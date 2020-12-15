@@ -1,0 +1,77 @@
+import 'package:minimal_bus_hk/model/eta.dart';
+import 'package:minimal_bus_hk/utils/stores.dart';
+import 'package:mobx/mobx.dart';
+
+part 'eta_list_store.g.dart';
+
+class ETAListStore = ETAListStoreBase with _$ETAListStore;
+
+abstract class ETAListStoreBase with Store {
+
+  @observable
+  bool isLoading = true;
+
+  @action
+  void setIsLoading(bool isLoading){
+    this.isLoading = isLoading;
+  }
+
+  @observable
+  int selectedETAListIndex;
+
+  @action
+  void setSelectedETAListIndex(int index){
+    selectedETAListIndex = index;
+  }
+
+  @observable
+  DateTime timeStampForChecking = DateTime.now();
+
+  @action
+  void updateTimeStampForChecking(){
+    timeStampForChecking = DateTime.now();
+  }
+
+  @computed
+  ObservableList<List<ETA>> get routesETAList{
+    var result = ObservableList<List<ETA>>();
+    if(Stores.dataManager.bookmarkedRouteStops == null || Stores.dataManager.ETAMap == null){
+      return result;
+    }
+
+    for(var routeStop in Stores.dataManager.bookmarkedRouteStops){
+      if(Stores.dataManager.ETAMap.containsKey(routeStop)){
+        var ETAs = Stores.dataManager.ETAMap[routeStop];
+        var filteredETAs = List<ETA>();
+        for(var eta in ETAs) {
+          if(routeStop.matchETA(eta)) {
+             filteredETAs.add(eta);
+          }
+        }
+        if(filteredETAs.length == 0){
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId, routeStop.isInbound));
+        }
+        filteredETAs.sort((a,b)=> a.etaTimestamp.compareTo(b.etaTimestamp));
+        result.add(filteredETAs);
+      }else{
+        result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.isInbound)]);
+      }
+    }
+
+    return result;
+  }
+
+  @computed
+  ObservableList<ETA> get displayedETAs{
+    ObservableList<ETA> result = ObservableList();
+    for(List<ETA> list in routesETAList ){
+      for(ETA eta in list){
+        if(( eta.etaTimestamp != null && timeStampForChecking.compareTo(eta.etaTimestamp) < -60000) || eta == list.last){
+          result.add(eta);
+          break;
+        }
+      }
+    }
+    return result;
+  }
+}
