@@ -14,25 +14,46 @@ class DataManager = DataManagerBase with _$DataManager;
 
 abstract class DataManagerBase with Store {
   @observable
-  ObservableList<BusRoute> routes;
+  ObservableMap<String,List<BusRoute>> companyRoutesMap;
+
+  @computed
+  ObservableList<BusRoute> get routes{
+    if(companyRoutesMap == null){
+      return null;
+    }
+
+    var result = ObservableList<BusRoute>();
+    for(var routes in companyRoutesMap.values){
+      for(var route in routes){
+          result.add(route);
+      }
+    }
+    return result;
+
+  }
 
   @computed
   ObservableMap<String, BusRoute> get routesMap{
     var result = ObservableMap<String, BusRoute>();
-    for(var route in routes){
+    if(routes != null) {
+      for (var route in routes) {
         result[route.routeCode] = route;
+      }
     }
     return result;
   }
 
   @action
-  void setRoutes(List<Map<String, dynamic>> dataArray){
+  void setRoutes(List<Map<String, dynamic>> dataArray,String companyCode){
 
     ObservableList<BusRoute> result = ObservableList();
     for(Map<String, dynamic> data in dataArray){
       result.add(BusRoute.fromJson(data));
     }
-    routes = result;
+    if(companyRoutesMap==null){
+      companyRoutesMap = ObservableMap();
+    }
+    companyRoutesMap[companyCode] = result;
   }
 
   @observable
@@ -76,7 +97,7 @@ abstract class DataManagerBase with Store {
   ObservableMap<RouteStop, List<ETA>> ETAMap;
 
   @action
-  void updateETAMap(String stopId, String routeCode ,List<Map<String, dynamic>> dataArray){
+  void updateETAMap(String stopId, String routeCode, String companyCode, List<Map<String, dynamic>> dataArray){
     List<ETA> inboundResult = List();
     List<ETA> outboundResult = List();
 
@@ -91,8 +112,8 @@ abstract class DataManagerBase with Store {
     if(ETAMap == null){
       ETAMap = ObservableMap();
     }
-    ETAMap[RouteStop(routeCode, stopId, true)] = inboundResult;
-    ETAMap[RouteStop(routeCode, stopId, false)] = outboundResult;
+    ETAMap[RouteStop(routeCode, stopId, companyCode, true)] = inboundResult;
+    ETAMap[RouteStop(routeCode, stopId, companyCode, false)] = outboundResult;
 
   }
 

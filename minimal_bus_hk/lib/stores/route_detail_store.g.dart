@@ -19,18 +19,18 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
                   name: 'RouteDetailStoreBase.selectedRouteBusStops'))
           .value;
 
-  final _$routeCodeAtom = Atom(name: 'RouteDetailStoreBase.routeCode');
+  final _$routeAtom = Atom(name: 'RouteDetailStoreBase.route');
 
   @override
-  String get routeCode {
-    _$routeCodeAtom.reportRead();
-    return super.routeCode;
+  BusRoute get route {
+    _$routeAtom.reportRead();
+    return super.route;
   }
 
   @override
-  set routeCode(String value) {
-    _$routeCodeAtom.reportWrite(value, super.routeCode, () {
-      super.routeCode = value;
+  set route(BusRoute value) {
+    _$routeAtom.reportWrite(value, super.route, () {
+      super.route = value;
     });
   }
 
@@ -53,11 +53,11 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
       ActionController(name: 'RouteDetailStoreBase');
 
   @override
-  void setRouteCode(String routeCode) {
+  void setBusRoute(BusRoute route) {
     final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
-        name: 'RouteDetailStoreBase.setRouteCode');
+        name: 'RouteDetailStoreBase.setBusRoute');
     try {
-      return super.setRouteCode(routeCode);
+      return super.setBusRoute(route);
     } finally {
       _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -77,7 +77,7 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
   @override
   String toString() {
     return '''
-routeCode: ${routeCode},
+route: ${route},
 isInbound: ${isInbound},
 selectedRouteBusStops: ${selectedRouteBusStops}
     ''';

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/network_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,17 +31,23 @@ class CacheUtils{
 
   CacheUtils._();
 
-  String getRouteDetailsCacheKey(String routeCode, bool isInbound){
-    return "${_routeDetailsCacheKey}_${routeCode}_${isInbound ? "I":"O"}";
+  String getRouteDetailsCacheKey(String routeCode, String companyCode, bool isInbound){
+    return "${_routeDetailsCacheKey}_${companyCode}_${routeCode}_${isInbound ? "I":"O"}";
   }
 
   String getBusStopDetailCacheKey(String stopId){
     return "${_busStopDetailCacheKey}_$stopId";
   }
 
-  Future<bool> getRoute() async {
+  Future<bool> getRoutes() async {
+    bool nwfbResult = await getRouteFor(NetworkUtil.companyCodeNWFB);
+    bool ctbResult = await getRouteFor(NetworkUtil.companyCodeCTB);
+    return nwfbResult && ctbResult;
+  }
+
+    Future<bool> getRouteFor(String companyCode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(routesCacheKey);
+    String content = prefs.getString("$routesCacheKey/$companyCode");
     var expiryDay = prefs.getInt(routesCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -49,25 +56,25 @@ class CacheUtils{
 
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
-      if(Stores.dataManager.routes == null || Stores.dataManager.routes.length == 0){
-        NetworkUtil.sharedInstance().parseRouteData(cachedData);
+      if(Stores.dataManager.routesMap == null || !Stores.dataManager.routesMap.containsKey(companyCode)) {
+        NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
       }
 
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds)){
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getRoute();
+        var code = await  NetworkUtil.sharedInstance().getRouteFor(companyCode);
         return code == 200;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getRoute();
+      var code = await  NetworkUtil.sharedInstance().getRouteFor(companyCode);
       return code == 200;
 
   }
 
-  Future<bool> getRouteDetail(String routeCode, bool isInbound) async {
+  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(getRouteDetailsCacheKey(routeCode,isInbound));
+    String content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
     var expiryDay = prefs.getInt(routeDetailsCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -79,16 +86,16 @@ class CacheUtils{
       if((isInbound && (Stores.dataManager.inboundBusStopsMap == null || !Stores.dataManager.inboundBusStopsMap.containsKey(routeCode))) ||
           (!isInbound && (Stores.dataManager.outboundBusStopsMap == null || !Stores.dataManager.outboundBusStopsMap.containsKey(routeCode)))){
         NetworkUtil.sharedInstance().parseRouteDetail(
-            routeCode, isInbound, cachedData);
+            routeCode, companyCode, isInbound, cachedData);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds)) {
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, isInbound);
+        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
         return code == 200;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, isInbound);
+      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
       return code == 200;
 
   }
@@ -117,13 +124,13 @@ class CacheUtils{
       return code == 200;
   }
 
-  Future<void> getRouteAndStopsDetail(String routeCode, bool isInbound) async {
+  Future<void> getRouteAndStopsDetail(BusRoute route, bool isInbound) async {
 
-    bool success = await getRouteDetail(routeCode, isInbound);
+    bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound);
     if(success){
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
-      if(routeStopsMap != null && routeStopsMap.containsKey(routeCode)){
-        for(var stop in routeStopsMap[routeCode]){
+      if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
+        for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
             await getBusStopDetail(stop.identifier);
           }

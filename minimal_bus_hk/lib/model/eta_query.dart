@@ -3,8 +3,9 @@ import 'package:minimal_bus_hk/model/route_stop.dart';
 class ETAQuery{
   final String routeCode;
   final String stopId;
+  final String companyCode;
 
-  ETAQuery.fromRouteStop(RouteStop routeStop) : routeCode = routeStop.routeCode, stopId = routeStop.stopId;
+  ETAQuery.fromRouteStop(RouteStop routeStop) : routeCode = routeStop.routeCode, stopId = routeStop.stopId, companyCode = routeStop.companyCode;
 
   bool operator ==(Object other){
     if(other is ETAQuery) {

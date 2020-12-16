@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _bookmarkReaction = autorun( (_) => updateETAData(Stores.dataManager.bookmarkedRouteStops));
 
     CacheUtils.sharedInstance().getBookmarkedRouteStop();
-    CacheUtils.sharedInstance().getRoute();
+    CacheUtils.sharedInstance().getRoutes();
   }
 
   @override
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                 Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child: Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
                                 Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?Stores.dataManager.busStopDetailMap[eta.stopId].localizedName() : "-"}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),)),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("ETA: ${ eta.toTimeDescription()}", style: TextStyle(fontSize: 14, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking.millisecondsSinceEpoch) < 60000 && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking.millisecondsSinceEpoch) > 0 )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking.millisecondsSinceEpoch) < 0? Colors.grey : Colors.black ),  )),
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("ETA: ${ eta.toTimeDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 14, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < 60000 && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > -30000 )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < -30000? Colors.grey : Colors.black ),  )),
                                 Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text( eta.localizedRemark().length > 0? eta.localizedRemark():"", style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),))
                               ])
                               ,onTap: (){

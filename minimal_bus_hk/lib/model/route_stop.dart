@@ -5,14 +5,15 @@ part 'route_stop.g.dart';
 class RouteStop{
   final String routeCode;
   final String stopId;
+  final String companyCode;
   final bool isInbound;
 
-  RouteStop( String routeCode, String stopId,  bool isInbound):routeCode = routeCode,this.stopId = stopId, this.isInbound = isInbound;
+  RouteStop( String routeCode, String stopId, String companyCode, bool isInbound):routeCode = routeCode,this.stopId = stopId, this.companyCode = companyCode, this.isInbound = isInbound;
 
 
   bool operator ==(Object other){
     if(other is RouteStop) {
-      return routeCode == other.routeCode && stopId == other.stopId && isInbound == other.isInbound;
+      return routeCode == other.routeCode && stopId == other.stopId && isInbound == other.isInbound && companyCode == other.companyCode;
     }else{
       return false;
     }
@@ -29,10 +30,10 @@ class RouteStop{
 
   @override
   int get hashCode {
-    return "$routeCode$stopId${isInbound?1:0}".hashCode;
+    return "$routeCode$stopId${isInbound?1:0}$companyCode".hashCode;
   }
   bool matchETA(ETA eta){
-    return eta.routeCode == this.routeCode && eta.stopId == this.stopId && eta.isInBound == this.isInbound;
+    return eta.routeCode == this.routeCode && eta.stopId == this.stopId && eta.isInBound == this.isInbound && eta.companyCode == this.companyCode;
   }
 
 }

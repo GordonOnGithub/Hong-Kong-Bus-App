@@ -49,12 +49,12 @@ abstract class ETAListStoreBase with Store {
           }
         }
         if(filteredETAs.length == 0){
-          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId, routeStop.isInbound));
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
         }
         filteredETAs.sort((a,b)=> a.etaTimestamp.compareTo(b.etaTimestamp));
         result.add(filteredETAs);
       }else{
-        result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.isInbound)]);
+        result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);
       }
     }
 
@@ -66,7 +66,7 @@ abstract class ETAListStoreBase with Store {
     ObservableList<ETA> result = ObservableList();
     for(List<ETA> list in routesETAList ){
       for(ETA eta in list){
-        if(( eta.etaTimestamp != null && timeStampForChecking.compareTo(eta.etaTimestamp) < -60000) || eta == list.last){
+        if(( eta.etaTimestamp != null ) || eta == list.last){
           result.add(eta);
           break;
         }

@@ -9,6 +9,13 @@ part of 'data_manager.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$DataManager on DataManagerBase, Store {
+  Computed<ObservableList<BusRoute>> _$routesComputed;
+
+  @override
+  ObservableList<BusRoute> get routes => (_$routesComputed ??=
+          Computed<ObservableList<BusRoute>>(() => super.routes,
+              name: 'DataManagerBase.routes'))
+      .value;
   Computed<ObservableMap<String, BusRoute>> _$routesMapComputed;
 
   @override
@@ -17,18 +24,18 @@ mixin _$DataManager on DataManagerBase, Store {
               name: 'DataManagerBase.routesMap'))
       .value;
 
-  final _$routesAtom = Atom(name: 'DataManagerBase.routes');
+  final _$companyRoutesMapAtom = Atom(name: 'DataManagerBase.companyRoutesMap');
 
   @override
-  ObservableList<BusRoute> get routes {
-    _$routesAtom.reportRead();
-    return super.routes;
+  ObservableMap<String, List<BusRoute>> get companyRoutesMap {
+    _$companyRoutesMapAtom.reportRead();
+    return super.companyRoutesMap;
   }
 
   @override
-  set routes(ObservableList<BusRoute> value) {
-    _$routesAtom.reportWrite(value, super.routes, () {
-      super.routes = value;
+  set companyRoutesMap(ObservableMap<String, List<BusRoute>> value) {
+    _$companyRoutesMapAtom.reportWrite(value, super.companyRoutesMap, () {
+      super.companyRoutesMap = value;
     });
   }
 
@@ -133,11 +140,11 @@ mixin _$DataManager on DataManagerBase, Store {
       ActionController(name: 'DataManagerBase');
 
   @override
-  void setRoutes(List<Map<String, dynamic>> dataArray) {
+  void setRoutes(List<Map<String, dynamic>> dataArray, String companyCode) {
     final _$actionInfo = _$DataManagerBaseActionController.startAction(
         name: 'DataManagerBase.setRoutes');
     try {
-      return super.setRoutes(dataArray);
+      return super.setRoutes(dataArray, companyCode);
     } finally {
       _$DataManagerBaseActionController.endAction(_$actionInfo);
     }
@@ -167,12 +174,12 @@ mixin _$DataManager on DataManagerBase, Store {
   }
 
   @override
-  void updateETAMap(
-      String stopId, String routeCode, List<Map<String, dynamic>> dataArray) {
+  void updateETAMap(String stopId, String routeCode, String companyCode,
+      List<Map<String, dynamic>> dataArray) {
     final _$actionInfo = _$DataManagerBaseActionController.startAction(
         name: 'DataManagerBase.updateETAMap');
     try {
-      return super.updateETAMap(stopId, routeCode, dataArray);
+      return super.updateETAMap(stopId, routeCode, companyCode, dataArray);
     } finally {
       _$DataManagerBaseActionController.endAction(_$actionInfo);
     }
@@ -192,12 +199,13 @@ mixin _$DataManager on DataManagerBase, Store {
   @override
   String toString() {
     return '''
-routes: ${routes},
+companyRoutesMap: ${companyRoutesMap},
 inboundBusStopsMap: ${inboundBusStopsMap},
 outboundBusStopsMap: ${outboundBusStopsMap},
 busStopDetailMap: ${busStopDetailMap},
 ETAMap: ${ETAMap},
 bookmarkedRouteStops: ${bookmarkedRouteStops},
+routes: ${routes},
 routesMap: ${routesMap}
     ''';
   }

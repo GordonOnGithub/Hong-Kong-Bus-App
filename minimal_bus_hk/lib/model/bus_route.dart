@@ -2,6 +2,7 @@ import 'package:minimal_bus_hk/localization_util.dart';
 
 class BusRoute{
 final String routeCode;
+final String companyCode;
 final String originEnglishName;
 final String originTCName;
 final String originSCName;
@@ -11,6 +12,7 @@ final String destinationSCName;
 final DateTime timestamp;
 BusRoute.fromJson(Map<String, dynamic> json):
       routeCode = json["route"],
+      companyCode = json["co"],
       originEnglishName = json["orig_en"],
       originTCName = json["orig_tc"],
       originSCName = json["orig_sc"],

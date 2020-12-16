@@ -19,29 +19,38 @@ class NetworkUtil{
 
   NetworkUtil._();
 
-  final String _routeAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route/nwfb";
-  final String _routeDataAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/nwfb";
+  final String _routeAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route";
+  final String _routeDataAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop";
   final String _busStopDetailAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop";
-  final String _etaAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/nwfb";
+  final String _etaAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta";
+
+  static final String companyCodeNWFB = "nwfb";
+  static final String companyCodeCTB = "ctb";
+
   Future<int> getRoute() async {
-    var response = await http.get(_routeAPI);
+    await getRouteFor(companyCodeNWFB);
+    await getRouteFor(companyCodeCTB);
+  }
+
+    Future<int> getRouteFor(String companyCode) async {
+    var response = await http.get("$_routeAPI/$companyCode");
     var code = response.statusCode;
     if(code == 200){
         Map<String, dynamic> responseData = jsonDecode(response.body);
         if(responseData.containsKey("data")){
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString(CacheUtils.routesCacheKey, response.body);
-          parseRouteData(responseData);
+          prefs.setString("${CacheUtils.routesCacheKey}/$companyCode", response.body);
+          parseRouteData(responseData, companyCode);
         }
     }else{
       if(Stores.dataManager.routes == null) {
-        Stores.dataManager.setRoutes(List());
+        Stores.dataManager.setRoutes(List(), companyCode);
       }
     }
     return code;
   }
 
-  void parseRouteData(Map<String, dynamic> responseData){
+  void parseRouteData(Map<String, dynamic> responseData, companyCode){
     var list = responseData["data"] as List<dynamic>;
     var dataList = List<Map<String, dynamic>>();
     for(var data in list){
@@ -49,19 +58,19 @@ class NetworkUtil{
         dataList.add(data);
       }
     }
-    Stores.dataManager.setRoutes(dataList);
+    Stores.dataManager.setRoutes(dataList, companyCode);
   }
 
-  Future<int> getRouteDetail(String routeCode, bool isInbound) async {
+  Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
     var response = await http.get(
-        "$_routeDataAPI/$routeCode/${isInbound ? "inbound" : "outbound"}");
+        "$_routeDataAPI/$companyCode/$routeCode/${isInbound ? "inbound" : "outbound"}");
     var code = response.statusCode;
     if (code == 200) {
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString(CacheUtils.sharedInstance().getRouteDetailsCacheKey(routeCode, isInbound), response.body);
-        parseRouteDetail(routeCode, isInbound, responseData);
+        prefs.setString(CacheUtils.sharedInstance().getRouteDetailsCacheKey(routeCode, companyCode,isInbound), response.body);
+        parseRouteDetail(routeCode,  companyCode, isInbound, responseData);
       }
     }else{
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
@@ -71,7 +80,7 @@ class NetworkUtil{
     return code;
   }
 
-  void parseRouteDetail(String routeCode, bool isInbound, Map<String, dynamic> responseData){
+  void parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData){
     var list = responseData["data"] as List<dynamic>;
     var dataList = List<Map<String, dynamic>>();
     for (var data in list) {
@@ -102,8 +111,8 @@ class NetworkUtil{
       Stores.dataManager.updateBusStopDetailMap(stopId, data);
   }
 
-  Future<int> getETA(String routeCode, String stopId) async {
-    var response = await http.get("$_etaAPI/$stopId/$routeCode");
+  Future<int> getETA(ETAQuery query) async {
+    var response = await http.get("$_etaAPI/${query.companyCode}/${query.stopId}/${query.routeCode}");
     var code = response.statusCode;
     if(code == 200){
       Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -115,7 +124,7 @@ class NetworkUtil{
             dataList.add(data);
           }
         }
-        Stores.dataManager.updateETAMap(stopId, routeCode, dataList);
+        Stores.dataManager.updateETAMap(query.stopId, query.routeCode,query.companyCode, dataList);
       }
     }
     return code;
@@ -133,7 +142,7 @@ class NetworkUtil{
       }
 
       for(var query in queries){
-        await NetworkUtil.sharedInstance().getETA(query.routeCode, query.stopId);
+        await NetworkUtil.sharedInstance().getETA(query);
       }
     }
   }

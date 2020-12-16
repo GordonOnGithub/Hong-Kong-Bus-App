@@ -103,14 +103,14 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
                                   InkWell(child:   Container( child: Text("Inbound", style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold ),)), onTap: (){
-                                  Stores.routeDetailStore.routeCode = Stores.routeListStore.displayedRoutes[index].routeCode;
+                                  Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = true;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => BusRouteDetailView()),
                                   );
                                 },), InkWell(child:   Container( child: Text("Outbound", style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold )), ), onTap: (){
-                                  Stores.routeDetailStore.routeCode = Stores.routeListStore.displayedRoutes[index].routeCode;
+                                  Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = false;
                                   Stores.routeListStore.setFilterKeyword("");
                                   Navigator.push(

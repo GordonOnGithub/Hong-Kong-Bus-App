@@ -42,7 +42,7 @@ abstract class RouteListStoreBase with Store {
               || element.destinationSCName.toLowerCase().contains(filterKeyword.toLowerCase())
               || element.originSCName.toLowerCase().contains(filterKeyword.toLowerCase())
             ).toList() );
-
+      result.sort((a,b)=> a.routeCode.length.compareTo(b.routeCode.length));
       return result;
     }else {
       var result = Stores.dataManager.routes;

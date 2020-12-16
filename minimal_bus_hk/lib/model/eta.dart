@@ -9,6 +9,7 @@ enum ETAStatus{
 class ETA{
   final String stopId;
   final String routeCode;
+  final String companyCode;
   final String englishRemark;
   final String TCRemark;
   final String SCRemark;
@@ -20,6 +21,7 @@ class ETA{
   ETA.fromJson(Map<String, dynamic> json):
         stopId = json["stop"],
         routeCode = json["route"],
+        companyCode = json["co"],
         englishRemark = json["rmk_en"],
         TCRemark = json["rmk_tc"],
         SCRemark = json["rmk_sc"],
@@ -29,9 +31,10 @@ class ETA{
         status = ETAStatus.found;
 
 
-  ETA.notFound(String routeCode, String stopId, bool isInbound):
+  ETA.notFound(String routeCode, String stopId, String companyCode, bool isInbound):
         routeCode = routeCode,
         stopId = stopId,
+        companyCode = companyCode,
         isInBound = isInbound,
         englishRemark = "",
         TCRemark = "",
@@ -40,10 +43,11 @@ class ETA{
         dataTimestamp = DateTime.now(),
         status = ETAStatus.notFound;
 
-  ETA.unknown(String routeCode, String stopId, bool isInbound):
+  ETA.unknown(String routeCode, String stopId, String companyCode,  bool isInbound):
         routeCode = routeCode,
         stopId = stopId,
-        isInBound = isInbound,
+        companyCode = companyCode,
+      isInBound = isInbound,
         englishRemark = "",
         TCRemark = "",
         SCRemark = "",
@@ -65,7 +69,10 @@ class ETA{
     }
   }
 
-  String toTimeDescription(){
+  String toTimeDescription(DateTime timestampForChecking){
+    if(timestampForChecking == null){
+      timestampForChecking = DateTime.now();
+    }
     if(status == ETAStatus.unknown){
       return "loading...";
     }
@@ -78,15 +85,16 @@ class ETA{
 
 
     var localTime = etaTimestamp.add(Duration(hours: 8));
-
-    return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")}";
+    var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
+    var timeLeft = remainedTimeInMilliseconds > -30000?( remainedTimeInMilliseconds > 60000?"[~${(remainedTimeInMilliseconds~/60000)}  minute(s)]":("[< 1 minute]")) : "";
+    return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")} $timeLeft";
   }
 
-  int getRemainTimeInMilliseconds(int timestampForChecking){
+  int getRemainTimeInMilliseconds(DateTime timestampForChecking){
     if(timestampForChecking == null){
-      timestampForChecking = DateTime.now().millisecondsSinceEpoch;
+      timestampForChecking = DateTime.now();
     }
-    return etaTimestamp.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch;
+    return  (etaTimestamp != null? etaTimestamp.millisecondsSinceEpoch:0) - DateTime.now().millisecondsSinceEpoch;
   }
 
 }

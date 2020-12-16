@@ -1,4 +1,5 @@
 import 'package:minimal_bus_hk/model/bus_stop.dart';
+import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 import 'package:mobx/mobx.dart';
@@ -9,11 +10,11 @@ class RouteDetailStore = RouteDetailStoreBase
 
 abstract class RouteDetailStoreBase with Store {
   @observable
-  String routeCode;
+  BusRoute route;
 
   @action
-  void setRouteCode(String routeCode){
-    this.routeCode = routeCode;
+  void setBusRoute(BusRoute route){
+    this.route = route;
   }
 
   @observable
@@ -26,7 +27,7 @@ abstract class RouteDetailStoreBase with Store {
 
   @computed
   ObservableList<BusStopDetail> get selectedRouteBusStops {
-    if(routeCode == null){
+    if(route == null){
       return ObservableList<BusStopDetail>();
     }
 
@@ -34,7 +35,7 @@ abstract class RouteDetailStoreBase with Store {
     if(routeStopsMap == null){
       return null;
     }
-    var routeStopsList = routeStopsMap[routeCode];
+    var routeStopsList = routeStopsMap[route.routeCode];
     if(routeStopsList == null){
       return null;
     }

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'utils/network_util.dart';
@@ -35,7 +33,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   @override
   void initState() {
     super.initState();
-    CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.routeCode, Stores.routeDetailStore.isInbound);
+    CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
   }
 
   @override
@@ -43,7 +41,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${Stores.routeDetailStore.routeCode} (${Stores.routeDetailStore.isInbound ? "Inbound":"Outbound"})")),
+        builder: (_) =>Text("${Stores.routeDetailStore.route.routeCode} (${Stores.routeDetailStore.isInbound ? "Inbound":"Outbound"})")),
         ),
         body: Observer(
             builder: (_) =>Center(child: (Stores.routeDetailStore.selectedRouteBusStops != null)?
@@ -59,13 +57,13 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                       Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text( "${index + 1}. ${Stores.routeDetailStore.selectedRouteBusStops[index].localizedName()}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
-                          (Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop( Stores.routeDetailStore.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.isInbound)))?
+                          (Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
                           Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("bookmarked", style: TextStyle(fontSize: 15))) : Text("")
 
                         ])),
                   ),
                     onTap: (){
-                    var routeStop = RouteStop( Stores.routeDetailStore.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.isInbound);
+                    var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
 
                       if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
                           routeStop)) {
