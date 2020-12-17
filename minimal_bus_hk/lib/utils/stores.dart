@@ -2,6 +2,8 @@ import 'package:minimal_bus_hk/stores/data_manager.dart';
 import 'package:minimal_bus_hk/stores/route_list_store.dart';
 import 'package:minimal_bus_hk/stores/route_detail_store.dart';
 import 'package:minimal_bus_hk/stores/eta_list_store.dart';
+import 'package:minimal_bus_hk/stores/app_config.dart';
+
 class Stores{
   static DataManager _dataManager = DataManager();
   static DataManager get dataManager => _dataManager;
@@ -14,4 +16,7 @@ class Stores{
 
   static ETAListStore _etaListStore = ETAListStore();
   static ETAListStore get etaListStore => _etaListStore;
+
+  static AppConfigStore _appConfigStoreBase = AppConfigStore();
+  static AppConfigStore get appConfig => _appConfigStoreBase;
 }

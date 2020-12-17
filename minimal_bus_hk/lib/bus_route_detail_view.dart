@@ -33,6 +33,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   @override
   void initState() {
     super.initState();
+    Stores.routeDetailStore.setSelectedBusStopIndex(null);
     CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
   }
 
@@ -50,30 +51,47 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                 padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 itemCount:  Stores.routeDetailStore.selectedRouteBusStops.length ,
                 itemBuilder: (BuildContext context, int index) {
-                  return InkWell(child:Container(
-                    height: 80,
+                  return Observer(
+                      builder: (_) =>InkWell(child:Container(
+                    height: Stores.routeDetailStore.selectedBusStopIndex == index ? 110 : 90,
                     child:Observer(
                       builder: (_) =>Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text( "${index + 1}. ${Stores.routeDetailStore.selectedRouteBusStops[index].localizedName()}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
+                      Padding(padding: const EdgeInsets.fromLTRB(0 , 10, 0, 5),child:Text( "${index + 1}. ${Stores.routeDetailStore.selectedRouteBusStops[index].localizedName()}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
                           (Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
-                          Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("bookmarked", style: TextStyle(fontSize: 15))) : Text("")
+                          Padding(padding: const EdgeInsets.fromLTRB(0 , 5, 0, 10),child:Container(height: 15,child:Text("bookmarked", style: TextStyle(fontSize: 15)))) : Container(height: 30,),
+                          index == Stores.routeDetailStore.selectedBusStopIndex? Container( height: 20,child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                            InkWell(child:
+                              Container( child:
+                                Text((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
+                                "Remove from bookmark" : "Add to bookmark",
+                                style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 )), ), onTap: (){
+                              var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
+
+                              if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
+                                  routeStop)) {
+                                Stores.dataManager.addRouteStopToBookmark(routeStop);
+                              } else {
+                                Stores.dataManager.removeRouteStopFromBookmark(
+                                    routeStop);
+                              }
+                          },),
+                          InkWell(child:
+                            Container( child:
+                               Text("Check location",  style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 )))
+                            )
+                          ],),):Container()
 
                         ])),
                   ),
                     onTap: (){
-                    var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
+                      Stores.routeDetailStore.setSelectedBusStopIndex(index);
 
-                      if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
-                          routeStop)) {
-                        Stores.dataManager.addRouteStopToBookmark(routeStop);
-                      } else {
-                        Stores.dataManager.removeRouteStopFromBookmark(
-                            routeStop);
-                      }
 
-                    },);
+                    },));
                 }
             ).build(context) : Text("No route is found."))):
               Text("loading...")

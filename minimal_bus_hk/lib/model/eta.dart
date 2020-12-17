@@ -1,4 +1,5 @@
 import 'package:minimal_bus_hk/localization_util.dart';
+import 'package:minimal_bus_hk/utils/stores.dart';
 
 enum ETAStatus{
   found,
@@ -69,7 +70,7 @@ class ETA{
     }
   }
 
-  String toTimeDescription(DateTime timestampForChecking){
+  String toClockDescription(DateTime timestampForChecking){
     if(timestampForChecking == null){
       timestampForChecking = DateTime.now();
     }
@@ -86,8 +87,13 @@ class ETA{
 
     var localTime = etaTimestamp.add(Duration(hours: 8));
     var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
-    var timeLeft = remainedTimeInMilliseconds > -30000?( remainedTimeInMilliseconds > 60000?"[~${(remainedTimeInMilliseconds~/60000)}  minute(s)]":("[< 1 minute]")) : "";
-    return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")} $timeLeft";
+    return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")}";
+  }
+
+  String getTimeLeftDescription(DateTime timestampForChecking){
+    var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
+    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)}  minute(s)":("< 1 minute")) : "";
+
   }
 
   int getRemainTimeInMilliseconds(DateTime timestampForChecking){

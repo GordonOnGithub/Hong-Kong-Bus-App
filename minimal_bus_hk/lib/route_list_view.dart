@@ -91,8 +91,8 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
                                Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child: Text( busRoute.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0), child:Text("From: ${busRoute.localizedOriginName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("To: ${busRoute.localizedDestinationName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0), child:Text("From: ${busRoute.localizedOriginName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("To: ${busRoute.localizedDestinationName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
                              ]), onTap:  (){
                                 Stores.routeListStore.setSelectedRoute(Stores.routeListStore.displayedRoutes[index]);
 
@@ -102,14 +102,14 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                  InkWell(child:   Container( child: Text("Inbound", style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold ),)), onTap: (){
+                                  InkWell(child:   Container( child: Text("Inbound", style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500 ),)), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = true;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => BusRouteDetailView()),
                                   );
-                                },), InkWell(child:   Container( child: Text("Outbound", style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold )), ), onTap: (){
+                                },), InkWell(child:   Container( child: Text("Outbound", style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500)), ), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = false;
                                   Stores.routeListStore.setFilterKeyword("");

@@ -25,6 +25,14 @@ abstract class RouteDetailStoreBase with Store {
     this.isInbound = isInbound;
   }
 
+  @observable
+  int selectedBusStopIndex;
+
+  @action
+  void setSelectedBusStopIndex(int index){
+    selectedBusStopIndex = index;
+  }
+
   @computed
   ObservableList<BusStopDetail> get selectedRouteBusStops {
     if(route == null){

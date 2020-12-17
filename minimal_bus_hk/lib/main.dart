@@ -109,8 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       bool isSelected = (Stores.etaListStore.selectedETAListIndex != null && Stores.etaListStore.selectedETAListIndex == index);
                       return Observer(
                           builder: (_) =>Container(
-                        height: (Stores.etaListStore.selectedETAListIndex != null && Stores.etaListStore.selectedETAListIndex == index) ? 180 : 140,
+                        height: (Stores.etaListStore.selectedETAListIndex != null && Stores.etaListStore.selectedETAListIndex == index) ? 220 : 190,
                         child:Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                              Flexible(flex: 14, child: InkWell(child:Column(
@@ -119,16 +120,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                  children:[
 
                                 Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child: Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?Stores.dataManager.busStopDetailMap[eta.stopId].localizedName() : "-"}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),)),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("ETA: ${ eta.toTimeDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 14, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < 60000 && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > -30000 )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < -30000? Colors.grey : Colors.black ),  )),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text( eta.localizedRemark().length > 0? eta.localizedRemark():"", style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),))
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("To: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?( eta.isInBound ? Stores.dataManager.routesMap[eta.routeCode].localizedOriginName() : Stores.dataManager.routesMap[eta.routeCode].localizedDestinationName()):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?Stores.dataManager.busStopDetailMap[eta.stopId].localizedName() : "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)),
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
+                                    Container(child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                      Flexible(flex:3, child:Text("ETA: ${ eta.toClockDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
+                                      Flexible(flex:4, child: Container()),
+                                      Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black )),  )
+                                    ],), height: 20,)
+                                ),
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text( eta.localizedRemark().length > 0? eta.localizedRemark():"", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
                               ])
                               ,onTap: (){
                                   Stores.etaListStore.setSelectedETAListIndex(index);
                              }
                       )),
                               (Stores.etaListStore.selectedETAListIndex != null && Stores.etaListStore.selectedETAListIndex == index) ?  Flexible(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                                InkWell(child:   Container( child: Text("Remove bookmark", style:  TextStyle(fontSize: 15, fontWeight: FontWeight.bold ),)), onTap: (){
+                                InkWell(child:   Container(height: 30, child: Text("Remove bookmark", style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500 ),)), onTap: (){
                                   Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops[index]);
                                   Stores.etaListStore.setSelectedETAListIndex(null);
 
