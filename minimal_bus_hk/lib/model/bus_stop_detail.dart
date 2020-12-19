@@ -1,6 +1,6 @@
-import 'package:minimal_bus_hk/localization_util.dart';
+import 'package:minimal_bus_hk/interface/localized_data.dart';
 
-class BusStopDetail{
+class BusStopDetail extends LocalizedData{
   final String identifier;
   final String englishName;
   final String TCName;
@@ -8,6 +8,9 @@ class BusStopDetail{
   final String latitude;
   final String longitude;
   final DateTime timestamp;
+  Map<String, Map<String, String>> _localizedData = Map();
+
+  static final String localizationKeyForName = "name";
 
 BusStopDetail.fromJson(Map<String, dynamic> json):
       identifier = json["stop"],
@@ -16,7 +19,13 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
       SCName = json["name_sc"],
       latitude = json["lat"],
       longitude = json["long"],
-      timestamp = DateTime.tryParse(json["data_timestamp"]);
+      timestamp = DateTime.tryParse(json["data_timestamp"]){
+      Map<String, String> nameData = Map();
+      nameData["en"] = englishName;
+      nameData["tc"] = TCName;
+      nameData["sc"] = SCName;
+      _localizedData[localizationKeyForName] = nameData;
+}
 
   BusStopDetail.empty(String identifier):
         identifier =identifier,
@@ -27,16 +36,8 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
         longitude  = "loading...",
         timestamp = DateTime.now();
 
-  String localizedName(){
-    switch(LocalizationUtil.localizationPref){
-      case LocalizationPref.english:
-        return englishName != null? englishName : "";
-      case LocalizationPref.TC:
-        return TCName!= null? TCName : "";
-      case LocalizationPref.SC:
-        return SCName!= null? SCName : "";
-      default:
-        return englishName;
-    }
+  @override
+  Map<String, Map<String, String>> getLocalizedData() {
+    return _localizedData;
   }
 }

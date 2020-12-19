@@ -133,8 +133,8 @@ class NetworkUtil{
   Future<void> getETAForRouteStops() async{
     var queries = List<ETAQuery>();
     if(Stores.dataManager.bookmarkedRouteStops == null)return;
-
-    for(RouteStop routeStop in Stores.dataManager.bookmarkedRouteStops){
+    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
+    for(RouteStop routeStop in list){
 
       var query = ETAQuery.fromRouteStop(routeStop);
       if(!queries.contains(query)){

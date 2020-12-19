@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/bus_route_detail_view.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
+import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:mobx/mobx.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
@@ -48,7 +49,8 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Route List"),
+        title: Observer(
+        builder: (_) => Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForRouteListView, Stores.localizationStore.localizationPref))),
       ),
       body: Observer(
       builder: (_) => Center(
@@ -66,7 +68,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   Stores.routeListStore.setFilterKeyword(text);
                 },
                   decoration: InputDecoration(
-                      hintText: 'Type to search route. e.g. \"796C\" "Mongkok"'
+                      hintText: Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSearchTextFieldPlaceholder, Stores.localizationStore.localizationPref)
                   ),)
             ),
             Expanded(flex: 9,
@@ -78,10 +80,11 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   BusRoute busRoute = Stores.routeListStore.displayedRoutes[index];
                   return Observer(
                       builder: (_) =>Container(
-                    height: (Stores.routeListStore.selectedRoute != null && busRoute == Stores.routeListStore.selectedRoute) ? 160 : 120,
-
-                        child:Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                        height: (busRoute == Stores.routeListStore.selectedRoute) ? 160 : 120,
+                        color:  (busRoute == Stores.routeListStore.selectedRoute) ? Colors.lightBlue[50] : Colors.grey[50],
+                        child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Expanded(flex: 12,
                               child:
@@ -91,25 +94,27 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
                                Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child: Text( busRoute.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0), child:Text("From: ${busRoute.localizedOriginName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("To: ${busRoute.localizedDestinationName()}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0), child:Text("${Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyFrom, Stores.localizationStore.localizationPref)}: ${Stores.localizationStore.localizedStringFrom(busRoute, BusRoute.localizationKeyForOrigin,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.localizationStore.localizedStringFrom(busRoute, BusRoute.localizationKeyForDestination,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
                              ]), onTap:  (){
                                 Stores.routeListStore.setSelectedRoute(Stores.routeListStore.displayedRoutes[index]);
 
+
                               },)),
-                              (Stores.routeListStore.selectedRoute != null && busRoute == Stores.routeListStore.selectedRoute) ?  Expanded(flex: 4,
+                              (busRoute == Stores.routeListStore.selectedRoute) ?  Expanded(flex: 4,
                                   child:Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                  InkWell(child:   Container( child: Text("Inbound", style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500 ),)), onTap: (){
+                                  InkWell(child:   Container( child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                  ),)), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = true;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => BusRouteDetailView()),
                                   );
-                                },), InkWell(child:   Container( child: Text("Outbound", style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500)), ), onTap: (){
+                                },), InkWell(child:   Container( child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = false;
                                   Stores.routeListStore.setFilterKeyword("");
@@ -119,9 +124,9 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                   );
                                 },)
                                 ],)) :  Expanded(flex: 0,
-                                  child:Container())
-
-                            ]),
+                                  child:Container()),
+                              Container(height: 1, color: Colors.grey,)
+                            ])),
                   ),
                   );
                 }
@@ -131,7 +136,8 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
               onTap: (){
                 NetworkUtil.sharedInstance().getRoute();
             },))
-            : Text("loading...")
+            : Observer(
+            builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref)))
       )),
 
 

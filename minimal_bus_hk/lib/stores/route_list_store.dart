@@ -21,6 +21,12 @@ abstract class RouteListStoreBase with Store {
     filterKeyword = keyword;
   }
 
+  @computed
+  List<String> get _keywords{
+    return filterKeyword.split(" ");
+
+  }
+
   @observable
   BusRoute selectedRoute;
 
@@ -33,16 +39,37 @@ abstract class RouteListStoreBase with Store {
   ObservableList<BusRoute> get displayedRoutes{
     if(filterKeyword != null && Stores.dataManager.routes != null) {
       var result =  ObservableList<BusRoute>();
-      result.addAll(Stores.dataManager.routes.where((element) =>
-          element.routeCode.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.destinationEnglishName.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.originEnglishName.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.destinationTCName.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.originTCName.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.destinationSCName.toLowerCase().contains(filterKeyword.toLowerCase())
-              || element.originSCName.toLowerCase().contains(filterKeyword.toLowerCase())
-            ).toList() );
-      result.sort((a,b)=> a.routeCode.length.compareTo(b.routeCode.length));
+        result.addAll(Stores.dataManager.routes.where((element) {
+        for(var keyword in _keywords) {
+          if(element.routeCode.toLowerCase().contains(keyword.toLowerCase())
+              || element.destinationEnglishName.toLowerCase().contains(
+              keyword.toLowerCase())
+              || element.originEnglishName.toLowerCase().contains(
+              keyword.toLowerCase())
+              || element.destinationTCName.toLowerCase().contains(
+              keyword.toLowerCase())
+              || element.originTCName.toLowerCase().contains(
+              keyword.toLowerCase())
+              || element.destinationSCName.toLowerCase().contains(
+              keyword.toLowerCase())
+              || element.originSCName.toLowerCase().contains(
+              keyword.toLowerCase())){
+
+          }else{
+            return false;
+          }
+        }
+        return true;
+        }
+        ).toList());
+
+      result.sort((a,b){
+        var result = a.routeCode.length.compareTo(b.routeCode.length);
+        if(result == 0){
+          result = a.routeCode.compareTo(b.routeCode);
+        }
+        return result;
+      });
       return result;
     }else {
       var result = Stores.dataManager.routes;

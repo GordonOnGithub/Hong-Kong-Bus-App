@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
+import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -42,7 +44,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${Stores.routeDetailStore.route.routeCode} (${Stores.routeDetailStore.isInbound ? "Inbound":"Outbound"})")),
+        builder: (_) =>Text("${Stores.routeDetailStore.route.routeCode} (${Stores.localizationStore.localizedString( Stores.routeDetailStore.isInbound ?LocalizationUtil.localizationKeyForInbound : LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref) })")),
         ),
         body: Observer(
             builder: (_) =>Center(child: (Stores.routeDetailStore.selectedRouteBusStops != null)?
@@ -53,22 +55,26 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                 itemBuilder: (BuildContext context, int index) {
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
-                    height: Stores.routeDetailStore.selectedBusStopIndex == index ? 110 : 90,
+                    height: Stores.routeDetailStore.selectedBusStopIndex == index ? 120 : 100,
+                    color: Stores.routeDetailStore.selectedBusStopIndex == index ? Colors.lightBlue[50] : Colors.grey[50],
                     child:Observer(
-                      builder: (_) =>Column(
+                      builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      Padding(padding: const EdgeInsets.fromLTRB(0 , 10, 0, 5),child:Text( "${index + 1}. ${Stores.routeDetailStore.selectedRouteBusStops[index].localizedName()}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
+                      Padding(padding: const EdgeInsets.fromLTRB(0 , 10, 0, 5),child:Text( "${index + 1}. ${Stores.localizationStore.localizedStringFrom(Stores.routeDetailStore.selectedRouteBusStops[index], BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
                           (Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
-                          Padding(padding: const EdgeInsets.fromLTRB(0 , 5, 0, 10),child:Container(height: 15,child:Text("bookmarked", style: TextStyle(fontSize: 15)))) : Container(height: 30,),
+                          Padding(padding: const EdgeInsets.fromLTRB(0 , 0, 0, 0),child:Container(height: 20,child:Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForBookmarked, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15)))) : Container(height: 30,),
                           index == Stores.routeDetailStore.selectedBusStopIndex? Container( height: 20,child:Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                             InkWell(child:
                               Container( child:
-                                Text((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
-                                "Remove from bookmark" : "Add to bookmark",
-                                style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 )), ), onTap: (){
+                                Text(
+                                    Stores.localizationStore.localizedString((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
+                                    LocalizationUtil.localizationKeyForUnbookmark : LocalizationUtil.localizationKeyForBookmark, Stores.localizationStore.localizationPref)
+                                    ,
+                                style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500, decoration: TextDecoration.underline )), ), onTap: (){
                               var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
 
                               if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
@@ -81,11 +87,11 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                           },),
                           InkWell(child:
                             Container( child:
-                               Text("Check location",  style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 )))
+                               Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref),  style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)))
                             )
-                          ],),):Container()
-
-                        ])),
+                          ],),):Container(height: 0,),
+                          Container(height: 1, color: Colors.grey,)
+                        ]))),
                   ),
                     onTap: (){
                       Stores.routeDetailStore.setSelectedBusStopIndex(index);
@@ -94,7 +100,8 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                     },));
                 }
             ).build(context) : Text("No route is found."))):
-              Text("loading...")
+            Observer(
+                builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref)))
           ,)),
 
     );

@@ -1,4 +1,6 @@
-import 'package:minimal_bus_hk/localization_util.dart';
+import 'file:///E:/Repository/Minimalistic%20HK%20Bus%20Guide/minimal_bus_hk/lib/utils/localization_util.dart';
+import 'package:minimal_bus_hk/interface/localized_data.dart';
+import 'package:minimal_bus_hk/stores/localization_store.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 
 enum ETAStatus{
@@ -7,7 +9,7 @@ enum ETAStatus{
   unknown
 }
 
-class ETA{
+class ETA extends LocalizedData{
   final String stopId;
   final String routeCode;
   final String companyCode;
@@ -19,6 +21,9 @@ class ETA{
   final bool isInBound;
   final ETAStatus status;
 
+  Map<String, Map<String, String>> _localizedData = Map();
+  static final String localizationKeyForRemark = "remark";
+
   ETA.fromJson(Map<String, dynamic> json):
         stopId = json["stop"],
         routeCode = json["route"],
@@ -29,7 +34,13 @@ class ETA{
         etaTimestamp = DateTime.tryParse(json["eta"]),
         dataTimestamp = DateTime.tryParse(json["data_timestamp"]),
         isInBound = json["dir"] == "I",
-        status = ETAStatus.found;
+        status = ETAStatus.found{
+    Map<String, String> nameData = Map();
+    nameData["en"] = englishRemark;
+    nameData["tc"] = TCRemark;
+    nameData["sc"] = SCRemark;
+    _localizedData[localizationKeyForRemark] = nameData;
+  }
 
 
   ETA.notFound(String routeCode, String stopId, String companyCode, bool isInbound):
@@ -57,19 +68,6 @@ class ETA{
         status = ETAStatus.unknown;
 
 
-  String localizedRemark(){
-    switch(LocalizationUtil.localizationPref){
-      case LocalizationPref.english:
-        return englishRemark;
-      case LocalizationPref.TC:
-        return TCRemark;
-      case LocalizationPref.SC:
-        return SCRemark;
-      default:
-        return englishRemark;
-    }
-  }
-
   String toClockDescription(DateTime timestampForChecking){
     if(timestampForChecking == null){
       timestampForChecking = DateTime.now();
@@ -92,7 +90,7 @@ class ETA{
 
   String getTimeLeftDescription(DateTime timestampForChecking){
     var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
-    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)}  minute(s)":("< 1 minute")) : "";
+    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)}":("< 1")) : "";
 
   }
 
@@ -102,5 +100,8 @@ class ETA{
     }
     return  (etaTimestamp != null? etaTimestamp.millisecondsSinceEpoch:0) - DateTime.now().millisecondsSinceEpoch;
   }
-
+  @override
+  Map<String, Map<String, String>> getLocalizedData() {
+    return _localizedData;
+  }
 }

@@ -1,0 +1,97 @@
+[
+  {
+    "key":"minutes",
+    "en":"minute(s)",
+    "tc":"分鐘",
+    "sc":"分鐘"
+  },
+  {
+    "key":"eta",
+    "en":"ETA",
+    "tc":"預計時間",
+    "sc":"預計時間"
+  },
+  {
+    "key":"inbound",
+    "en":"Inbound",
+    "tc":"回程",
+    "sc":"回程"
+  },
+  {
+    "key":"outbound",
+    "en":"Outbound",
+    "tc":"去程",
+    "sc":"去程"
+  },
+  {
+    "key":"location",
+    "en":"Location",
+    "tc":"位置",
+    "sc":"位置"
+  },
+  {
+    "key":"bookmark",
+    "en":"Bookmark",
+    "tc":"標記路線車站",
+    "sc":"標記路線車站"
+  },
+  {
+    "key":"unbookmark",
+    "en":"Unbookmark",
+    "tc":"移除標記",
+    "sc":"移除標記"
+  },
+  {
+    "key":"bookmarked",
+    "en":"Bookmarked",
+    "tc":"已標記",
+    "sc":"已標記"
+  },
+  {
+    "key":"etaListViewTitle",
+    "en":"Estimated Time of Arrival (ETA)",
+    "tc":"預計到站時間",
+    "sc":"預計到站時間"
+  },
+  {
+    "key":"routeListViewTitle",
+    "en":"Routes",
+    "tc":"路線",
+    "sc":"路線"
+  },
+  {
+    "key":"settingViewTitle",
+    "en":"Setting",
+    "tc":"設定",
+    "sc":"設定"
+  },
+  {
+    "key":"routeListViewSearchTextFieldPlaceholder",
+    "en":"Type to search route. e.g. \"796C\" \"Mongkok\"",
+    "tc":"輸入關鍵字以搜尋路線，例: \"796C\" \"旺角\"",
+    "sc":"輸入關鍵字以搜尋路線，例: \"796C\" \"旺角\""
+  },
+  {
+    "key":"to",
+    "en":"To",
+    "tc":"往",
+    "sc":"往"
+  },
+  {
+    "key":"from",
+    "en":"From",
+    "tc":"從",
+    "sc":"從"
+  },
+  {
+    "key":"remove",
+    "en":"Remove",
+    "tc":"移除",
+    "sc":"移除"
+  }, {
+  "key":"loading",
+  "en":"Loading",
+  "tc":"載入中",
+  "sc":"載入中"
+}
+]

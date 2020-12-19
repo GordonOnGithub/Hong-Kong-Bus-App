@@ -1,6 +1,6 @@
-import 'package:minimal_bus_hk/localization_util.dart';
+import 'package:minimal_bus_hk/interface/localized_data.dart';
 
-class BusRoute{
+class BusRoute extends LocalizedData{
 final String routeCode;
 final String companyCode;
 final String originEnglishName;
@@ -10,6 +10,12 @@ final String destinationEnglishName;
 final String destinationTCName;
 final String destinationSCName;
 final DateTime timestamp;
+Map<String, Map<String, String>> _localizedData = Map();
+
+static final String localizationKeyForOrigin = "origin";
+static final String localizationKeyForDestination = "destination";
+
+
 BusRoute.fromJson(Map<String, dynamic> json):
       routeCode = json["route"],
       companyCode = json["co"],
@@ -19,31 +25,23 @@ BusRoute.fromJson(Map<String, dynamic> json):
       destinationEnglishName = json["dest_en"],
       destinationTCName = json["dest_tc"],
       destinationSCName = json["dest_sc"],
-      timestamp = DateTime.tryParse(json["data_timestamp"]);
+      timestamp = DateTime.tryParse(json["data_timestamp"]){
+      Map<String, String> destinationNameData = Map();
+      destinationNameData["en"] = destinationEnglishName;
+      destinationNameData["tc"] = destinationTCName;
+      destinationNameData["sc"] = destinationSCName;
+      _localizedData[localizationKeyForDestination] = destinationNameData;
 
-    String localizedOriginName(){
-      switch(LocalizationUtil.localizationPref){
-        case LocalizationPref.english:
-          return originEnglishName;
-        case LocalizationPref.TC:
-          return originTCName;
-        case LocalizationPref.SC:
-          return originSCName;
-        default:
-          return originEnglishName;
-      }
-    }
+      Map<String, String> originNameData = Map();
+      originNameData["en"] = originEnglishName;
+      originNameData["tc"] = originTCName;
+      originNameData["sc"] = originSCName;
+      _localizedData[localizationKeyForOrigin] = originNameData;
 
-    String localizedDestinationName(){
-      switch(LocalizationUtil.localizationPref){
-        case LocalizationPref.english:
-          return destinationEnglishName;
-        case LocalizationPref.TC:
-          return destinationTCName;
-        case LocalizationPref.SC:
-          return destinationSCName;
-        default:
-          return destinationEnglishName;
-      }
-    }
+}
+
+  @override
+  Map<String, Map<String, String>> getLocalizedData() {
+  return _localizedData;
+  }
 }

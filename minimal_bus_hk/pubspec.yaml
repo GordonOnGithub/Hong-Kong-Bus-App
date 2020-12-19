@@ -36,9 +36,13 @@ dependencies:
   json_serializable: 3.5.1
   http: 0.12.2
   shared_preferences: 0.5.12+4
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -50,6 +54,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/localization.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

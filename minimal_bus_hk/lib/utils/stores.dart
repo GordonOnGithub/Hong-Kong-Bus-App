@@ -3,6 +3,7 @@ import 'package:minimal_bus_hk/stores/route_list_store.dart';
 import 'package:minimal_bus_hk/stores/route_detail_store.dart';
 import 'package:minimal_bus_hk/stores/eta_list_store.dart';
 import 'package:minimal_bus_hk/stores/app_config.dart';
+import 'package:minimal_bus_hk/stores/localization_store.dart';
 
 class Stores{
   static DataManager _dataManager = DataManager();
@@ -19,4 +20,7 @@ class Stores{
 
   static AppConfigStore _appConfigStoreBase = AppConfigStore();
   static AppConfigStore get appConfig => _appConfigStoreBase;
+
+  static LocalizationStore _localizationStore = LocalizationStore();
+  static LocalizationStore get localizationStore => _localizationStore;
 }
