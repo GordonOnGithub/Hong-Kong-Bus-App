@@ -1,6 +1,6 @@
-import 'file:///E:/Repository/Minimalistic%20HK%20Bus%20Guide/minimal_bus_hk/lib/utils/localization_util.dart';
 import 'package:minimal_bus_hk/interface/localized_data.dart';
 import 'package:minimal_bus_hk/stores/localization_store.dart';
+import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 
 enum ETAStatus{
@@ -73,24 +73,23 @@ class ETA extends LocalizedData{
       timestampForChecking = DateTime.now();
     }
     if(status == ETAStatus.unknown){
-      return "loading...";
+      return Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref);
     }
     if(status == ETAStatus.notFound){
-      return "-";
+      return "--:--";
     }
     if(etaTimestamp == null){
-      return "-";
+      return "--:--";
     }
 
 
     var localTime = etaTimestamp.add(Duration(hours: 8));
-    var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
     return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")}";
   }
 
   String getTimeLeftDescription(DateTime timestampForChecking){
     var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
-    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)}":("< 1")) : "";
+    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)}":("< 1")) : "-";
 
   }
 

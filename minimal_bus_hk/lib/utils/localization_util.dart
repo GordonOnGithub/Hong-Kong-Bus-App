@@ -13,7 +13,10 @@ class LocalizationUtil{
   static final String localizationKeyForETAListView = "etaListViewTitle";
   static final String localizationKeyForRouteListView = "routeListViewTitle";
   static final String localizationKeyForSettingView = "settingViewTitle";
+  static final String localizationKeyForSettingLanguage = "settingLanguage";
   static final String localizationKeyForSearchTextFieldPlaceholder = "routeListViewSearchTextFieldPlaceholder";
   static final String localizationKeyForLoading = "loading";
+  static final String localizationKeyForEmptyETAList = "emptyETAList";
+  static final String localizationKeyForConnectivityWarning = "connectivityWarning";
 
 }

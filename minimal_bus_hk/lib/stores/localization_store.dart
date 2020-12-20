@@ -62,7 +62,7 @@ abstract class LocalizationStoreBase with Store {
     var lang = "en";
     if(pref == LocalizationPref.TC){
       lang = "tc";
-    }else{
+    }else if(pref == LocalizationPref.SC){
       lang = "sc";
     }
     Map<String, String> map = _localizationMap[key];
@@ -78,7 +78,7 @@ abstract class LocalizationStoreBase with Store {
     var lang = "en";
     if(pref == LocalizationPref.TC){
       lang = "tc";
-    }else{
+    }else if(pref == LocalizationPref.SC){
       lang = "sc";
     }
     Map<String, String> map = data.getLocalizedData()[key];

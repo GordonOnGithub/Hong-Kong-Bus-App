@@ -56,7 +56,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
       builder: (_) => Center(
 
         child:  Stores.routeListStore.displayedRoutes != null ?(
-            (Stores.dataManager.routes.length > 0 ) ?
+            // (Stores.dataManager.routes.length > 0 ) ?
             Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             child:Column(
@@ -72,7 +72,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   ),)
             ),
             Expanded(flex: 9,
-            child:
+            child:Scrollbar(child:
             ListView.builder(
                 padding: const EdgeInsets.all(0),
                 itemCount:   Stores.routeListStore.displayedRoutes.length ,
@@ -89,7 +89,6 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                               Expanded(flex: 12,
                               child:
                                InkWell(child:
-
                                Column(
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
@@ -106,7 +105,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                  InkWell(child:   Container( child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                  InkWell(child:   Container(alignment: Alignment.center,  child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                   ),)), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = true;
@@ -114,7 +113,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                     context,
                                     MaterialPageRoute(builder: (context) => BusRouteDetailView()),
                                   );
-                                },), InkWell(child:   Container( child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
+                                },), InkWell(child:   Container( alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = false;
                                   Stores.routeListStore.setFilterKeyword("");
@@ -130,14 +129,17 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   ),
                   );
                 }
-            ).build(context)),
+            ).build(context))),
           ],
-        )) : InkWell(child: Container(width: 100,height: 100, child:Text("Failed to get route list, tap to retry")),
-              onTap: (){
-                NetworkUtil.sharedInstance().getRoute();
-            },))
+        ))
+            // InkWell(child: Container(width: 100,height: 100, child:Observer(
+            //     builder: (_) =>Text("Failed to get route list, tap to retry"))),
+            //   onTap: (){
+            //     NetworkUtil.sharedInstance().getRoute();
+            // },)
+        )
             : Observer(
-            builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref)))
+            builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
 
 

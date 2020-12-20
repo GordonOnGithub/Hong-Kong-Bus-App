@@ -32,7 +32,11 @@ abstract class RouteListStoreBase with Store {
 
   @action
   void setSelectedRoute(BusRoute busRoute){
-    selectedRoute = busRoute;
+    if(selectedRoute != busRoute) {
+      selectedRoute = busRoute;
+    }else{
+      selectedRoute = null;
+    }
   }
 
   @computed

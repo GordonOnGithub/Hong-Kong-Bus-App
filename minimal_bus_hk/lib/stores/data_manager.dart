@@ -142,7 +142,7 @@ abstract class DataManagerBase with Store {
       bookmarkedRouteStops.removeWhere((element) => element == routeStop);
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        if( bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+        if( bookmarkedRouteStops != null) {
          prefs.setString( CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops));
         }
 

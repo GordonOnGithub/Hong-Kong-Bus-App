@@ -66,6 +66,12 @@
     "sc":"設定"
   },
   {
+  "key":"settingLanguage",
+  "en":"Language",
+  "tc":"語言",
+  "sc":"語言"
+},
+  {
     "key":"routeListViewSearchTextFieldPlaceholder",
     "en":"Type to search route. e.g. \"796C\" \"Mongkok\"",
     "tc":"輸入關鍵字以搜尋路線，例: \"796C\" \"旺角\"",
@@ -93,5 +99,20 @@
   "en":"Loading",
   "tc":"載入中",
   "sc":"載入中"
+ }, {
+  "key":"emptyETAList",
+  "en":"Your route stop list is empty.\nTo add a route stop and track its ETA, click the search button at the bottom to search for routes, choose a route and select a stop to bookmark. ",
+  "tc":"你的列表沒有任何路線的車站。\n若要查看路線車站的預計到站時間，請按下方的搜尋按鈕以尋找目標路線，然後選擇並標記車站。",
+  "sc":"你的列表沒有任何路線的車站。\n若要查看路線車站的預計到站時間，請按下方的搜尋按鈕以尋找目標路線，然後選擇並標記車站。"
+}, {
+  "key":"failedToLoadData",
+  "en":"Encountered an error when downloading data, click here to retry",
+  "tc":"載入資料時發生錯誤，按此重試。",
+  "sc":"載入資料時發生錯誤，按此重試。"
+}, {
+  "key":"connectivityWarning",
+  "en":"Please check the internet connection.",
+  "tc":"請檢查網絡連線。",
+  "sc":"請檢查網絡連線。"
 }
 ]

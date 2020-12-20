@@ -21,7 +21,11 @@ abstract class ETAListStoreBase with Store {
 
   @action
   void setSelectedETAListIndex(int index){
-    selectedETAListIndex = index;
+    if(selectedETAListIndex != index) {
+      selectedETAListIndex = index;
+    }else{
+      selectedETAListIndex = null;
+    }
   }
 
   @observable
@@ -35,12 +39,12 @@ abstract class ETAListStoreBase with Store {
   @computed
   ObservableList<List<ETA>> get routesETAList{
     var result = ObservableList<List<ETA>>();
-    if(Stores.dataManager.bookmarkedRouteStops == null || Stores.dataManager.ETAMap == null){
+    if(Stores.dataManager.bookmarkedRouteStops == null ){
       return result;
     }
 
     for(var routeStop in Stores.dataManager.bookmarkedRouteStops){
-      if(Stores.dataManager.ETAMap.containsKey(routeStop)){
+      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
         var ETAs = Stores.dataManager.ETAMap[routeStop];
         var filteredETAs = List<ETA>();
         for(var eta in ETAs) {
@@ -74,4 +78,5 @@ abstract class ETAListStoreBase with Store {
     }
     return result;
   }
+
 }

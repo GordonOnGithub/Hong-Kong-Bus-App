@@ -47,10 +47,10 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
         builder: (_) =>Text("${Stores.routeDetailStore.route.routeCode} (${Stores.localizationStore.localizedString( Stores.routeDetailStore.isInbound ?LocalizationUtil.localizationKeyForInbound : LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref) })")),
         ),
         body: Observer(
-            builder: (_) =>Center(child: (Stores.routeDetailStore.selectedRouteBusStops != null)?
+            builder: (_) =>Center(child: Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 20),child:(Stores.routeDetailStore.selectedRouteBusStops != null)?
             ((Stores.routeDetailStore.selectedRouteBusStops.length > 0?
-                ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            Scrollbar(child:ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 itemCount:  Stores.routeDetailStore.selectedRouteBusStops.length ,
                 itemBuilder: (BuildContext context, int index) {
                   return Observer(
@@ -69,8 +69,9 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                             InkWell(child:
-                              Container( child:
-                                Text(
+                              Container(
+                                alignment: Alignment.center,
+                                child: Text(
                                     Stores.localizationStore.localizedString((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.selectedRouteBusStops[index].identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
                                     LocalizationUtil.localizationKeyForUnbookmark : LocalizationUtil.localizationKeyForBookmark, Stores.localizationStore.localizationPref)
                                     ,
@@ -86,8 +87,9 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                               }
                           },),
                           InkWell(child:
-                            Container( child:
-                               Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref),  style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)))
+                            Container(
+                                alignment: Alignment.center,
+                                child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref),  style:  TextStyle(fontSize: 15, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)))
                             )
                           ],),):Container(height: 0,),
                           Container(height: 1, color: Colors.grey,)
@@ -99,10 +101,10 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
                     },));
                 }
-            ).build(context) : Text("No route is found."))):
+            ).build(context)) : Text("No route is found."))):
             Observer(
                 builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref)))
-          ,)),
+          ,))),
 
     );
   }

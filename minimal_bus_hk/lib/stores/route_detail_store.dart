@@ -30,7 +30,11 @@ abstract class RouteDetailStoreBase with Store {
 
   @action
   void setSelectedBusStopIndex(int index){
-    selectedBusStopIndex = index;
+    if(selectedBusStopIndex != index) {
+      selectedBusStopIndex = index;
+    }else{
+      selectedBusStopIndex = null;
+    }
   }
 
   @computed
