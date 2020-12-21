@@ -24,7 +24,6 @@ abstract class RouteListStoreBase with Store {
   @computed
   List<String> get _keywords{
     return filterKeyword.split(" ");
-
   }
 
   @observable
@@ -82,5 +81,13 @@ abstract class RouteListStoreBase with Store {
       // }
       return result;
     }
+  }
+
+  @observable
+  bool dataFetchingError = false;
+
+  @action
+  void setDataFetchingError(bool hasError){
+    dataFetchingError = hasError;
   }
 }

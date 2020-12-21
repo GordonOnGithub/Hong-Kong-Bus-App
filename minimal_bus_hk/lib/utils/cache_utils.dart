@@ -124,7 +124,7 @@ class CacheUtils{
       return code == 200;
   }
 
-  Future<void> getRouteAndStopsDetail(BusRoute route, bool isInbound) async {
+  Future<bool> getRouteAndStopsDetail(BusRoute route, bool isInbound) async {
 
     bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound);
     if(success){
@@ -132,11 +132,12 @@ class CacheUtils{
       if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
         for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            await getBusStopDetail(stop.identifier);
+            success = success && await getBusStopDetail(stop.identifier);
           }
         }
       }
     }
+    return success;
   }
 
   Future<void> getBookmarkedRouteStop() async{

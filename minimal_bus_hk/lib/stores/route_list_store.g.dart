@@ -54,6 +54,22 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
     });
   }
 
+  final _$dataFetchingErrorAtom =
+      Atom(name: 'RouteListStoreBase.dataFetchingError');
+
+  @override
+  bool get dataFetchingError {
+    _$dataFetchingErrorAtom.reportRead();
+    return super.dataFetchingError;
+  }
+
+  @override
+  set dataFetchingError(bool value) {
+    _$dataFetchingErrorAtom.reportWrite(value, super.dataFetchingError, () {
+      super.dataFetchingError = value;
+    });
+  }
+
   final _$RouteListStoreBaseActionController =
       ActionController(name: 'RouteListStoreBase');
 
@@ -80,10 +96,22 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
   }
 
   @override
+  void setDataFetchingError(bool hasError) {
+    final _$actionInfo = _$RouteListStoreBaseActionController.startAction(
+        name: 'RouteListStoreBase.setDataFetchingError');
+    try {
+      return super.setDataFetchingError(hasError);
+    } finally {
+      _$RouteListStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 filterKeyword: ${filterKeyword},
 selectedRoute: ${selectedRoute},
+dataFetchingError: ${dataFetchingError},
 displayedRoutes: ${displayedRoutes}
     ''';
   }

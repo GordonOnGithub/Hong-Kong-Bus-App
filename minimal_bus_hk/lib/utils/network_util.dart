@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/model/eta_query.dart';
@@ -27,14 +29,17 @@ class NetworkUtil{
   static final String companyCodeNWFB = "nwfb";
   static final String companyCodeCTB = "ctb";
 
-  Future<int> getRoute() async {
-    await getRouteFor(companyCodeNWFB);
-    await getRouteFor(companyCodeCTB);
+  Future<bool> getRoute() async {
+    int nwfbResult = await getRouteFor(companyCodeNWFB);
+    int ctbResult = await getRouteFor(companyCodeCTB);
+    return nwfbResult == 200 &&  ctbResult == 200;
   }
 
     Future<int> getRouteFor(String companyCode) async {
-    var response = await http.get("$_routeAPI/$companyCode");
-    var code = response.statusCode;
+    var response = await http.get("$_routeAPI/$companyCode").catchError((e){
+        return null;// connectivity issue
+    });
+    var code = response != null? response.statusCode : -1;
     if(code == 200){
         Map<String, dynamic> responseData = jsonDecode(response.body);
         if(responseData.containsKey("data")){
@@ -44,7 +49,7 @@ class NetworkUtil{
         }
     }else{
       if(Stores.dataManager.routes == null) {
-        Stores.dataManager.setRoutes(List(), companyCode);
+        Stores.dataManager.setRoutes([], companyCode);
       }
     }
     return code;
@@ -52,7 +57,7 @@ class NetworkUtil{
 
   void parseRouteData(Map<String, dynamic> responseData, companyCode){
     var list = responseData["data"] as List<dynamic>;
-    var dataList = List<Map<String, dynamic>>();
+    var dataList = <Map<String, dynamic>>[];
     for(var data in list){
       if(data is Map<String, dynamic>){
         dataList.add(data);
@@ -63,8 +68,10 @@ class NetworkUtil{
 
   Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
     var response = await http.get(
-        "$_routeDataAPI/$companyCode/$routeCode/${isInbound ? "inbound" : "outbound"}");
-    var code = response.statusCode;
+        "$_routeDataAPI/$companyCode/$routeCode/${isInbound ? "inbound" : "outbound"}").catchError((e){
+      return null;// connectivity issue
+    });
+    var code = response != null? response.statusCode : -1;
     if (code == 200) {
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if (responseData.containsKey("data")) {
@@ -74,7 +81,7 @@ class NetworkUtil{
       }
     }else{
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        Stores.dataManager.updateBusStopsMap(routeCode, isInbound, List());
+        Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
       }
     }
     return code;
@@ -82,7 +89,7 @@ class NetworkUtil{
 
   void parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData){
     var list = responseData["data"] as List<dynamic>;
-    var dataList = List<Map<String, dynamic>>();
+    var dataList = <Map<String, dynamic>>[];
     for (var data in list) {
       if (data is Map<String, dynamic>) {
         dataList.add(data);
@@ -93,8 +100,10 @@ class NetworkUtil{
 
   Future<int> getBusStopDetail(String stopId) async {
     var response = await http.get(
-        "$_busStopDetailAPI/$stopId");
-    var code = response.statusCode;
+        "$_busStopDetailAPI/$stopId").catchError((e){
+      return null;// connectivity issue
+    });
+    var code = response != null? response.statusCode : -1;
     if (code == 200) {
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if (responseData.containsKey("data")) {
@@ -112,13 +121,15 @@ class NetworkUtil{
   }
 
   Future<int> getETA(ETAQuery query) async {
-    var response = await http.get("$_etaAPI/${query.companyCode}/${query.stopId}/${query.routeCode}");
-    var code = response.statusCode;
+    var response = await http.get("$_etaAPI/${query.companyCode}/${query.stopId}/${query.routeCode}").catchError((e){
+      return null;// connectivity issue
+    });
+    var code = response != null? response.statusCode : -1;
     if(code == 200){
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if(responseData.containsKey("data")){
         var list = responseData["data"] as List<dynamic>;
-        var dataList = List<Map<String, dynamic>>();
+        var dataList = <Map<String, dynamic>>[];
         for(var data in list){
           if(data is Map<String, dynamic>){
             dataList.add(data);
@@ -131,7 +142,7 @@ class NetworkUtil{
   }
 
   Future<void> getETAForRouteStops() async{
-    var queries = List<ETAQuery>();
+    var queries = <ETAQuery>[];
     if(Stores.dataManager.bookmarkedRouteStops == null)return;
     List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
     for(RouteStop routeStop in list){

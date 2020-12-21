@@ -14,9 +14,12 @@ class LocalizationUtil{
   static final String localizationKeyForRouteListView = "routeListViewTitle";
   static final String localizationKeyForSettingView = "settingViewTitle";
   static final String localizationKeyForSettingLanguage = "settingLanguage";
-  static final String localizationKeyForSearchTextFieldPlaceholder = "routeListViewSearchTextFieldPlaceholder";
+  static final String localizationKeyForRouteSearchTextFieldPlaceholder = "routeListViewRouteSearchTextFieldPlaceholder";
   static final String localizationKeyForLoading = "loading";
   static final String localizationKeyForEmptyETAList = "emptyETAList";
   static final String localizationKeyForConnectivityWarning = "connectivityWarning";
+  static final String localizationKeyForFailedToLoadData =  "failedToLoadData";
+  static final String localizationKeyForStopSearchTextFieldPlaceholder = "routeListViewStopSearchTextFieldPlaceholder";
+  static final String localizationKeyForNoRouteDataFound = "noRouteDataFound";
 
 }

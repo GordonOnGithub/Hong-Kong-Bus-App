@@ -25,15 +25,27 @@ abstract class RouteDetailStoreBase with Store {
     this.isInbound = isInbound;
   }
 
+  // @observable
+  // int selectedBusStopIndex;
+  //
+  // @action
+  // void setSelectedBusStopIndex(int index){
+  //   if(selectedBusStopIndex != index) {
+  //     selectedBusStopIndex = index;
+  //   }else{
+  //     selectedBusStopIndex = null;
+  //   }
+  // }
+
   @observable
-  int selectedBusStopIndex;
+  String selectedStopId;
 
   @action
-  void setSelectedBusStopIndex(int index){
-    if(selectedBusStopIndex != index) {
-      selectedBusStopIndex = index;
+  void setSelectedStopId(String stopId){
+    if(selectedStopId != stopId){
+        selectedStopId = stopId;
     }else{
-      selectedBusStopIndex = null;
+      selectedStopId = null;
     }
   }
 
@@ -64,6 +76,58 @@ abstract class RouteDetailStoreBase with Store {
 
     return result;
   }
+  @observable
+  bool dataFetchingError = false;
 
+  @action
+  void setDataFetchingError(bool hasError){
+    dataFetchingError = hasError;
+  }
+  @observable
+  String filterKeyword = "";
 
+  @action
+  void setFilterKeyword(String keyword){
+    filterKeyword = keyword;
+  }
+
+  @computed
+  List<String> get _keywords{
+    return filterKeyword.split(" ");
+  }
+
+  @computed
+  ObservableList<BusStopDetail> get displayedStops{
+    if(filterKeyword != null && selectedRouteBusStops != null) {
+      var result =  ObservableList<BusStopDetail>();
+      result.addAll(selectedRouteBusStops.where((element) {
+        for(var keyword in _keywords) {
+          if( element.englishName.toLowerCase().contains(
+                  keyword.toLowerCase())
+              || element.TCName.toLowerCase().contains(
+                  keyword.toLowerCase())
+              || element.SCName.toLowerCase().contains(
+                  keyword.toLowerCase())){
+
+          }else{
+            return false;
+          }
+        }
+        return true;
+      }
+      ).toList());
+
+      // result.sort((a,b){
+      //   var result = a.routeCode.length.compareTo(b.routeCode.length);
+      //   if(result == 0){
+      //     result = a.routeCode.compareTo(b.routeCode);
+      //   }
+      //   return result;
+      // });
+      return result;
+    }else {
+
+      return null;
+    }
+  }
 }

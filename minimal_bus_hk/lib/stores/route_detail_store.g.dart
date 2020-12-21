@@ -18,6 +18,21 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
                   () => super.selectedRouteBusStops,
                   name: 'RouteDetailStoreBase.selectedRouteBusStops'))
           .value;
+  Computed<List<String>> _$_keywordsComputed;
+
+  @override
+  List<String> get _keywords =>
+      (_$_keywordsComputed ??= Computed<List<String>>(() => super._keywords,
+              name: 'RouteDetailStoreBase._keywords'))
+          .value;
+  Computed<ObservableList<BusStopDetail>> _$displayedStopsComputed;
+
+  @override
+  ObservableList<BusStopDetail> get displayedStops =>
+      (_$displayedStopsComputed ??= Computed<ObservableList<BusStopDetail>>(
+              () => super.displayedStops,
+              name: 'RouteDetailStoreBase.displayedStops'))
+          .value;
 
   final _$routeAtom = Atom(name: 'RouteDetailStoreBase.route');
 
@@ -49,20 +64,50 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     });
   }
 
-  final _$selectedBusStopIndexAtom =
-      Atom(name: 'RouteDetailStoreBase.selectedBusStopIndex');
+  final _$selectedStopIdAtom =
+      Atom(name: 'RouteDetailStoreBase.selectedStopId');
 
   @override
-  int get selectedBusStopIndex {
-    _$selectedBusStopIndexAtom.reportRead();
-    return super.selectedBusStopIndex;
+  String get selectedStopId {
+    _$selectedStopIdAtom.reportRead();
+    return super.selectedStopId;
   }
 
   @override
-  set selectedBusStopIndex(int value) {
-    _$selectedBusStopIndexAtom.reportWrite(value, super.selectedBusStopIndex,
-        () {
-      super.selectedBusStopIndex = value;
+  set selectedStopId(String value) {
+    _$selectedStopIdAtom.reportWrite(value, super.selectedStopId, () {
+      super.selectedStopId = value;
+    });
+  }
+
+  final _$dataFetchingErrorAtom =
+      Atom(name: 'RouteDetailStoreBase.dataFetchingError');
+
+  @override
+  bool get dataFetchingError {
+    _$dataFetchingErrorAtom.reportRead();
+    return super.dataFetchingError;
+  }
+
+  @override
+  set dataFetchingError(bool value) {
+    _$dataFetchingErrorAtom.reportWrite(value, super.dataFetchingError, () {
+      super.dataFetchingError = value;
+    });
+  }
+
+  final _$filterKeywordAtom = Atom(name: 'RouteDetailStoreBase.filterKeyword');
+
+  @override
+  String get filterKeyword {
+    _$filterKeywordAtom.reportRead();
+    return super.filterKeyword;
+  }
+
+  @override
+  set filterKeyword(String value) {
+    _$filterKeywordAtom.reportWrite(value, super.filterKeyword, () {
+      super.filterKeyword = value;
     });
   }
 
@@ -92,11 +137,33 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
   }
 
   @override
-  void setSelectedBusStopIndex(int index) {
+  void setSelectedStopId(String stopId) {
     final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
-        name: 'RouteDetailStoreBase.setSelectedBusStopIndex');
+        name: 'RouteDetailStoreBase.setSelectedStopId');
     try {
-      return super.setSelectedBusStopIndex(index);
+      return super.setSelectedStopId(stopId);
+    } finally {
+      _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setDataFetchingError(bool hasError) {
+    final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
+        name: 'RouteDetailStoreBase.setDataFetchingError');
+    try {
+      return super.setDataFetchingError(hasError);
+    } finally {
+      _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setFilterKeyword(String keyword) {
+    final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
+        name: 'RouteDetailStoreBase.setFilterKeyword');
+    try {
+      return super.setFilterKeyword(keyword);
     } finally {
       _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -107,8 +174,11 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     return '''
 route: ${route},
 isInbound: ${isInbound},
-selectedBusStopIndex: ${selectedBusStopIndex},
-selectedRouteBusStops: ${selectedRouteBusStops}
+selectedStopId: ${selectedStopId},
+dataFetchingError: ${dataFetchingError},
+filterKeyword: ${filterKeyword},
+selectedRouteBusStops: ${selectedRouteBusStops},
+displayedStops: ${displayedStops}
     ''';
   }
 }

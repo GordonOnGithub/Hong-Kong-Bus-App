@@ -34,8 +34,9 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   void initState() {
     super.initState();
     Stores.routeListStore.setSelectedRoute(null);
-
     _searchFieldController = TextEditingController(text:"");
+    CacheUtils.sharedInstance().getRoutes().then((value) => Stores.routeListStore.setDataFetchingError(!value));
+
   }
 
   @override
@@ -56,25 +57,26 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
       builder: (_) => Center(
 
         child:  Stores.routeListStore.displayedRoutes != null ?(
-            // (Stores.dataManager.routes.length > 0 ) ?
             Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            child:Column(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            child:Observer(
+                builder: (_) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(flex:1,
-                child:TextField(
+                child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: TextField(
                   controller: _searchFieldController,
                   onChanged: (text){
                   Stores.routeListStore.setFilterKeyword(text);
                 },
                   decoration: InputDecoration(
-                      hintText: Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSearchTextFieldPlaceholder, Stores.localizationStore.localizationPref)
-                  ),)
+                      hintText: Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForRouteSearchTextFieldPlaceholder, Stores.localizationStore.localizationPref)
+                  ),))
             ),
             Expanded(flex: 9,
             child:Scrollbar(child:
             ListView.builder(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 itemCount:   Stores.routeListStore.displayedRoutes.length ,
                 itemBuilder: (BuildContext context, int index) {
                   BusRoute busRoute = Stores.routeListStore.displayedRoutes[index];
@@ -130,16 +132,21 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   );
                 }
             ).build(context))),
+            (Stores.routeListStore.dataFetchingError ) ?
+
+            InkWell(child:
+            Container( color: Colors.yellow, height: 50, alignment: Alignment.center, child:
+            Observer(
+                builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),))),
+              onTap: (){
+                Stores.routeListStore.setDataFetchingError(false);
+                NetworkUtil.sharedInstance().getRoute().then((value) => Stores.routeListStore.setDataFetchingError(!value));
+              },)
+             : Container()
           ],
-        ))
-            // InkWell(child: Container(width: 100,height: 100, child:Observer(
-            //     builder: (_) =>Text("Failed to get route list, tap to retry"))),
-            //   onTap: (){
-            //     NetworkUtil.sharedInstance().getRoute();
-            // },)
-        )
-            : Observer(
-            builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
+        )))
+        ) : Observer(
+            builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
 
 
