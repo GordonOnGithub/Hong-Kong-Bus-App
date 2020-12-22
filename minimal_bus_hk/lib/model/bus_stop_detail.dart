@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:minimal_bus_hk/interface/localized_data.dart';
 
 class BusStopDetail extends LocalizedData{
@@ -46,4 +47,6 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
   Map<String, Map<String, String>> getLocalizedData() {
     return _localizedData;
   }
+
+  LatLng get positionForMap =>  (latitude != null && longitude != null) ? LatLng(latitude, longitude) : LatLng(0, 0);
 }

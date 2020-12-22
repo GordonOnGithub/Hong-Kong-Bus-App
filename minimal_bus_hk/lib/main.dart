@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 InkWell(child:
                                 Container(height: 30,
                                     alignment: Alignment.center,
-                                    child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                     ),)), onTap: (){
                                   Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops[index]);
                                   Stores.etaListStore.setSelectedETAListIndex(null);

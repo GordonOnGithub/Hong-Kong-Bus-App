@@ -51,26 +51,26 @@ class _SettingViewPageState extends State<SettingViewPage> {
     switch(option) {
       case SelectedOption.none:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500 )),), onTap: (){
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.language);
           },),
 
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("About", style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500 )),), onTap: (){
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("About", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
 
           },),
         ];
       case SelectedOption.language:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("English", style: TextStyle(fontSize: 15,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.english? FontWeight.bold : FontWeight.w400 ),),), onTap: () {
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("English", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.english? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.english);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("繁體中文", style: TextStyle(fontSize: 15,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.TC? FontWeight.bold : FontWeight.w400 )),), onTap: () {
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("繁體中文", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.TC? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.TC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡體中文", style: TextStyle(fontSize: 15,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.SC? FontWeight.bold : FontWeight.w400 )),), onTap: () {
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡體中文", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.SC? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.SC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),

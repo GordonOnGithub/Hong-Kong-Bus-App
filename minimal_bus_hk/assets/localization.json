@@ -14,20 +14,20 @@
   {
     "key":"inbound",
     "en":"Inbound",
-    "tc":"回程",
-    "sc":"回程"
+    "tc":"回程路線",
+    "sc":"回程路線"
   },
   {
     "key":"outbound",
     "en":"Outbound",
-    "tc":"去程",
-    "sc":"去程"
+    "tc":"去程路線",
+    "sc":"去程路線"
   },
   {
     "key":"location",
     "en":"Location",
-    "tc":"位置",
-    "sc":"位置"
+    "tc":"車站位置",
+    "sc":"車站位置"
   },
   {
     "key":"bookmark",
@@ -80,14 +80,14 @@
   {
     "key":"to",
     "en":"To",
-    "tc":"往",
-    "sc":"往"
+    "tc":"去",
+    "sc":"去"
   },
   {
     "key":"from",
     "en":"From",
-    "tc":"從",
-    "sc":"從"
+    "tc":"由",
+    "sc":"由"
   },
   {
     "key":"remove",

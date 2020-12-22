@@ -24,19 +24,6 @@ abstract class RouteDetailStoreBase with Store {
   void setIsInbound(bool isInbound){
     this.isInbound = isInbound;
   }
-
-  // @observable
-  // int selectedBusStopIndex;
-  //
-  // @action
-  // void setSelectedBusStopIndex(int index){
-  //   if(selectedBusStopIndex != index) {
-  //     selectedBusStopIndex = index;
-  //   }else{
-  //     selectedBusStopIndex = null;
-  //   }
-  // }
-
   @observable
   String selectedStopId;
 

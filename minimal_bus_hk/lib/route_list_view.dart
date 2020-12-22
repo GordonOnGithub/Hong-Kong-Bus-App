@@ -34,7 +34,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   void initState() {
     super.initState();
     Stores.routeListStore.setSelectedRoute(null);
-    _searchFieldController = TextEditingController(text:"");
+    _searchFieldController = TextEditingController(text:Stores.routeListStore.filterKeyword);
     CacheUtils.sharedInstance().getRoutes().then((value) => Stores.routeListStore.setDataFetchingError(!value));
 
   }
@@ -43,7 +43,6 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    Stores.routeListStore.setFilterKeyword("");
   }
 
   @override
@@ -107,7 +106,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                  InkWell(child:   Container(alignment: Alignment.center,  child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                  InkWell(child:   Container(alignment: Alignment.center,  child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                   ),)), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = true;
@@ -115,7 +114,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                     context,
                                     MaterialPageRoute(builder: (context) => BusRouteDetailView()),
                                   );
-                                },), InkWell(child:   Container( alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 15, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
+                                },), InkWell(child:   Container( alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
                                   Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
                                   Stores.routeDetailStore.isInbound = false;
                                   Stores.routeListStore.setFilterKeyword("");
