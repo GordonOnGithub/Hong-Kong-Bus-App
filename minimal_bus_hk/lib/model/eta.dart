@@ -18,7 +18,7 @@ class ETA extends LocalizedData{
   final String SCRemark;
   final DateTime etaTimestamp;
   final DateTime dataTimestamp;
-  final bool isInBound;
+  final bool isInbound;
   final ETAStatus status;
 
   Map<String, Map<String, String>> _localizedData = Map();
@@ -33,7 +33,7 @@ class ETA extends LocalizedData{
         SCRemark = json["rmk_sc"],
         etaTimestamp = DateTime.tryParse(json["eta"]),
         dataTimestamp = DateTime.tryParse(json["data_timestamp"]),
-        isInBound = json["dir"] == "I",
+        isInbound = json["dir"] == "I",
         status = ETAStatus.found{
     Map<String, String> nameData = Map();
     nameData["en"] = englishRemark;
@@ -47,7 +47,7 @@ class ETA extends LocalizedData{
         routeCode = routeCode,
         stopId = stopId,
         companyCode = companyCode,
-        isInBound = isInbound,
+        isInbound = isInbound,
         englishRemark = "",
         TCRemark = "",
         SCRemark = "",
@@ -59,7 +59,7 @@ class ETA extends LocalizedData{
         routeCode = routeCode,
         stopId = stopId,
         companyCode = companyCode,
-      isInBound = isInbound,
+      isInbound = isInbound,
         englishRemark = "",
         TCRemark = "",
         SCRemark = "",

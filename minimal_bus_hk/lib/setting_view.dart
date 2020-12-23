@@ -8,13 +8,7 @@ import 'package:minimal_bus_hk/utils/localization_util.dart';
 class SettingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SettingViewPage(),
-    );
+    return SettingViewPage();
   }
 }
 
@@ -51,7 +45,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
     switch(option) {
       case SelectedOption.none:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.language);
           },),
 
@@ -86,9 +80,9 @@ class _SettingViewPageState extends State<SettingViewPage> {
   String _getTitle(SelectedOption option){
     switch(option){
       case SelectedOption.none:
-        return Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSettingView, Stores.localizationStore.localizationPref);
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingView, Stores.localizationStore.localizationPref);
       case SelectedOption.language:
-        return Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref);
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
         return "About";
     }

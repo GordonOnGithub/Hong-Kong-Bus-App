@@ -104,17 +104,18 @@ abstract class RouteDetailStoreBase with Store {
       }
       ).toList());
 
-      // result.sort((a,b){
-      //   var result = a.routeCode.length.compareTo(b.routeCode.length);
-      //   if(result == 0){
-      //     result = a.routeCode.compareTo(b.routeCode);
-      //   }
-      //   return result;
-      // });
       return result;
     }else {
 
       return null;
     }
+  }
+
+  @observable
+  int selectedIndex;
+
+  @action
+  void setSelectedIndex(int index){
+    selectedIndex = index;
   }
 }

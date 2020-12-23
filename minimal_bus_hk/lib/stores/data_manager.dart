@@ -103,7 +103,7 @@ abstract class DataManagerBase with Store {
 
     for(Map<String, dynamic> data in dataArray){
       var eta = ETA.fromJson(data);
-      if(eta.isInBound) {
+      if(eta.isInbound) {
         inboundResult.add(eta);
       }else{
         outboundResult.add(eta);

@@ -25,19 +25,19 @@ mixin _$LocalizationStore on LocalizationStoreBase, Store {
     });
   }
 
-  final _$_localizationMapAtom =
-      Atom(name: 'LocalizationStoreBase._localizationMap');
+  final _$localizationMapAtom =
+      Atom(name: 'LocalizationStoreBase.localizationMap');
 
   @override
-  ObservableMap<String, Map<String, String>> get _localizationMap {
-    _$_localizationMapAtom.reportRead();
-    return super._localizationMap;
+  ObservableMap<String, Map<String, String>> get localizationMap {
+    _$localizationMapAtom.reportRead();
+    return super.localizationMap;
   }
 
   @override
-  set _localizationMap(ObservableMap<String, Map<String, String>> value) {
-    _$_localizationMapAtom.reportWrite(value, super._localizationMap, () {
-      super._localizationMap = value;
+  set localizationMap(ObservableMap<String, Map<String, String>> value) {
+    _$localizationMapAtom.reportWrite(value, super.localizationMap, () {
+      super.localizationMap = value;
     });
   }
 
@@ -66,7 +66,8 @@ mixin _$LocalizationStore on LocalizationStoreBase, Store {
   @override
   String toString() {
     return '''
-localizationPref: ${localizationPref}
+localizationPref: ${localizationPref},
+localizationMap: ${localizationMap}
     ''';
   }
 }

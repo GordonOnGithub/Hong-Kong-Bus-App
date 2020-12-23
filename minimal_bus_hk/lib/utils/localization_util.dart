@@ -1,8 +1,13 @@
+import 'package:minimal_bus_hk/interface/localized_data.dart';
+import 'package:minimal_bus_hk/stores/localization_store.dart';
+import 'package:minimal_bus_hk/utils/stores.dart';
+
 class LocalizationUtil{
   static final String localizationKeyTo = "to";
   static final String localizationKeyFrom = "from";
   static final String localizationKeyForMinute = "minutes";
   static final String localizationKeyForETA = "eta";
+  static final String localizationKeyForRoute = "route";
   static final String localizationKeyForInbound = "inbound";
   static final String localizationKeyForOutbound = "outbound";
   static final String localizationKeyForLocation = "location";
@@ -21,5 +26,41 @@ class LocalizationUtil{
   static final String localizationKeyForFailedToLoadData =  "failedToLoadData";
   static final String localizationKeyForStopSearchTextFieldPlaceholder = "routeListViewStopSearchTextFieldPlaceholder";
   static final String localizationKeyForNoRouteDataFound = "noRouteDataFound";
+  static final String localizationKeyForRecenter = "recenter";
+  static final String localizationKeyForLocationPermissionNotGranted = "locationPermissionNotGranted";
 
+
+  static String localizedString(String key, LocalizationPref pref){
+    if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {
+      return "";
+    }
+    var lang = "en";
+    if(pref == LocalizationPref.TC){
+      lang = "tc";
+    }else if(pref == LocalizationPref.SC){
+      lang = "sc";
+    }
+    Map<String, String> map = Stores.localizationStore.localizationMap[key];
+    if(map.containsKey(lang)){
+      return map[lang];
+    }
+    return "";
+  }
+
+  static String localizedStringFrom(LocalizedData data, String key, LocalizationPref pref){
+    if(data.getLocalizedData() == null || !data.getLocalizedData().containsKey(key)) {
+      return "";
+    }
+    var lang = "en";
+    if(pref == LocalizationPref.TC){
+      lang = "tc";
+    }else if(pref == LocalizationPref.SC){
+      lang = "sc";
+    }
+    Map<String, String> map = data.getLocalizedData()[key];
+    if(map.containsKey(lang)){
+      return map[lang];
+    }
+    return "";
+  }
 }

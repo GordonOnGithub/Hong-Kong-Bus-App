@@ -111,6 +111,21 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     });
   }
 
+  final _$selectedIndexAtom = Atom(name: 'RouteDetailStoreBase.selectedIndex');
+
+  @override
+  int get selectedIndex {
+    _$selectedIndexAtom.reportRead();
+    return super.selectedIndex;
+  }
+
+  @override
+  set selectedIndex(int value) {
+    _$selectedIndexAtom.reportWrite(value, super.selectedIndex, () {
+      super.selectedIndex = value;
+    });
+  }
+
   final _$RouteDetailStoreBaseActionController =
       ActionController(name: 'RouteDetailStoreBase');
 
@@ -170,6 +185,17 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
   }
 
   @override
+  void setSelectedIndex(int index) {
+    final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
+        name: 'RouteDetailStoreBase.setSelectedIndex');
+    try {
+      return super.setSelectedIndex(index);
+    } finally {
+      _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 route: ${route},
@@ -177,6 +203,7 @@ isInbound: ${isInbound},
 selectedStopId: ${selectedStopId},
 dataFetchingError: ${dataFetchingError},
 filterKeyword: ${filterKeyword},
+selectedIndex: ${selectedIndex},
 selectedRouteBusStops: ${selectedRouteBusStops},
 displayedStops: ${displayedStops}
     ''';

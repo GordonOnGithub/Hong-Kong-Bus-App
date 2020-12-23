@@ -33,7 +33,7 @@ class RouteStop{
     return "$routeCode$stopId${isInbound?1:0}$companyCode".hashCode;
   }
   bool matchETA(ETA eta){
-    return eta.routeCode == this.routeCode && eta.stopId == this.stopId && eta.isInBound == this.isInbound && eta.companyCode == this.companyCode;
+    return eta.routeCode == this.routeCode && eta.stopId == this.stopId && eta.isInbound == this.isInbound && eta.companyCode == this.companyCode;
   }
 
 }

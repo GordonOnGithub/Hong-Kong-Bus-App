@@ -60,6 +60,12 @@
     "sc":"路線"
   },
   {
+    "key":"route",
+    "en":"Route",
+    "tc":"路線",
+    "sc":"路線"
+  },
+  {
     "key":"settingViewTitle",
     "en":"Setting",
     "tc":"設定",
@@ -126,5 +132,17 @@
     "en":"No route data is found.",
     "tc":"找不到路線資料。",
     "sc":"找不到路線資料。"
+  },
+  {
+    "key":"recenter",
+    "en":"Recenter",
+    "tc":"置中",
+    "sc":"置中"
+  },
+  {
+    "key":"locationPermissionNotGranted",
+    "en":"To show your location on map, please grant location permission.",
+    "tc":"請給予位置權限，以在地圖上顯示您的位置。",
+    "sc":"請給予位置權限，以在地圖上顯示您的位置。"
   }
 ]

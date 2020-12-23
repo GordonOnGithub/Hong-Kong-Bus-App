@@ -3,6 +3,7 @@ import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:mobx/mobx.dart';
+import 'google_map_view.dart';
 import 'utils/network_util.dart';
 import 'route_list_view.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -115,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Observer(
-        builder: (_) =>Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref))),
+        builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref))),
         actions: [IconButton(icon: Icon(Icons.settings), onPressed: (){
           Navigator.push(
             context,
@@ -127,11 +128,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
         child: Observer(
       builder: (_) => Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.stretch , children:[
-        (Stores.connectivityStore.connected? Flexible(flex: 0, child: Container()) :  Flexible(flex: 1, child:Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),))),
+        (Stores.connectivityStore.connected? Flexible(flex: 0, child: Container()) :  Flexible(flex: 1, child:
+        Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),))),
       Flexible(flex: 9, child: ((Stores.dataManager.routes != null &&  Stores.dataManager.bookmarkedRouteStops != null )?
-        Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: (
+        Padding(padding: const EdgeInsets.all(0), child: (
                      Stores.dataManager.bookmarkedRouteStops.length > 0 ? Scrollbar( child: ListView.builder(
-                    padding: const EdgeInsets.all(0),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                     itemCount: Stores.etaListStore.displayedETAs.length ,
                     itemBuilder: (BuildContext context, int index) {
                       ETA eta = Stores.etaListStore.displayedETAs[index];
@@ -148,30 +150,35 @@ class _MyHomePageState extends State<MyHomePage> {
                              crossAxisAlignment: CrossAxisAlignment.stretch,
                                  children:[
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  Stores.localizationStore.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInBound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  Stores.localizationStore.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)),
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                      Flexible(flex:3, child:Text("${Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForETA, Stores.localizationStore.localizationPref)}: ${ eta.toClockDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
+                                      Flexible(flex:3, child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForETA, Stores.localizationStore.localizationPref)}: ${ eta.toClockDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
                                       // Flexible(flex:4, child: Container()),
-                                      Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}${Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),  )
+                                      Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),  )
                                     ],), height: 20,)
                                 ),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text(Stores.localizationStore.localizedStringFrom(eta, ETA.localizationKeyForRemark, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text(LocalizationUtil.localizedStringFrom(eta, ETA.localizationKeyForRemark, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
                               ])
                               ,onTap: (){
                                   Stores.etaListStore.setSelectedETAListIndex(index);
                              }
                       )),
-                              (Stores.etaListStore.selectedETAListIndex == index) ?  Flexible(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                              (Stores.etaListStore.selectedETAListIndex == index) ?  Flexible(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                                 InkWell(child:
                                 Container(height: 30,
                                     alignment: Alignment.center,
-                                    child: Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                     ),)), onTap: (){
-                                  Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops[index]);
-                                  Stores.etaListStore.setSelectedETAListIndex(null);
-
+                                  _onRemoveBookmark(index);
+                                },),
+                                InkWell(child:
+                                Container(height: 30,
+                                    alignment: Alignment.center,
+                                    child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    ),)), onTap: (){
+                                    _onOpenMapView(eta);
                                 },)
 
                               ],)) : Expanded(flex: 0, child:Container()),
@@ -181,12 +188,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),);
                     }
                 ).build(context)) : Observer(
-                         builder: (_) => Container(alignment: Alignment.center, child:Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForEmptyETAList, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,))))
+                         builder: (_) => Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: Container(alignment: Alignment.center, child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForEmptyETAList, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,)))))
 
 
         ):
         Observer(
-            builder: (_) =>Container(alignment: Alignment.center,child:Text(Stores.localizationStore.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.center)))),
+            builder: (_) =>Container(alignment: Alignment.center,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.center)))),
       )
       ]),
       )),
@@ -201,5 +208,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.search),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void _onRemoveBookmark(int index){
+    Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops[index]);
+    Stores.etaListStore.setSelectedETAListIndex(null);
+  }
+
+  void _onOpenMapView(ETA eta){
+    if(Stores.dataManager.routesMap.containsKey(eta.routeCode) && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId)) {
+      Stores.googleMapStore.setSelectedBusStop(
+          Stores.dataManager.busStopDetailMap[eta.stopId]);
+      Stores.googleMapStore.setIsInbound(
+          eta.isInbound);
+      Stores.googleMapStore.setSelectedRoute(
+          Stores.dataManager.routesMap[eta
+              .routeCode]);
+      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.dataManager.routesMap[eta
+          .routeCode], eta.isInbound);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>
+            GoogleMapView()),
+      );
+    }
+
   }
 }
