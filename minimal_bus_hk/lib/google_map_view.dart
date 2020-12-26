@@ -3,6 +3,7 @@ import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/custom_map_pin_info.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
+import 'package:mobx/mobx.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
@@ -27,8 +28,7 @@ class GoogleMapViewPage extends StatefulWidget {
 class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   GoogleMapController mapController;
   static final _defaultZoomForStop = 18.0;
-  static final _defaultZoomForRoute = 10.5;
-  static final _HKGeographicCenter = const LatLng(22.32621908589066, 114.1186428366926);
+  // static final _defaultZoomForRoute = 10.5;
   static final _customPinInfoList = [
     CustomMapPinInfo("立會",  LatLng(22.28161008355225, 114.16632608035314), "There's no riot, only tyranny.", "沒有暴徒 只有暴政", "沒有暴徒 只有暴政"),
 
@@ -46,7 +46,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   @override
   void initState() {
     super.initState();
-    Stores.googleMapStore.setCurrentZoomLevel( Stores.googleMapStore.selectedBusStop != null?_defaultZoomForStop:_defaultZoomForRoute);
+    Stores.googleMapStore.setCurrentZoomLevel( Stores.googleMapStore.selectedBusStop != null?_defaultZoomForStop: Stores.googleMapStore.getDefaultZoomLevelForRoute);
 
     Permission.locationWhenInUse.status.then((status) {
       Stores.googleMapStore.setLocationPermissionGranted(status == PermissionStatus.granted);
@@ -60,6 +60,9 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    if(Stores.googleMapStore.selectedBusStop != null) {
+      mapController.showMarkerInfoWindow(MarkerId(Stores.googleMapStore.selectedBusStop.identifier));
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -73,8 +76,8 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
       Stores.googleMapStore.locationPermissionGranted? Container() :  Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocationPermissionNotGranted, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),)),
       Expanded( child:
         GoogleMap(initialCameraPosition: CameraPosition(
-            target:  Stores.googleMapStore.selectedBusStop != null?Stores.googleMapStore.selectedBusStop.positionForMap:_HKGeographicCenter,
-            zoom:   Stores.googleMapStore.selectedBusStop != null?_defaultZoomForStop:_defaultZoomForRoute,
+            target:  Stores.googleMapStore.selectedBusStop != null?Stores.googleMapStore.selectedBusStop.positionForMap:Stores.googleMapStore.routeGeoCenter,
+            zoom:   Stores.googleMapStore.selectedBusStop != null?_defaultZoomForStop:Stores.googleMapStore.getDefaultZoomLevelForRoute,
           ),
           markers: _getMarkers(Stores.googleMapStore.busStops, Stores.googleMapStore.currentZoomLevel),
           onMapCreated: _onMapCreated,
@@ -87,17 +90,19 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           myLocationEnabled: Stores.googleMapStore.locationPermissionGranted,
           myLocationButtonEnabled: Stores.googleMapStore.locationPermissionGranted,
           tiltGesturesEnabled: false,
+          cameraTargetBounds: CameraTargetBounds(LatLngBounds(northeast: LatLng(22.631843587586193, 114.41798414088238), southwest:  LatLng(22.176373229353644, 113.81319021792984))),
+
         )),
           Observer(
-            builder: (_) =>SizedBox( height: 100, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
-            Stores.googleMapStore.selectedBusStop != null && !Stores.googleMapStore.atCenter ?InkWell(child: Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
+            builder: (_) =>Stores.googleMapStore.selectedBusStop != null && !Stores.googleMapStore.atCenter ?SizedBox( height: 100, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
+            InkWell(child: Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
               Icon(Icons.location_on_outlined),
               Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
               ]),
               onTap: (){
                 _onRecenterClicked();
-            },) : Container(),
-          ],)))
+            },) ,
+          ],)):Container())
           
         ],),))
     );
@@ -113,14 +118,22 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
               Stores.localizationStore.localizationPref));
           Marker stopMarker = Marker(markerId: markerId,
               position: busStopDetail.positionForMap,
-              infoWindow: infoWindow,);
+              infoWindow: infoWindow,
+              icon: BitmapDescriptor.defaultMarkerWithHue(  Stores.googleMapStore.selectedBusStop != null && busStopDetail.identifier == Stores.googleMapStore.selectedBusStop.identifier ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed));
           markers.add(stopMarker);
         }
       }
+//debug
+    // MarkerId markerId = MarkerId("geocenter");
+    // Marker stopMarker = Marker(markerId: markerId,
+    //     position: Stores.googleMapStore.routeGeoCenter,
+    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+    // );
+    // markers.add(stopMarker);
 
       //easter egg
       for(var pinInfo in _customPinInfoList) {
-        if(zoom >= 17 || (pinInfo.identifier == "Save12HKYouth" && zoom >= _defaultZoomForRoute)) {
+        if(zoom >= 17 || (pinInfo.identifier == "Save12HKYouth" && zoom >= 11)) {
           MarkerId markerId = MarkerId(pinInfo.identifier);
         InfoWindow infoWindow = InfoWindow(title: LocalizationUtil.localizedStringFrom(pinInfo, CustomMapPinInfo.localizationKeyForDescription, Stores.localizationStore.localizationPref));
         Marker stopMarker = Marker(markerId: markerId,

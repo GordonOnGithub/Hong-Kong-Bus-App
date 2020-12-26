@@ -92,8 +92,8 @@ abstract class RouteDetailStoreBase with Store {
       var filteredList =  ObservableList<BusStopDetail>();
       filteredList.addAll(selectedRouteBusStops.where((element) {
         for(var keyword in _keywords) {
-          if( element.englishName.toLowerCase().contains(
-                  keyword.toLowerCase())
+          if(( element.englishName.toLowerCase().contains(
+                  keyword.toLowerCase()))
               || element.TCName.toLowerCase().contains(
                   keyword.toLowerCase())
               || element.SCName.toLowerCase().contains(

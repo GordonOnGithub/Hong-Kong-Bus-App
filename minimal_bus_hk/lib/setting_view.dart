@@ -45,11 +45,21 @@ class _SettingViewPageState extends State<SettingViewPage> {
     switch(option) {
       case SelectedOption.none:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
+          Row( mainAxisAlignment: MainAxisAlignment.center, children:[
+            Icon(Icons.language),
+          Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
+              ]))
+    , onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.language);
           },),
 
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("About", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),), onTap: (){
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
+          Row( mainAxisAlignment: MainAxisAlignment.center, children:[
+              Icon(Icons.info_outline),
+          Text("About", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+            ]
+          )), onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
 
           },),

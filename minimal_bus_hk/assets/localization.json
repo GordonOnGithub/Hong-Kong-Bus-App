@@ -7,7 +7,7 @@
   },
   {
     "key":"eta",
-    "en":"ETA",
+    "en":"Est. Time",
     "tc":"預計時間",
     "sc":"預計時間"
   },
@@ -49,7 +49,7 @@
   },
   {
     "key":"etaListViewTitle",
-    "en":"Estimated Time of Arrival (ETA)",
+    "en":"Estimated Time of Arrival",
     "tc":"預計到站時間",
     "sc":"預計到站時間"
   },
@@ -107,9 +107,9 @@
   "sc":"載入中"
  }, {
   "key":"emptyETAList",
-  "en":"Your route stop list is empty.",
-  "tc":"你的列表沒有任何路線的車站。",
-  "sc":"你的列表沒有任何路線的車站。"
+  "en":"The route stop list is empty.",
+  "tc":"列表裡沒有任何路線的車站。",
+  "sc":"列表裡沒有任何路線的車站。"
 }, {
   "key":"failedToLoadData",
   "en":"Encountered error when downloading data, click here to retry",

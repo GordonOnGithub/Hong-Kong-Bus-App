@@ -16,6 +16,35 @@ mixin _$GoogleMapStore on GoogleMapStoreBase, Store {
           Computed<ObservableList<BusStopDetail>>(() => super.busStops,
               name: 'GoogleMapStoreBase.busStops'))
       .value;
+  Computed<LatLng> _$routeGeoCenterComputed;
+
+  @override
+  LatLng get routeGeoCenter =>
+      (_$routeGeoCenterComputed ??= Computed<LatLng>(() => super.routeGeoCenter,
+              name: 'GoogleMapStoreBase.routeGeoCenter'))
+          .value;
+  Computed<double> _$routeHorizontalRangeInKMComputed;
+
+  @override
+  double get routeHorizontalRangeInKM => (_$routeHorizontalRangeInKMComputed ??=
+          Computed<double>(() => super.routeHorizontalRangeInKM,
+              name: 'GoogleMapStoreBase.routeHorizontalRangeInKM'))
+      .value;
+  Computed<double> _$routeVerticalRangeInKMComputed;
+
+  @override
+  double get routeVerticalRangeInKM => (_$routeVerticalRangeInKMComputed ??=
+          Computed<double>(() => super.routeVerticalRangeInKM,
+              name: 'GoogleMapStoreBase.routeVerticalRangeInKM'))
+      .value;
+  Computed<double> _$getDefaultZoomLevelForRouteComputed;
+
+  @override
+  double get getDefaultZoomLevelForRoute =>
+      (_$getDefaultZoomLevelForRouteComputed ??= Computed<double>(
+              () => super.getDefaultZoomLevelForRoute,
+              name: 'GoogleMapStoreBase.getDefaultZoomLevelForRoute'))
+          .value;
 
   final _$selectedBusStopAtom =
       Atom(name: 'GoogleMapStoreBase.selectedBusStop');
@@ -189,7 +218,11 @@ isInbound: ${isInbound},
 currentZoomLevel: ${currentZoomLevel},
 locationPermissionGranted: ${locationPermissionGranted},
 atCenter: ${atCenter},
-busStops: ${busStops}
+busStops: ${busStops},
+routeGeoCenter: ${routeGeoCenter},
+routeHorizontalRangeInKM: ${routeHorizontalRangeInKM},
+routeVerticalRangeInKM: ${routeVerticalRangeInKM},
+getDefaultZoomLevelForRoute: ${getDefaultZoomLevelForRoute}
     ''';
   }
 }

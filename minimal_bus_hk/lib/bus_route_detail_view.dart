@@ -6,6 +6,7 @@ import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/route_list_view.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
+import 'model/bus_route.dart';
 import 'model/eta.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
@@ -71,7 +72,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return  Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${Stores.routeDetailStore.route.routeCode} (${LocalizationUtil.localizedString( Stores.routeDetailStore.isInbound ?LocalizationUtil.localizationKeyForInbound : LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref) })")),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }")),
         ),
         body: Observer(
             builder: (_) =>Center(child:
@@ -104,11 +105,11 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                     color: ( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index)? Colors.lightBlue[50] : Colors.grey[50],
                     child:Observer(
                       builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                      Padding(padding: const EdgeInsets.fromLTRB(0 , 0, 0, 0),child:
+                      Padding(padding: const EdgeInsets.fromLTRB(0 , 10, 0, 0),child:
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween ,children:[
                           Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
                        Icons.bookmark:Icons.bookmark_border),
@@ -119,17 +120,18 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                       ])),
                           Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
 
-                          Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            Flexible(flex:3, child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForETA, Stores.localizationStore.localizationPref)}: ${ eta.toClockDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
-                            // Flexible(flex:4, child: Container()),
-                            Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),  )
+                          Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end ,  children: [
+                            Icon(Icons.access_time, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black,),
+                          Expanded(child:Text(" ${ eta.toClockDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
+                            Icon(Icons.timer, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
+                            Text(" ${ eta.getTimeLeftDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),
                           ],), height: 20,)
                           ),
 
 
                           ( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index) ? Container( height: 30,child:Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                            crossAxisAlignment: CrossAxisAlignment.center, children: [
                             InkWell(child:
                               Container(
                                 alignment: Alignment.center,
