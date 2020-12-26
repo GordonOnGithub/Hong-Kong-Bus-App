@@ -72,4 +72,12 @@ abstract class GoogleMapStoreBase with Store {
   void setLocationPermissionGranted(bool locationPermissionGranted){
     this.locationPermissionGranted = locationPermissionGranted;
   }
+
+  @observable
+  bool atCenter = true;
+
+  @action
+  void setAtCenter(bool atCenter){
+    this.atCenter = atCenter;
+  }
 }

@@ -20,4 +20,6 @@ abstract class AppConfigStoreBase with Store {
   void setArrivalExpiryTimeMilliseconds(int timeMilliseconds){
     arrivalExpiryTimeMilliseconds = timeMilliseconds;
   }
+
+  final int etaExpiryTimeMilliseconds = 30000;
 }

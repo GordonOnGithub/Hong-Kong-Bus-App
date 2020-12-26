@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
+import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
@@ -54,6 +55,18 @@ abstract class DataManagerBase with Store {
       companyRoutesMap = ObservableMap();
     }
     companyRoutesMap[companyCode] = result;
+  }
+
+  @computed
+  ObservableList<DirectionalRoute> get directionalRouteList {
+    var result = ObservableList<DirectionalRoute>();
+
+    for(var route in routes){
+      result.add(DirectionalRoute(route: route, isInbound: true));
+      result.add(DirectionalRoute(route: route, isInbound: false));
+    }
+
+    return result;
   }
 
   @observable

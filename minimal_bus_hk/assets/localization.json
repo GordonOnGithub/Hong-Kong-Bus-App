@@ -32,20 +32,20 @@
   {
     "key":"bookmark",
     "en":"Bookmark",
-    "tc":"標記路線車站",
-    "sc":"標記路線車站"
+    "tc":"收藏車站",
+    "sc":"收藏車站"
   },
   {
     "key":"unbookmark",
     "en":"Unbookmark",
-    "tc":"移除標記",
-    "sc":"移除標記"
+    "tc":"移除收藏",
+    "sc":"移除收藏"
   },
   {
     "key":"bookmarked",
     "en":"Bookmarked",
-    "tc":"已標記",
-    "sc":"已標記"
+    "tc":"已收藏",
+    "sc":"已收藏"
   },
   {
     "key":"etaListViewTitle",
@@ -86,8 +86,8 @@
   {
     "key":"to",
     "en":"To",
-    "tc":"去",
-    "sc":"去"
+    "tc":"往",
+    "sc":"往"
   },
   {
     "key":"from",
@@ -107,9 +107,9 @@
   "sc":"載入中"
  }, {
   "key":"emptyETAList",
-  "en":"Your route stop list is empty.\nTo add a route stop and track its ETA, click the search button at the bottom to search for routes, choose a route and select a stop to bookmark. ",
-  "tc":"你的列表沒有任何路線的車站。\n若要查看路線車站的預計到站時間，請按下方的搜尋按鈕以尋找目標路線，然後選擇並標記車站。",
-  "sc":"你的列表沒有任何路線的車站。\n若要查看路線車站的預計到站時間，請按下方的搜尋按鈕以尋找目標路線，然後選擇並標記車站。"
+  "en":"Your route stop list is empty.",
+  "tc":"你的列表沒有任何路線的車站。",
+  "sc":"你的列表沒有任何路線的車站。"
 }, {
   "key":"failedToLoadData",
   "en":"Encountered error when downloading data, click here to retry",

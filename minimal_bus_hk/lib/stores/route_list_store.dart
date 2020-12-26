@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
+import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
@@ -26,62 +28,121 @@ abstract class RouteListStoreBase with Store {
     return filterKeyword.split(" ");
   }
 
+  // @deprecated
+  // @observable
+  // BusRoute selectedRoute;
+  //
+  // @deprecated
+  // @action
+  // void setSelectedRoute(BusRoute busRoute){
+  //   if(selectedRoute != busRoute) {
+  //     selectedRoute = busRoute;
+  //   }else{
+  //     selectedRoute = null;
+  //   }
+  // }
+
   @observable
-  BusRoute selectedRoute;
+  DirectionalRoute selectedDirectionalRoute;
 
   @action
-  void setSelectedRoute(BusRoute busRoute){
-    if(selectedRoute != busRoute) {
-      selectedRoute = busRoute;
+  void setSelectedDirectionalRoute(DirectionalRoute busRoute){
+    if(selectedDirectionalRoute != busRoute) {
+      selectedDirectionalRoute = busRoute;
     }else{
-      selectedRoute = null;
+      selectedDirectionalRoute = null;
     }
   }
 
+
   @computed
-  ObservableList<BusRoute> get displayedRoutes{
-    if(filterKeyword != null && Stores.dataManager.routes != null) {
-      var result =  ObservableList<BusRoute>();
-        result.addAll(Stores.dataManager.routes.where((element) {
+  ObservableList<DirectionalRoute> get displayedDirectionalRoutes {
+    if(filterKeyword != null && Stores.dataManager.directionalRouteList != null) {
+      var result =  ObservableList<DirectionalRoute>();
+      result.addAll(Stores.dataManager.directionalRouteList.where((element) {
         for(var keyword in _keywords) {
-          if(element.routeCode.toLowerCase().contains(keyword.toLowerCase())
-              || element.destinationEnglishName.toLowerCase().contains(
-              keyword.toLowerCase())
-              || element.originEnglishName.toLowerCase().contains(
-              keyword.toLowerCase())
-              || element.destinationTCName.toLowerCase().contains(
-              keyword.toLowerCase())
-              || element.originTCName.toLowerCase().contains(
-              keyword.toLowerCase())
-              || element.destinationSCName.toLowerCase().contains(
-              keyword.toLowerCase())
-              || element.originSCName.toLowerCase().contains(
-              keyword.toLowerCase())){
+          if(element.route.routeCode.toLowerCase().contains(keyword.toLowerCase())
+            || (element.isInbound &&
+                  ( element.route.originEnglishName.toLowerCase().contains(
+                  keyword.toLowerCase())
+                  || element.route.originEnglishName.toLowerCase().contains(
+                  keyword.toLowerCase())
+                  || element.route.originSCName.toLowerCase().contains(
+                  keyword.toLowerCase())))
+              ||(!element.isInbound &&
+                  ( element.route.destinationEnglishName.toLowerCase().contains(
+                  keyword.toLowerCase())
+                  || element.route.destinationSCName.toLowerCase().contains(
+                  keyword.toLowerCase())
+                  || element.route.destinationTCName.toLowerCase().contains(
+                  keyword.toLowerCase())))){
 
           }else{
             return false;
           }
         }
         return true;
-        }
-        ).toList());
+      }
+      ).toList());
 
       result.sort((a,b){
-        var result = a.routeCode.length.compareTo(b.routeCode.length);
+        var result = a.route.routeCode.length.compareTo(b.route.routeCode.length);
         if(result == 0){
-          result = a.routeCode.compareTo(b.routeCode);
+          result = a.route.routeCode.compareTo(b.route.routeCode);
         }
         return result;
       });
       return result;
     }else {
-      var result = Stores.dataManager.routes;
-      // if(result == null){
-      //   result = ObservableList<BusRoute>();
-      // }
+      var result = Stores.dataManager.directionalRouteList;
+
       return result;
     }
+
   }
+  // @deprecated
+  // @computed
+  // ObservableList<BusRoute> get displayedRoutes{
+  //   if(filterKeyword != null && Stores.dataManager.routes != null) {
+  //     var result =  ObservableList<BusRoute>();
+  //       result.addAll(Stores.dataManager.routes.where((element) {
+  //       for(var keyword in _keywords) {
+  //         if(element.routeCode.toLowerCase().contains(keyword.toLowerCase())
+  //             || element.destinationEnglishName.toLowerCase().contains(
+  //             keyword.toLowerCase())
+  //             || element.originEnglishName.toLowerCase().contains(
+  //             keyword.toLowerCase())
+  //             || element.destinationTCName.toLowerCase().contains(
+  //             keyword.toLowerCase())
+  //             || element.originTCName.toLowerCase().contains(
+  //             keyword.toLowerCase())
+  //             || element.destinationSCName.toLowerCase().contains(
+  //             keyword.toLowerCase())
+  //             || element.originSCName.toLowerCase().contains(
+  //             keyword.toLowerCase())){
+  //
+  //         }else{
+  //           return false;
+  //         }
+  //       }
+  //       return true;
+  //       }
+  //       ).toList());
+  //
+  //     result.sort((a,b){
+  //       var result = a.routeCode.length.compareTo(b.routeCode.length);
+  //       if(result == 0){
+  //         result = a.routeCode.compareTo(b.routeCode);
+  //       }
+  //       return result;
+  //     });
+  //     return result;
+  //   }else {
+  //     var result = Stores.dataManager.routes;
+  //
+  //     return result;
+  //   }
+  // }
 
   @observable
   bool dataFetchingError = false;

@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
+import 'package:minimal_bus_hk/model/bus_stop.dart';
+import 'package:minimal_bus_hk/model/eta.dart';
+import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/network_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,10 +43,47 @@ class CacheUtils{
     return "${_busStopDetailCacheKey}_$stopId";
   }
 
+  Future<void> fetchAllData() async{
+    await getRoutes();
+    if(Stores.dataManager.routes != null){
+      for(var route in Stores.dataManager.routes) {
+        await CacheUtils.sharedInstance().getRouteDetail(
+            route.routeCode, route.companyCode, true);
+        await CacheUtils.sharedInstance().getRouteDetail(
+            route.routeCode, route.companyCode, false);
+
+        var inboundBusRouteCount = Stores.dataManager.inboundBusStopsMap != null? Stores.dataManager.inboundBusStopsMap.values.length : 0;
+        var outboundBusRouteCount = Stores.dataManager.outboundBusStopsMap != null? Stores.dataManager.outboundBusStopsMap.values.length : 0;
+
+        debugPrint("route data fetch progress: ${inboundBusRouteCount + outboundBusRouteCount}/${Stores.dataManager.routes.length * 2}");
+
+      }
+        int count = 0;
+      for(var list in Stores.dataManager.inboundBusStopsMap.values){
+          for(var busStop in list){
+            await CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier);
+          }
+          count += 1;
+          debugPrint("$count/${Stores.dataManager.routes.length}");
+      }
+      for(var list in Stores.dataManager.outboundBusStopsMap.values){
+        for(var busStop in list){
+          await CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier);
+        }
+        count += 1;
+        debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
+      }
+    }
+
+  }
+
   Future<bool> getRoutes() async {
-    bool nwfbResult = await getRouteFor(NetworkUtil.companyCodeNWFB);
-    bool ctbResult = await getRouteFor(NetworkUtil.companyCodeCTB);
-    return nwfbResult && ctbResult;
+    bool result = true;
+
+    for(var code in NetworkUtil.companyCodeList){
+      result = await getRouteFor(code) && result;
+    }
+    return result;
   }
 
     Future<bool> getRouteFor(String companyCode) async {
@@ -152,11 +193,54 @@ class CacheUtils{
     }
 
     Stores.dataManager.setRoutStopBookmarks(list);
-
-
   }
 
-  bool _checkCacheContentExpired( Map<String, dynamic> cachedData, int expiryDuration ){
+  Future<void> getETAForBookmarkedRouteStops() async{
+    var queries = <ETAQuery>[];
+    if(Stores.dataManager.bookmarkedRouteStops == null)return;
+    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
+    for(RouteStop routeStop in list){
+
+      var query = ETAQuery.fromRouteStop(routeStop);
+      if(!queries.contains(query)){
+        queries.add(query);
+      }
+
+      for(var query in queries){
+        await getETA(query);
+      }
+    }
+  }
+
+  Future<void> getETAForRoute(BusRoute route, bool isInbound) async{
+    var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
+    if(routeStopsMap == null){
+      return;
+    }
+    var busStopsList = routeStopsMap[route.routeCode];
+    if(busStopsList == null){
+      return;
+    }
+    for(BusStop busStop in busStopsList){
+      var query = ETAQuery.fromBusStop(busStop);
+      await getETA(query);
+
+    }
+  }
+
+  Future<bool> getETA(ETAQuery query) async {
+    if(Stores.dataManager.routesMap != null && Stores.dataManager.routesMap.containsKey(query.routeCode) &&
+        Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey( Stores.dataManager.routesMap[query.routeCode])){
+      List<ETA> ETAs = Stores.dataManager.ETAMap[Stores.dataManager.routesMap[query.routeCode]];
+        if(ETAs.length > 0 &&  DateTime.now().millisecondsSinceEpoch - ETAs.first.dataTimestamp.millisecondsSinceEpoch  < Stores.appConfig.etaExpiryTimeMilliseconds && ETAs.first.status == ETAStatus.found){
+          return true;
+        }
+    }
+    var result = await NetworkUtil.sharedInstance().getETA(query);
+    return result == 200;
+  }
+
+    bool _checkCacheContentExpired( Map<String, dynamic> cachedData, int expiryDuration ){
     var key = "generated_timestamp ";//API issue, there is an extra space in key
     if(!cachedData.containsKey(key)){
       return true;

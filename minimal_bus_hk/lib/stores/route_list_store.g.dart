@@ -16,13 +16,16 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
       (_$_keywordsComputed ??= Computed<List<String>>(() => super._keywords,
               name: 'RouteListStoreBase._keywords'))
           .value;
-  Computed<ObservableList<BusRoute>> _$displayedRoutesComputed;
+  Computed<ObservableList<DirectionalRoute>>
+      _$displayedDirectionalRoutesComputed;
 
   @override
-  ObservableList<BusRoute> get displayedRoutes => (_$displayedRoutesComputed ??=
-          Computed<ObservableList<BusRoute>>(() => super.displayedRoutes,
-              name: 'RouteListStoreBase.displayedRoutes'))
-      .value;
+  ObservableList<DirectionalRoute> get displayedDirectionalRoutes =>
+      (_$displayedDirectionalRoutesComputed ??=
+              Computed<ObservableList<DirectionalRoute>>(
+                  () => super.displayedDirectionalRoutes,
+                  name: 'RouteListStoreBase.displayedDirectionalRoutes'))
+          .value;
 
   final _$filterKeywordAtom = Atom(name: 'RouteListStoreBase.filterKeyword');
 
@@ -39,18 +42,20 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
     });
   }
 
-  final _$selectedRouteAtom = Atom(name: 'RouteListStoreBase.selectedRoute');
+  final _$selectedDirectionalRouteAtom =
+      Atom(name: 'RouteListStoreBase.selectedDirectionalRoute');
 
   @override
-  BusRoute get selectedRoute {
-    _$selectedRouteAtom.reportRead();
-    return super.selectedRoute;
+  DirectionalRoute get selectedDirectionalRoute {
+    _$selectedDirectionalRouteAtom.reportRead();
+    return super.selectedDirectionalRoute;
   }
 
   @override
-  set selectedRoute(BusRoute value) {
-    _$selectedRouteAtom.reportWrite(value, super.selectedRoute, () {
-      super.selectedRoute = value;
+  set selectedDirectionalRoute(DirectionalRoute value) {
+    _$selectedDirectionalRouteAtom
+        .reportWrite(value, super.selectedDirectionalRoute, () {
+      super.selectedDirectionalRoute = value;
     });
   }
 
@@ -85,11 +90,11 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
   }
 
   @override
-  void setSelectedRoute(BusRoute busRoute) {
+  void setSelectedDirectionalRoute(DirectionalRoute busRoute) {
     final _$actionInfo = _$RouteListStoreBaseActionController.startAction(
-        name: 'RouteListStoreBase.setSelectedRoute');
+        name: 'RouteListStoreBase.setSelectedDirectionalRoute');
     try {
-      return super.setSelectedRoute(busRoute);
+      return super.setSelectedDirectionalRoute(busRoute);
     } finally {
       _$RouteListStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -110,9 +115,9 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
   String toString() {
     return '''
 filterKeyword: ${filterKeyword},
-selectedRoute: ${selectedRoute},
+selectedDirectionalRoute: ${selectedDirectionalRoute},
 dataFetchingError: ${dataFetchingError},
-displayedRoutes: ${displayedRoutes}
+displayedDirectionalRoutes: ${displayedDirectionalRoutes}
     ''';
   }
 }

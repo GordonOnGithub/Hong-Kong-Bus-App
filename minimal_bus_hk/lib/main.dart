@@ -47,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
    Future<void> updateETAData(List<RouteStop> routeStops) async{
      if(routeStops == null)return;
-     //Stores.etaListStore.setIsLoading(true);
      if(_updateTimer != null){
        _updateTimer.cancel();
        _updateTimer = null;
@@ -56,13 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
     for(RouteStop s in routeStops){
       await CacheUtils.sharedInstance().getBusStopDetail(s.stopId);
     }
-    await NetworkUtil.sharedInstance().getETAForRouteStops();
-  //  Stores.etaListStore.setIsLoading(false);
+    await CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
 
     _updateTimer = Timer.periodic(Duration(seconds: 30), (timer) {
       Stores.etaListStore.updateTimeStampForChecking();
       if(_callETAApi) {
-        NetworkUtil.sharedInstance().getETAForRouteStops();
+        CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
       }
       _callETAApi = !_callETAApi;
     });
@@ -81,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
     CacheUtils.sharedInstance().getBookmarkedRouteStop();
-    CacheUtils.sharedInstance().getRoutes();
+    CacheUtils.sharedInstance().fetchAllData();
     Stores.localizationStore.loadDataFromAsset();
 
      Connectivity().checkConnectivity().then((result) {
@@ -142,46 +140,60 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: (Stores.etaListStore.selectedETAListIndex == index) ? 220 : 190,
                         color:  (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : Colors.grey[50],
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Flexible(flex: 14, child: InkWell(child:Column(
-                             mainAxisAlignment: MainAxisAlignment.center,
+                               Expanded(child: InkWell(child:Column(
+                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                              crossAxisAlignment: CrossAxisAlignment.stretch,
                                  children:[
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)),
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
+                                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
+                                   Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                                     Icon((Stores.etaListStore.selectedETAListIndex == index) ?Icons.keyboard_arrow_up :Icons.keyboard_arrow_down)
+                                   ])
+                                   ),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                       Flexible(flex:3, child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForETA, Stores.localizationStore.localizationPref)}: ${ eta.toClockDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
                                       // Flexible(flex:4, child: Container()),
-                                      Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),  )
+                                      Flexible(flex:3, child:Text("${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),  )
                                     ],), height: 20,)
                                 ),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text(LocalizationUtil.localizedStringFrom(eta, ETA.localizationKeyForRemark, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
+                                Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text(LocalizationUtil.localizedStringFrom(eta, ETA.localizationKeyForRemark, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
                               ])
                               ,onTap: (){
                                   Stores.etaListStore.setSelectedETAListIndex(index);
                              }
                       )),
-                              (Stores.etaListStore.selectedETAListIndex == index) ?  Flexible(flex: 4, child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                              (Stores.etaListStore.selectedETAListIndex == index) ? Row( mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                                 InkWell(child:
-                                Container(height: 30,
+                                Container(
+                                    width: 120,
                                     alignment: Alignment.center,
-                                    child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                    ),)), onTap: (){
+                                    child:   Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
+                                      Icon(Icons.remove_circle_outline),
+                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    ),)])
+                              ), onTap: (){
                                   _onRemoveBookmark(index);
                                 },),
                                 InkWell(child:
-                                Container(height: 30,
+                                Container(
+                                    width: 120,
                                     alignment: Alignment.center,
-                                    child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                    ),)), onTap: (){
+                                    child:
+                                    Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
+                                      Icon(Icons.location_on_outlined),
+                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    ),)])
+                                ), onTap: (){
                                     _onOpenMapView(eta);
                                 },)
 
-                              ],)) : Expanded(flex: 0, child:Container()),
+                              ],) :Container(),
                               Container(height: 1, color: Colors.grey,),
                             ]
                         ))

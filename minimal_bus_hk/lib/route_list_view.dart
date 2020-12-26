@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/bus_route_detail_view.dart';
+import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:mobx/mobx.dart';
@@ -27,16 +28,17 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   @override
   void initState() {
     super.initState();
-    Stores.routeListStore.setSelectedRoute(null);
-    _searchFieldController = TextEditingController(text:Stores.routeListStore.filterKeyword);
+    Stores.routeListStore.setSelectedDirectionalRoute(null);
     CacheUtils.sharedInstance().getRoutes().then((value) => Stores.routeListStore.setDataFetchingError(!value));
-
+    Stores.routeListStore.setFilterKeyword("");
+    _searchFieldController = TextEditingController(text:Stores.routeListStore.filterKeyword);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    Stores.routeListStore.setFilterKeyword("");
   }
 
   @override
@@ -49,7 +51,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
       body: Observer(
       builder: (_) => Center(
 
-        child:  Stores.routeListStore.displayedRoutes != null ?(
+        child:  Stores.routeListStore.displayedDirectionalRoutes != null ?(
             Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             child:Observer(
@@ -71,47 +73,37 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
             child:Scrollbar(child:
             ListView.builder(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-                itemCount:   Stores.routeListStore.displayedRoutes.length ,
+                itemCount:   Stores.routeListStore.displayedDirectionalRoutes.length ,
                 itemBuilder: (BuildContext context, int index) {
-                  BusRoute busRoute = Stores.routeListStore.displayedRoutes[index];
+                  DirectionalRoute directionalBusRoute = Stores.routeListStore.displayedDirectionalRoutes[index];
                   return Observer(
                       builder: (_) =>Container(
-                        height: (busRoute == Stores.routeListStore.selectedRoute) ? 160 : 120,
-                        color:  (busRoute == Stores.routeListStore.selectedRoute) ? Colors.lightBlue[50] : Colors.grey[50],
-                        child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        height:  80,
+                        color:  Colors.grey[50],
+                        child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
+                        Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children:[
+                        Row(children: [
+                          Flexible(flex:10, child:
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Expanded(flex: 12,
-                              child:
                                InkWell(child:
                                Column(
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child: Text( busRoute.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0), child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyFrom, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(busRoute, BusRoute.localizationKeyForOrigin,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(busRoute, BusRoute.localizationKeyForDestination,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( directionalBusRoute.route.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(directionalBusRoute.route, directionalBusRoute.isInbound? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
                              ]), onTap:  (){
                                  _onRouteSelected(index);
-                               },)),
-                              (busRoute == Stores.routeListStore.selectedRoute) ?  Expanded(flex: 4,
-                                  child:Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                  InkWell(child:   Container(alignment: Alignment.center,  child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForInbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                  ),)), onTap: (){
-                                  Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
-                                  Stores.routeDetailStore.isInbound = true;
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => BusRouteDetailView()),
-                                  );
-                                },), InkWell(child:   Container( alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForOutbound, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline)), ), onTap: (){
-                                        _onOpenRouteDetail(index);
-                                },)
-                                ],)) :  Expanded(flex: 0,
-                                  child:Container()),
+                               },),
+                            ])),
+                          Flexible(flex: 1, child: Icon(Icons.arrow_forward))
+
+                        ],),
                               Container(height: 1, color: Colors.grey,)
                             ])),
                   ),
@@ -137,20 +129,18 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
 
     );
   }
-
-  void _onOpenRouteDetail(int index){
-    Stores.routeDetailStore.route = Stores.routeListStore.displayedRoutes[index];
-    Stores.routeDetailStore.isInbound = false;
+  
+  void _onRouteSelected(int index){
+    var directionalRoute = Stores.routeListStore.displayedDirectionalRoutes[index];
+    Stores.routeListStore.setSelectedDirectionalRoute(directionalRoute);
+    FocusScope.of(context).requestFocus(FocusNode());
+    Stores.routeDetailStore.route = directionalRoute.route;
+    Stores.routeDetailStore.isInbound = directionalRoute.isInbound;
     Stores.routeListStore.setFilterKeyword("");
+    _searchFieldController.text = "";
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => BusRouteDetailView()),
     );
-  }
-
-  void _onRouteSelected(int index){
-    Stores.routeListStore.setSelectedRoute(Stores.routeListStore.displayedRoutes[index]);
-    FocusScope.of(context).requestFocus(FocusNode());
-
   }
 }

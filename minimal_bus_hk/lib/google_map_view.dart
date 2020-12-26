@@ -78,6 +78,9 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           ),
           markers: _getMarkers(Stores.googleMapStore.busStops, Stores.googleMapStore.currentZoomLevel),
           onMapCreated: _onMapCreated,
+          onCameraMoveStarted: (){
+            Stores.googleMapStore.setAtCenter(false);
+          },
           onCameraIdle: (){
               mapController.getZoomLevel().then((value) => Stores.googleMapStore.setCurrentZoomLevel(value));
           },
@@ -85,12 +88,16 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           myLocationButtonEnabled: Stores.googleMapStore.locationPermissionGranted,
           tiltGesturesEnabled: false,
         )),
-          SizedBox( height: 100, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
-            Stores.googleMapStore.selectedBusStop != null ?InkWell(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRecenter, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+          Observer(
+            builder: (_) =>SizedBox( height: 100, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
+            Stores.googleMapStore.selectedBusStop != null && !Stores.googleMapStore.atCenter ?InkWell(child: Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
+              Icon(Icons.location_on_outlined),
+              Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+              ]),
               onTap: (){
                 _onRecenterClicked();
             },) : Container(),
-          ],))
+          ],)))
           
         ],),))
     );
@@ -130,6 +137,8 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   void _onRecenterClicked(){
     mapController.moveCamera(
       CameraUpdate.newLatLngZoom(Stores.googleMapStore.selectedBusStop.positionForMap, _defaultZoomForStop),
-    );
+    ).then((value) {
+      Stores.googleMapStore.setAtCenter(true);
+    });
   }
 }

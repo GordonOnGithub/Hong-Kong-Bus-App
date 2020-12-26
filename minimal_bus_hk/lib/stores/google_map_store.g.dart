@@ -96,6 +96,21 @@ mixin _$GoogleMapStore on GoogleMapStoreBase, Store {
     });
   }
 
+  final _$atCenterAtom = Atom(name: 'GoogleMapStoreBase.atCenter');
+
+  @override
+  bool get atCenter {
+    _$atCenterAtom.reportRead();
+    return super.atCenter;
+  }
+
+  @override
+  set atCenter(bool value) {
+    _$atCenterAtom.reportWrite(value, super.atCenter, () {
+      super.atCenter = value;
+    });
+  }
+
   final _$GoogleMapStoreBaseActionController =
       ActionController(name: 'GoogleMapStoreBase');
 
@@ -155,6 +170,17 @@ mixin _$GoogleMapStore on GoogleMapStoreBase, Store {
   }
 
   @override
+  void setAtCenter(bool atCenter) {
+    final _$actionInfo = _$GoogleMapStoreBaseActionController.startAction(
+        name: 'GoogleMapStoreBase.setAtCenter');
+    try {
+      return super.setAtCenter(atCenter);
+    } finally {
+      _$GoogleMapStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 selectedBusStop: ${selectedBusStop},
@@ -162,6 +188,7 @@ selectedRoute: ${selectedRoute},
 isInbound: ${isInbound},
 currentZoomLevel: ${currentZoomLevel},
 locationPermissionGranted: ${locationPermissionGranted},
+atCenter: ${atCenter},
 busStops: ${busStops}
     ''';
   }

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:minimal_bus_hk/model/bus_route.dart';
+import 'package:minimal_bus_hk/model/bus_stop.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
@@ -29,10 +31,15 @@ class NetworkUtil{
   static final String companyCodeNWFB = "nwfb";
   static final String companyCodeCTB = "ctb";
 
+  static final List<String> companyCodeList = [companyCodeCTB, companyCodeNWFB];
+
   Future<bool> getRoute() async {
-    int nwfbResult = await getRouteFor(companyCodeNWFB);
-    int ctbResult = await getRouteFor(companyCodeCTB);
-    return nwfbResult == 200 &&  ctbResult == 200;
+    bool result = true;
+
+    for(var code in companyCodeList){
+      result = (await getRouteFor(code) == 200) && result;
+    }
+    return result;
   }
 
     Future<int> getRouteFor(String companyCode) async {
@@ -141,13 +148,36 @@ class NetworkUtil{
     return code;
   }
 
-  Future<void> getETAForRouteStops() async{
+  Future<void> getETAForBookmarkedRouteStops() async{
     var queries = <ETAQuery>[];
     if(Stores.dataManager.bookmarkedRouteStops == null)return;
     List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
     for(RouteStop routeStop in list){
 
       var query = ETAQuery.fromRouteStop(routeStop);
+      if(!queries.contains(query)){
+        queries.add(query);
+      }
+
+      for(var query in queries){
+        await NetworkUtil.sharedInstance().getETA(query);
+      }
+    }
+  }
+
+  Future<void> getETAForRoute(BusRoute route, bool isInbound) async{
+    var queries = <ETAQuery>[];
+    var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
+    if(routeStopsMap == null){
+      return;
+    }
+    var busStopsList = routeStopsMap[route.routeCode];
+    if(busStopsList == null){
+      return;
+    }
+    for(BusStop busStop in busStopsList){
+
+      var query = ETAQuery.fromBusStop(busStop);
       if(!queries.contains(query)){
         queries.add(query);
       }

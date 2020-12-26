@@ -23,6 +23,15 @@ mixin _$DataManager on DataManagerBase, Store {
           Computed<ObservableMap<String, BusRoute>>(() => super.routesMap,
               name: 'DataManagerBase.routesMap'))
       .value;
+  Computed<ObservableList<DirectionalRoute>> _$directionalRouteListComputed;
+
+  @override
+  ObservableList<DirectionalRoute> get directionalRouteList =>
+      (_$directionalRouteListComputed ??=
+              Computed<ObservableList<DirectionalRoute>>(
+                  () => super.directionalRouteList,
+                  name: 'DataManagerBase.directionalRouteList'))
+          .value;
 
   final _$companyRoutesMapAtom = Atom(name: 'DataManagerBase.companyRoutesMap');
 
@@ -206,7 +215,8 @@ busStopDetailMap: ${busStopDetailMap},
 ETAMap: ${ETAMap},
 bookmarkedRouteStops: ${bookmarkedRouteStops},
 routes: ${routes},
-routesMap: ${routesMap}
+routesMap: ${routesMap},
+directionalRouteList: ${directionalRouteList}
     ''';
   }
 }

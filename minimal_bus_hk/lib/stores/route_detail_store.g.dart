@@ -25,13 +25,29 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
       (_$_keywordsComputed ??= Computed<List<String>>(() => super._keywords,
               name: 'RouteDetailStoreBase._keywords'))
           .value;
-  Computed<ObservableList<BusStopDetail>> _$displayedStopsComputed;
+  Computed<ObservableList<BusStopDetailWithETA>> _$displayedStopsComputed;
 
   @override
-  ObservableList<BusStopDetail> get displayedStops =>
-      (_$displayedStopsComputed ??= Computed<ObservableList<BusStopDetail>>(
-              () => super.displayedStops,
-              name: 'RouteDetailStoreBase.displayedStops'))
+  ObservableList<BusStopDetailWithETA> get displayedStops =>
+      (_$displayedStopsComputed ??=
+              Computed<ObservableList<BusStopDetailWithETA>>(
+                  () => super.displayedStops,
+                  name: 'RouteDetailStoreBase.displayedStops'))
+          .value;
+  Computed<ObservableList<List<ETA>>> _$routesETAListComputed;
+
+  @override
+  ObservableList<List<ETA>> get routesETAList => (_$routesETAListComputed ??=
+          Computed<ObservableList<List<ETA>>>(() => super.routesETAList,
+              name: 'RouteDetailStoreBase.routesETAList'))
+      .value;
+  Computed<ObservableMap<String, ETA>> _$displayedETAMapComputed;
+
+  @override
+  ObservableMap<String, ETA> get displayedETAMap =>
+      (_$displayedETAMapComputed ??= Computed<ObservableMap<String, ETA>>(
+              () => super.displayedETAMap,
+              name: 'RouteDetailStoreBase.displayedETAMap'))
           .value;
 
   final _$routeAtom = Atom(name: 'RouteDetailStoreBase.route');
@@ -126,6 +142,23 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     });
   }
 
+  final _$timeStampForCheckingAtom =
+      Atom(name: 'RouteDetailStoreBase.timeStampForChecking');
+
+  @override
+  DateTime get timeStampForChecking {
+    _$timeStampForCheckingAtom.reportRead();
+    return super.timeStampForChecking;
+  }
+
+  @override
+  set timeStampForChecking(DateTime value) {
+    _$timeStampForCheckingAtom.reportWrite(value, super.timeStampForChecking,
+        () {
+      super.timeStampForChecking = value;
+    });
+  }
+
   final _$RouteDetailStoreBaseActionController =
       ActionController(name: 'RouteDetailStoreBase');
 
@@ -196,6 +229,17 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
   }
 
   @override
+  void updateTimeStampForChecking() {
+    final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
+        name: 'RouteDetailStoreBase.updateTimeStampForChecking');
+    try {
+      return super.updateTimeStampForChecking();
+    } finally {
+      _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 route: ${route},
@@ -204,8 +248,11 @@ selectedStopId: ${selectedStopId},
 dataFetchingError: ${dataFetchingError},
 filterKeyword: ${filterKeyword},
 selectedIndex: ${selectedIndex},
+timeStampForChecking: ${timeStampForChecking},
 selectedRouteBusStops: ${selectedRouteBusStops},
-displayedStops: ${displayedStops}
+displayedStops: ${displayedStops},
+routesETAList: ${routesETAList},
+displayedETAMap: ${displayedETAMap}
     ''';
   }
 }

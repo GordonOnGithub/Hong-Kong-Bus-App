@@ -1,6 +1,9 @@
 import 'package:minimal_bus_hk/model/bus_stop.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
+import 'package:minimal_bus_hk/model/bus_stop_detail_with_eta.dart';
+import 'package:minimal_bus_hk/model/eta.dart';
+import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 import 'package:mobx/mobx.dart';
 part 'route_detail_store.g.dart';
@@ -84,10 +87,10 @@ abstract class RouteDetailStoreBase with Store {
   }
 
   @computed
-  ObservableList<BusStopDetail> get displayedStops{
+  ObservableList<BusStopDetailWithETA> get displayedStops{
     if(filterKeyword != null && selectedRouteBusStops != null) {
-      var result =  ObservableList<BusStopDetail>();
-      result.addAll(selectedRouteBusStops.where((element) {
+      var filteredList =  ObservableList<BusStopDetail>();
+      filteredList.addAll(selectedRouteBusStops.where((element) {
         for(var keyword in _keywords) {
           if( element.englishName.toLowerCase().contains(
                   keyword.toLowerCase())
@@ -104,6 +107,14 @@ abstract class RouteDetailStoreBase with Store {
       }
       ).toList());
 
+      var result =  ObservableList<BusStopDetailWithETA>();
+
+      for(var busStopDetail in filteredList){
+
+        var eta = displayedETAMap[busStopDetail.identifier];
+            result.add(BusStopDetailWithETA(busStopDetail: busStopDetail, eta: eta));
+      }
+
       return result;
     }else {
 
@@ -117,5 +128,62 @@ abstract class RouteDetailStoreBase with Store {
   @action
   void setSelectedIndex(int index){
     selectedIndex = index;
+  }
+
+  @observable
+  DateTime timeStampForChecking = DateTime.now();
+
+  @action
+  void updateTimeStampForChecking(){
+    timeStampForChecking = DateTime.now();
+  }
+
+  @computed
+  ObservableList<List<ETA>> get routesETAList{
+    var result = ObservableList<List<ETA>>();
+    var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
+    if(routeStopsMap == null){
+      return result;
+    }
+    var busStopsList = routeStopsMap[route.routeCode];
+    if(busStopsList == null){
+      return result;
+    }
+
+    for(BusStop busStop in busStopsList){
+      var routeStop = RouteStop(route.routeCode, busStop.identifier, route.companyCode, isInbound);
+      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
+        var ETAs = Stores.dataManager.ETAMap[routeStop];
+        var filteredETAs = <ETA>[];
+        for(var eta in ETAs) {
+          if(routeStop.matchETA(eta)) {
+            filteredETAs.add(eta);
+          }
+        }
+        if(filteredETAs.length == 0){
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
+        }
+        filteredETAs.sort((a,b)=> a.etaTimestamp.compareTo(b.etaTimestamp));
+        result.add(filteredETAs);
+      }else{
+        result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);
+      }
+    }
+
+    return result;
+  }
+
+  @computed
+  ObservableMap<String, ETA> get displayedETAMap{
+    ObservableMap<String, ETA> result = ObservableMap<String, ETA>();
+    for(List<ETA> list in routesETAList ){
+      for(ETA eta in list){
+        if(( eta.etaTimestamp != null ) || eta == list.last){
+          result[eta.stopId] = eta;
+          break;
+        }
+      }
+    }
+    return result;
   }
 }

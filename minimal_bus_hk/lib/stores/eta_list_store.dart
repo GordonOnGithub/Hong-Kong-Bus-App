@@ -46,7 +46,7 @@ abstract class ETAListStoreBase with Store {
     for(var routeStop in Stores.dataManager.bookmarkedRouteStops){
       if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
         var ETAs = Stores.dataManager.ETAMap[routeStop];
-        var filteredETAs = List<ETA>();
+        var filteredETAs = <ETA>[];
         for(var eta in ETAs) {
           if(routeStop.matchETA(eta)) {
              filteredETAs.add(eta);
