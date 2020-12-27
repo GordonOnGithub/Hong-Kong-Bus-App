@@ -59,7 +59,7 @@ abstract class RouteDetailStoreBase with Store {
       if(Stores.dataManager.busStopDetailMap != null && Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)){
         result.add(Stores.dataManager.busStopDetailMap[stop.identifier]);
       }else{
-        result.add(BusStopDetail.empty(stop.identifier));
+        result.add(BusStopDetail.unknown(stop.identifier));
       }
 
     }
@@ -109,10 +109,27 @@ abstract class RouteDetailStoreBase with Store {
 
       var result =  ObservableList<BusStopDetailWithETA>();
 
-      for(var busStopDetail in filteredList){
-
+      for(var busStopDetail in filteredList) {
         var eta = displayedETAMap[busStopDetail.identifier];
-            result.add(BusStopDetailWithETA(busStopDetail: busStopDetail, eta: eta));
+        var sequence = 0;
+
+        var routeStopsMap = isInbound
+            ? Stores.dataManager.inboundBusStopsMap
+            : Stores.dataManager.outboundBusStopsMap;
+        if (routeStopsMap != null) {
+           var routeStopsList = routeStopsMap[route.routeCode];
+           if (routeStopsList != null) {
+              for (BusStop s in routeStopsList) {
+                if(s.identifier == busStopDetail.identifier){
+                   sequence = s.sequence;
+                   break;
+                }
+             }
+
+            result.add(BusStopDetailWithETA(
+              busStopDetail: busStopDetail, eta: eta, sequence: sequence));
+          }
+        }
       }
 
       return result;
@@ -122,12 +139,13 @@ abstract class RouteDetailStoreBase with Store {
     }
   }
 
+
   @observable
-  int selectedIndex;
+  int selectedSequence;
 
   @action
-  void setSelectedIndex(int index){
-    selectedIndex = index;
+  void setSelectedSequence(int seq){
+    selectedSequence = seq;
   }
 
   @observable

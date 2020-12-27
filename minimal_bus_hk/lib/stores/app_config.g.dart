@@ -93,6 +93,23 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
     });
   }
 
+  final _$showRouteDetailReminderAtom =
+      Atom(name: 'AppConfigStoreBase.showRouteDetailReminder');
+
+  @override
+  bool get showRouteDetailReminder {
+    _$showRouteDetailReminderAtom.reportRead();
+    return super.showRouteDetailReminder;
+  }
+
+  @override
+  set showRouteDetailReminder(bool value) {
+    _$showRouteDetailReminderAtom
+        .reportWrite(value, super.showRouteDetailReminder, () {
+      super.showRouteDetailReminder = value;
+    });
+  }
+
   final _$shouldDownloadAllDataAsyncAction =
       AsyncAction('AppConfigStoreBase.shouldDownloadAllData');
 
@@ -147,6 +164,24 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
         .run(() => super.setShowSearchButtonReminder(shouldShow));
   }
 
+  final _$checkShowRouteDetailReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.checkShowRouteDetailReminder');
+
+  @override
+  Future<void> checkShowRouteDetailReminder() {
+    return _$checkShowRouteDetailReminderAsyncAction
+        .run(() => super.checkShowRouteDetailReminder());
+  }
+
+  final _$setShowRouteDetailReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.setShowRouteDetailReminder');
+
+  @override
+  Future<void> setShowRouteDetailReminder(bool shouldShow) {
+    return _$setShowRouteDetailReminderAsyncAction
+        .run(() => super.setShowRouteDetailReminder(shouldShow));
+  }
+
   final _$AppConfigStoreBaseActionController =
       ActionController(name: 'AppConfigStoreBase');
 
@@ -177,7 +212,8 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
     return '''
 arrivalImminentTimeMilliseconds: ${arrivalImminentTimeMilliseconds},
 arrivalExpiryTimeMilliseconds: ${arrivalExpiryTimeMilliseconds},
-showSearchButtonReminder: ${showSearchButtonReminder}
+showSearchButtonReminder: ${showSearchButtonReminder},
+showRouteDetailReminder: ${showRouteDetailReminder}
     ''';
   }
 }

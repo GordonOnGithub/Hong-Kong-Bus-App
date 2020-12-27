@@ -99,7 +99,7 @@ abstract class DataManagerBase with Store {
 
   @action
   void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData){
-    var busStopDetail = BusStopDetail.fromJson(busStopData);
+    var busStopDetail = busStopData.keys.length > 0 ? BusStopDetail.fromJson(busStopData) : BusStopDetail.invalid(stopId);
     if(busStopDetailMap == null){
       busStopDetailMap = ObservableMap();
     }
@@ -111,8 +111,8 @@ abstract class DataManagerBase with Store {
 
   @action
   void updateETAMap(String stopId, String routeCode, String companyCode, List<Map<String, dynamic>> dataArray){
-    List<ETA> inboundResult = List();
-    List<ETA> outboundResult = List();
+    List<ETA> inboundResult = [];
+    List<ETA> outboundResult = [];
 
     for(Map<String, dynamic> data in dataArray){
       var eta = ETA.fromJson(data);

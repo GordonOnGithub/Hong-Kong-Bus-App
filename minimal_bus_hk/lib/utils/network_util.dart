@@ -6,6 +6,7 @@ import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
 
 import 'package:minimal_bus_hk/utils/stores.dart';
 class NetworkUtil{
@@ -44,6 +45,14 @@ class NetworkUtil{
   }
 
     Future<int> getRouteFor(String companyCode) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
+      if(Stores.dataManager.routes == null) {
+        Stores.dataManager.setRoutes([], companyCode);
+      }
+      return -1;
+    }
+
     var response = await http.get("$_routeAPI/$companyCode").catchError((e){
         return null;// connectivity issue
     });
@@ -75,6 +84,13 @@ class NetworkUtil{
   }
 
   Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
+      if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
+        Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
+      }
+      return -1;
+    }
     var response = await http.get(
         "$_routeDataAPI/$companyCode/$routeCode/${isInbound ? "inbound" : "outbound"}").catchError((e){
       return null;// connectivity issue
@@ -107,6 +123,10 @@ class NetworkUtil{
   }
 
   Future<int> getBusStopDetail(String stopId) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
+      return -1;
+    }
     var response = await http.get(
         "$_busStopDetailAPI/$stopId").catchError((e){
       return null;// connectivity issue
@@ -129,6 +149,10 @@ class NetworkUtil{
   }
 
   Future<int> getETA(ETAQuery query) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
+      return -1;
+    }
     var response = await http.get("$_etaAPI/${query.companyCode}/${query.stopId}/${query.routeCode}").catchError((e){
       return null;// connectivity issue
     });

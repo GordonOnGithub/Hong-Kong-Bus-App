@@ -89,4 +89,24 @@ abstract class AppConfigStoreBase with Store {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(_showSearchButtonReminderConfigKey, shouldShow);
   }
+
+  @observable
+  bool showRouteDetailReminder = false;
+  static final String _showRouteDetailReminderConfigKey = "showRouteDetailReminder";
+
+  @action
+  Future<void> checkShowRouteDetailReminder() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    showRouteDetailReminder = prefs.getBool(_showRouteDetailReminderConfigKey);
+    if(showRouteDetailReminder == null){
+      showRouteDetailReminder = true;
+    }
+  }
+
+  @action
+  Future<void> setShowRouteDetailReminder(bool shouldShow) async{
+    showRouteDetailReminder = shouldShow;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(_showRouteDetailReminderConfigKey, shouldShow);
+  }
 }

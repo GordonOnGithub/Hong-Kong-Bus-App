@@ -69,7 +69,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
     return Scaffold(
         appBar: AppBar(
           title: Observer(
-        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}")),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}", maxLines: 2,)),
         ),
         body: Observer(
     builder: (_) =>Center(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -90,21 +90,20 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           myLocationEnabled: Stores.googleMapStore.locationPermissionGranted,
           myLocationButtonEnabled: Stores.googleMapStore.locationPermissionGranted,
           tiltGesturesEnabled: false,
+          zoomControlsEnabled: false,
           cameraTargetBounds: CameraTargetBounds(LatLngBounds(northeast: LatLng(22.631843587586193, 114.41798414088238), southwest:  LatLng(22.176373229353644, 113.81319021792984))),
 
         )),
-          Observer(
-            builder: (_) =>Stores.googleMapStore.selectedBusStop != null ? (!Stores.googleMapStore.atCenter ? Container( height: 80, width: 300, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
-            InkWell(child: Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
-              Icon(Icons.location_on_outlined),
-               Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline), maxLines: 2,),
-              ]),
-              onTap: (){
-                _onRecenterClicked();
-            },) ,
-          ],)) : Container(height: 80)):Container())
-          
-        ],),))
+        ],),)),
+            floatingActionButton:Observer(
+           builder: (_) =>  !Stores.googleMapStore.atCenter ?
+           FloatingActionButton(
+             onPressed: (){
+               _onRecenterClicked();
+             },
+             child: Icon(Icons.zoom_in),
+           ): Container()),
+
     );
   }
 
@@ -114,7 +113,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         var count = 0;
         for (var busStopDetail in busStops) {
           count += 1;
-          MarkerId markerId = MarkerId(busStopDetail.identifier);
+          MarkerId markerId = MarkerId("${busStopDetail.identifier}");
           InfoWindow infoWindow = InfoWindow(title: "$count. ${LocalizationUtil.localizedStringFrom(
               busStopDetail, BusStopDetail.localizationKeyForName,
               Stores.localizationStore.localizationPref)}");
@@ -151,7 +150,9 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
 
   void _onRecenterClicked(){
     mapController.moveCamera(
-      CameraUpdate.newLatLngZoom(Stores.googleMapStore.selectedBusStop.positionForMap, _defaultZoomForStop),
+      Stores.googleMapStore.selectedBusStop != null?
+      CameraUpdate.newLatLngZoom(Stores.googleMapStore.selectedBusStop.positionForMap, _defaultZoomForStop):
+      CameraUpdate.newLatLngZoom(Stores.googleMapStore.routeGeoCenter, Stores.googleMapStore.getDefaultZoomLevelForRoute),
     ).then((value) {
       Stores.googleMapStore.setAtCenter(true);
       if(Stores.googleMapStore.selectedBusStop != null) {

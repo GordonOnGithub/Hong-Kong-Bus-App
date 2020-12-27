@@ -19,9 +19,9 @@ class CacheUtils{
   static final String busStopDetailsCacheExpiryDaysKey = "bus_stop_details_expiry_days_key";
 
   static final int _dayInMicroseconds = 86400000;
-  final int _defaultRoutesCacheExpiryDays = 7;
-  final int _defaultRouteDetailsCacheExpiryDays = 7;
-  final int _defaultBusStopDetailsCacheExpiryDays = 7;
+  final int _defaultRoutesCacheExpiryDays = 14;
+  final int _defaultRouteDetailsCacheExpiryDays = 14;
+  final int _defaultBusStopDetailsCacheExpiryDays = 14;
 
   static CacheUtils _sharedInstance;
 
@@ -86,7 +86,7 @@ class CacheUtils{
     return result;
   }
 
-    Future<bool> getRouteFor(String companyCode) async {
+    Future<bool> getRouteFor(String companyCode, {bool silentUpdate = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString("$routesCacheKey/$companyCode");
     var expiryDay = prefs.getInt(routesCacheExpiryDaysKey);
@@ -101,11 +101,11 @@ class CacheUtils{
         NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
       }
 
-      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds)){
+      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate){
         return true;
       }else{
         var code = await  NetworkUtil.sharedInstance().getRouteFor(companyCode);
-        return code == 200;
+        return code == 200 || silentUpdate;
       }
     }
       var code = await  NetworkUtil.sharedInstance().getRouteFor(companyCode);
@@ -113,7 +113,7 @@ class CacheUtils{
 
   }
 
-  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
+  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool silentUpdate = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
     var expiryDay = prefs.getInt(routeDetailsCacheExpiryDaysKey);
@@ -129,11 +129,11 @@ class CacheUtils{
         NetworkUtil.sharedInstance().parseRouteDetail(
             routeCode, companyCode, isInbound, cachedData);
       }
-      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds)) {
+      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
         var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
-        return code == 200;
+        return code == 200 || silentUpdate;
       }
     }
       var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
@@ -141,7 +141,7 @@ class CacheUtils{
 
   }
 
-  Future<bool> getBusStopDetail(String stopId) async {
+  Future<bool> getBusStopDetail(String stopId, {bool silentUpdate = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getBusStopDetailCacheKey(stopId));
     var expiryDay = prefs.getInt(busStopDetailsCacheExpiryDaysKey);
@@ -154,26 +154,26 @@ class CacheUtils{
       if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stopId)) {
         NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData);
       }
-      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds)) {
+      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
         var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId);
-        return code == 200;
+        return code == 200 || !silentUpdate;
       }
     }
       var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId);
       return code == 200;
   }
 
-  Future<bool> getRouteAndStopsDetail(BusRoute route, bool isInbound) async {
+  Future<bool> getRouteAndStopsDetail(BusRoute route, bool isInbound, {bool silentUpdate = false}) async {
 
-    bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound);
+    bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound, silentUpdate: silentUpdate);
     if(success){
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
       if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
         for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            success = success && await getBusStopDetail(stop.identifier);
+            success = success && await getBusStopDetail(stop.identifier, silentUpdate: silentUpdate);
           }
         }
       }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/google_map_view.dart';
@@ -37,12 +38,13 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   @override
   void initState() {
     super.initState();
+    Stores.appConfig.checkShowRouteDetailReminder();
     Stores.routeDetailStore.setSelectedStopId(null);
-    Stores.routeDetailStore.setSelectedIndex(null);
+    Stores.routeDetailStore.setSelectedSequence(null);
     Stores.routeDetailStore.setFilterKeyword("");
     _searchFieldController = TextEditingController(text:Stores.routeDetailStore.filterKeyword);
 
-    CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound).then((value) {
+    CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) {
       Stores.routeDetailStore.setDataFetchingError(!value);
       if(value) {
         CacheUtils.sharedInstance().getETAForRoute(
@@ -74,7 +76,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return  Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }")),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }", maxLines: 2,)),
         ),
         body: Observer(
             builder: (_) =>Center(child:
@@ -82,7 +84,8 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
               child:(Stores.routeDetailStore.selectedRouteBusStops != null)?
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     Expanded(flex:1,
-                    child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                    child: Container(color: Colors.grey[200], child:
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                     Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
                       Icon(Icons.search),
                       Expanded(child: TextField(
@@ -100,9 +103,9 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                       },):Container()
                     ]
                     )
-                    )
+                    ))
                 ),
-
+                Container(height: 1, color: Colors.grey,),
                 Expanded(flex: 9,child:(Stores.routeDetailStore.displayedStops != null && Stores.routeDetailStore.displayedStops.length > 0?
                 Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   child:
@@ -115,35 +118,34 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
-                    height:( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index)? 120 : 90,
-                    color: ( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index)? Colors.lightBlue[50] : Colors.grey[50],
+                    height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 120 : 60,
+                    color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? Colors.lightBlue[50] : Colors.grey[50],
                     child:Observer(
                       builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                      Padding(padding: const EdgeInsets.fromLTRB(0 , 10, 0, 0),child:
+                      Padding(padding: const EdgeInsets.fromLTRB(0 , 15, 0, 0),child:
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween ,children:[
                           Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
                        Icons.bookmark:Icons.bookmark_border),
 
-                        Expanded(child: Text( "${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold), textAlign: TextAlign.left,)),
+                        Expanded(child: Text( "${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
 
-                        Icon(( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index)? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                        Icon(( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence)? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
                       ])),
+                          ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence) ?
                           Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
-
                           Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end ,  children: [
                             Icon(Icons.access_time, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black,),
                           Expanded(child:Text(" ${ eta.toClockDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
                             Icon(Icons.timer, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
                             Text(" ${ eta.getTimeLeftDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),
                           ],), height: 20,)
-                          ),
+                          ) : Container(),
 
-
-                          ( Stores.routeDetailStore.selectedStopId == Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier && Stores.routeDetailStore.selectedIndex == index) ? Container( height: 30,child:Row(
+                          ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence) ? Container( height: 30,child:Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.center, children: [
                             InkWell(child:
@@ -187,19 +189,28 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                  Observer( builder: (_) =>(Stores.routeDetailStore.dataFetchingError ) ?
                   InkWell(child:
                   Container( color: Colors.yellow, height: 50, alignment: Alignment.center, child:
-                  Observer(
-                      builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),))),
+                  Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),)),
                     onTap: (){
                       Stores.routeDetailStore.setDataFetchingError(false);
-                      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound).then((value) => Stores.routeDetailStore.setDataFetchingError(!value));
+                      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) => Stores.routeDetailStore.setDataFetchingError(!value));
                     },)
-                      : Container())
+                      : ( Stores.appConfig.showRouteDetailReminder?
+                     InkWell(child:
+                   Container( color: Colors.yellow, height: 50, alignment: Alignment.center, child:
+                   Row(children:[
+                   Expanded(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteDetailReminder, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),)),
+                    Container(width:120)
+                   ])),onTap: (){
+                      Stores.appConfig.setShowRouteDetailReminder(false);
+                    },)
+
+                     :Container()))
                 ]):
             Observer(
                 builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref)))
           ,))),
           floatingActionButton:  Observer(
-    builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null?FloatingActionButton.extended(
+    builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null && !Stores.routeDetailStore.dataFetchingError?FloatingActionButton.extended(
             icon: Icon(Icons.map),
             label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMap, Stores.localizationStore.localizationPref), ),
             onPressed: (){
@@ -222,9 +233,15 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   void _onSelectedRouteStop(int index){
     var stop = Stores.routeDetailStore.displayedStops[index];
     if(stop.busStopDetail.latitude != null && stop.busStopDetail.longitude != null) {
+      Stores.appConfig.setShowRouteDetailReminder(false);
       Stores.routeDetailStore.setSelectedStopId(
           stop.busStopDetail.identifier);
-      Stores.routeDetailStore.setSelectedIndex(index);
+      if(Stores.routeDetailStore.selectedSequence != stop.sequence) {
+        Stores.routeDetailStore.setSelectedSequence(stop.sequence);
+      }else{
+        Stores.routeDetailStore.setSelectedSequence(null);
+
+      }
     }
   }
 }

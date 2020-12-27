@@ -204,5 +204,11 @@
     "en": "Click \"search\" to look up bus routes & stops",
     "tc": "按 「搜尋」以尋找巴士路線及車站資料",
     "sc": "按 「搜尋」以尋找巴士路線及車站資料"
+  },
+  {
+    "key": "routeDetailReminder",
+    "en": "Select a bus stop for more information",
+    "tc": "選擇車站以查看更多資料",
+    "sc": "選擇車站以查看更多資料"
   }
   ]

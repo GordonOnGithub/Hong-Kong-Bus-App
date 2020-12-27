@@ -65,7 +65,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(flex:1,
-                child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                child: Container(color: Colors.grey[200], child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                 Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
                   Icon(Icons.search),
                 Expanded(child: TextField(
@@ -83,8 +83,9 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   _searchFieldController.text = "";
                  Stores.routeListStore.setFilterKeyword("");
                 },):Container()
-                ]))
+                ])))
             ),
+            Container(height: 1, color: Colors.grey,),
             Expanded(flex: 9,
             child:Scrollbar(child:
             ListView.builder(

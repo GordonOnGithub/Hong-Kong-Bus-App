@@ -12,5 +12,4 @@ class BusStop{
         sequence =  (json["seq"] is int)? json["seq"]: 0 ,
         identifier = json["stop"],
         timestamp = DateTime.tryParse(json["data_timestamp"]);
-
 }

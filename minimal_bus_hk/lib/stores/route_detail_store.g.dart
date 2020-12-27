@@ -127,18 +127,19 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     });
   }
 
-  final _$selectedIndexAtom = Atom(name: 'RouteDetailStoreBase.selectedIndex');
+  final _$selectedSequenceAtom =
+      Atom(name: 'RouteDetailStoreBase.selectedSequence');
 
   @override
-  int get selectedIndex {
-    _$selectedIndexAtom.reportRead();
-    return super.selectedIndex;
+  int get selectedSequence {
+    _$selectedSequenceAtom.reportRead();
+    return super.selectedSequence;
   }
 
   @override
-  set selectedIndex(int value) {
-    _$selectedIndexAtom.reportWrite(value, super.selectedIndex, () {
-      super.selectedIndex = value;
+  set selectedSequence(int value) {
+    _$selectedSequenceAtom.reportWrite(value, super.selectedSequence, () {
+      super.selectedSequence = value;
     });
   }
 
@@ -218,11 +219,11 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
   }
 
   @override
-  void setSelectedIndex(int index) {
+  void setSelectedSequence(int seq) {
     final _$actionInfo = _$RouteDetailStoreBaseActionController.startAction(
-        name: 'RouteDetailStoreBase.setSelectedIndex');
+        name: 'RouteDetailStoreBase.setSelectedSequence');
     try {
-      return super.setSelectedIndex(index);
+      return super.setSelectedSequence(seq);
     } finally {
       _$RouteDetailStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -247,7 +248,7 @@ isInbound: ${isInbound},
 selectedStopId: ${selectedStopId},
 dataFetchingError: ${dataFetchingError},
 filterKeyword: ${filterKeyword},
-selectedIndex: ${selectedIndex},
+selectedSequence: ${selectedSequence},
 timeStampForChecking: ${timeStampForChecking},
 selectedRouteBusStops: ${selectedRouteBusStops},
 displayedStops: ${displayedStops},

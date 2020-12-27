@@ -171,12 +171,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                    ])
                                    ),
 
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):""}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
 
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                    Row( mainAxisAlignment: MainAxisAlignment.start, children:[
                                      Icon(Icons.location_on_outlined),
-                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
+                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): " - "}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
                                     ]),),
                               Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [

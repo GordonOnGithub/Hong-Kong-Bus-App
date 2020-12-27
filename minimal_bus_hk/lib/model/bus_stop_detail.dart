@@ -14,10 +14,10 @@ class BusStopDetail extends LocalizedData{
   static final String localizationKeyForName = "name";
 
 BusStopDetail.fromJson(Map<String, dynamic> json):
-      identifier = json["stop"],
-      englishName = json["name_en"],
-      TCName = json["name_tc"],
-      SCName = json["name_sc"],
+      identifier = json["stop"] ?? "",
+      englishName = json["name_en"] ?? "",
+      TCName = json["name_tc"] ?? "",
+      SCName = json["name_sc"] ?? "",
       latitude = double.tryParse(json["lat"]),
       longitude = double.tryParse(json["long"]),
       timestamp = DateTime.tryParse(json["data_timestamp"]){
@@ -28,7 +28,7 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
       _localizedData[localizationKeyForName] = nameData;
 }
 
-  BusStopDetail.empty(String identifier):
+  BusStopDetail.unknown(String identifier):
         identifier = identifier,
         englishName = "",
         TCName = "",
@@ -40,6 +40,21 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
     nameData["en"] = "loading";
     nameData["tc"] = "載入中";
     nameData["sc"] = "載入中";
+    _localizedData[localizationKeyForName] = nameData;
+  }
+
+  BusStopDetail.invalid(String identifier):
+        identifier = identifier,
+        englishName = "",
+        TCName = "",
+        SCName = "",
+        latitude = null,
+        longitude  = null,
+        timestamp = DateTime.now(){
+    Map<String, String> nameData = Map();
+    nameData["en"] = "n/a";
+    nameData["tc"] = "n/a";
+    nameData["sc"] = "n/a";
     _localizedData[localizationKeyForName] = nameData;
   }
 
