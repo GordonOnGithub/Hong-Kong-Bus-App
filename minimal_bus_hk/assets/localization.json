@@ -79,9 +79,9 @@
 },
   {
     "key":"routeListViewRouteSearchTextFieldPlaceholder",
-    "en":"Type to search for routes. e.g. \"796C\" \"Mongkok\"",
-    "tc":"輸入關鍵字以搜尋路線，例: \"796C\" \"旺角\"",
-    "sc":"輸入關鍵字以搜尋路線，例: \"796C\" \"旺角\""
+    "en":"Type to search, e.g.\"796C\" \"Mongkok\"",
+    "tc":"輸入關鍵字以搜尋路線，例:\"796C\" \"旺角\"",
+    "sc":"輸入關鍵字以搜尋路線，例:\"796C\" \"旺角\""
   },
   {
     "key":"to",
@@ -166,8 +166,8 @@
   {
     "key": "downloadAllDataPopupContent",
     "en": "Download all data in advance to speed up searching and support offline route search.(est. data size: 140 MB)",
-    "tc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。",
-    "sc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。"
+    "tc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。(資料大小: 約140MB)",
+    "sc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。(資料大小: 約140MB)"
   },
   {
     "key": "downloadAllDataPopupYes",

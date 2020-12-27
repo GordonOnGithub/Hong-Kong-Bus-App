@@ -60,6 +60,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    Stores.googleMapStore.setAtCenter(true);
     if(Stores.googleMapStore.selectedBusStop != null) {
       mapController.showMarkerInfoWindow(MarkerId(Stores.googleMapStore.selectedBusStop.identifier));
     }
