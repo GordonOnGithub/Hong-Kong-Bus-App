@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gordon.minimal_bus_hk">
    <application
-        android:label="minimal_bus_hk"
+        android:label="HK Bus"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

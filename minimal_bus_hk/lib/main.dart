@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minimal_bus_hk/bus_route_detail_view.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
@@ -60,7 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _updateTimer = Timer.periodic(Duration(seconds: 30), (timer) {
       Stores.etaListStore.updateTimeStampForChecking();
       if(_callETAApi) {
-        CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
+        CacheUtils.sharedInstance().getETAForBookmarkedRouteStops().then((value){
+          if (!value){
+            _callETAApi = true;
+          }
+        });
       }
       _callETAApi = !_callETAApi;
     });
@@ -79,7 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
     CacheUtils.sharedInstance().getBookmarkedRouteStop();
-    CacheUtils.sharedInstance().fetchAllData();
     Stores.localizationStore.loadDataFromAsset();
 
      Connectivity().checkConnectivity().then((result) {
@@ -89,6 +93,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _connectivityStream = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
         Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
     });
+
+    Stores.appConfig.shouldDownloadAllData().then((value){
+        if(value == null){
+          CacheUtils.sharedInstance().getRoutes();
+          showDialog(context: context, builder: (context) => _buildDownloadAllDataDialog(context));
+        }else if(value){
+          CacheUtils.sharedInstance().fetchAllData();
+        } else{
+          CacheUtils.sharedInstance().getRoutes();
+        }
+    });
+
+    Stores.appConfig.checkShowSearchButtonReminder();
   }
 
   @override
@@ -126,9 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
         child: Observer(
       builder: (_) => Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.stretch , children:[
-        (Stores.connectivityStore.connected? Flexible(flex: 0, child: Container()) :  Flexible(flex: 1, child:
-        Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),))),
-      Flexible(flex: 9, child: ((Stores.dataManager.routes != null &&  Stores.dataManager.bookmarkedRouteStops != null )?
+        (Stores.connectivityStore.connected?  Container() :
+        Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),)),
+      Expanded( child: ((Stores.dataManager.routes != null &&  Stores.dataManager.bookmarkedRouteStops != null )?
         Padding(padding: const EdgeInsets.all(0), child: (
                      Stores.dataManager.bookmarkedRouteStops.length > 0 ? Scrollbar( child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
@@ -159,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                    Row( mainAxisAlignment: MainAxisAlignment.start, children:[
                                      Icon(Icons.location_on_outlined),
-                                   Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),),
+                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): "-"}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
                                     ]),),
                               Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -175,32 +192,44 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Stores.etaListStore.setSelectedETAListIndex(index);
                              }
                       )),
-                              (Stores.etaListStore.selectedETAListIndex == index) ? Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 10) , child: Row( mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                              (Stores.etaListStore.selectedETAListIndex == index) ? Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 15) , child:
+                              Container(height: 25, child:
+                              Row( mainAxisAlignment: MainAxisAlignment.spaceEvenly, crossAxisAlignment:  CrossAxisAlignment.end, children: [
                                 InkWell(child:
                                 Container(
-                                    width: 120,
                                     alignment: Alignment.center,
                                     child:   Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.end ,children:[
                                       Icon(Icons.remove_circle_outline),
-                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                     ),)])
                               ), onTap: (){
                                   _onRemoveBookmark(index);
                                 },),
                                 InkWell(child:
                                 Container(
-                                    width: 120,
+                                    alignment: Alignment.center,
+                                    child:
+                                    Row(mainAxisAlignment: MainAxisAlignment.start , crossAxisAlignment: CrossAxisAlignment.end,children:[
+                                      Icon(Icons.info_outline),
+                                      Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteDetail, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                      ),)])
+                                ), onTap: (){
+                                  _onRouteInfoButtonClicked(eta);
+                                },),
+
+                                InkWell(child:
+                                Container(
                                     alignment: Alignment.center,
                                     child:
                                     Row(mainAxisAlignment: MainAxisAlignment.start , crossAxisAlignment: CrossAxisAlignment.end,children:[
                                       Icon(Icons.location_on_outlined),
-                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 20, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
+                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
                                     ),)])
                                 ), onTap: (){
                                     _onOpenMapView(eta);
                                 },)
 
-                              ],)) :Container(),
+                              ],))) :Container(),
                               Container(height: 1, color: Colors.grey,),
                             ]
                         ))
@@ -213,19 +242,29 @@ class _MyHomePageState extends State<MyHomePage> {
         ):
         Observer(
             builder: (_) =>Container(alignment: Alignment.center,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.center)))),
-      )
+      ),
+          Stores.appConfig.showSearchButtonReminder ? Container(height: 80,color: Colors.yellow,alignment: Alignment.center, child:
+          Row(children:[
+            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearchButtonReminder, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600)))),
+            Container(width: 120)
+          ])
+          )
+          :Container()
       ]),
       )),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Observer(
+    builder: (_) =>FloatingActionButton.extended(
         onPressed: (){
+          Stores.appConfig.setShowSearchButtonReminder(false);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => RouteListView()),
           );
         },
         tooltip: 'Search',
-        child: Icon(Icons.search),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        icon: Icon(Icons.search),
+        label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearch, Stores.localizationStore.localizationPref)),
+      )), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -251,6 +290,35 @@ class _MyHomePageState extends State<MyHomePage> {
             GoogleMapView()),
       );
     }
+  }
+
+  void _onRouteInfoButtonClicked(ETA eta){
+
+     if(Stores.dataManager.routesMap.containsKey(eta.routeCode)) {
+       Stores.routeDetailStore.route = Stores.dataManager.routesMap[eta.routeCode];
+       Stores.routeDetailStore.isInbound = eta.isInbound;
+       Navigator.push(
+         context,
+         MaterialPageRoute(builder: (context) => BusRouteDetailView()),
+       );
+     }
+  }
+
+  Widget _buildDownloadAllDataDialog(BuildContext context) {
+     return AlertDialog(title: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle, Stores.localizationStore.localizationPref)),
+       content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref)),
+     actions: [
+       FlatButton(onPressed: (){
+         CacheUtils.sharedInstance().fetchAllData();
+         Stores.appConfig.setShouldDownloadAllData(true);
+         Navigator.of(context).pop();
+       }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupYes, Stores.localizationStore.localizationPref))),
+       FlatButton(onPressed: (){
+         Stores.appConfig.setShouldDownloadAllData(false);
+         Navigator.of(context).pop();
+       }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupNo, Stores.localizationStore.localizationPref))),
+     ],);
 
   }
+
 }

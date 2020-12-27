@@ -28,6 +28,16 @@ class LocalizationUtil{
   static final String localizationKeyForNoRouteDataFound = "noRouteDataFound";
   static final String localizationKeyForRecenter = "recenter";
   static final String localizationKeyForLocationPermissionNotGranted = "locationPermissionNotGranted";
+  static final String localizationKeyForSearch = "search";
+  static final String localizationKeyForMap = "map";
+  static final String localizationKeyForDownloadAllDataPopupTitle = "downloadAllDataPopupTitle";
+  static final String localizationKeyForDownloadAllDataPopupContent = "downloadAllDataPopupContent";
+  static final String localizationKeyForDownloadAllDataPopupYes = "downloadAllDataPopupYes";
+  static final String localizationKeyForDownloadAllDataPopupNo = "downloadAllDataPopupNo";
+  static final String localizationKeyForRouteDetail = "routeDetail";
+  static final String localizationKeyForRouteSearchReminder = "routeSearchReminder";
+  static final String localizationKeyForUnderstand = "understand";
+  static final String localizationKeyForSearchButtonReminder = "searchButtonReminder";
 
 
   static String localizedString(String key, LocalizationPref pref){

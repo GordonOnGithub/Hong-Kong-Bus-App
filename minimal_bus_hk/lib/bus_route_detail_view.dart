@@ -32,6 +32,7 @@ class BusRouteDetailPage extends StatefulWidget {
 class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   Timer _updateTimer;
   bool _callETAApi = false;
+  TextEditingController _searchFieldController;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     Stores.routeDetailStore.setSelectedStopId(null);
     Stores.routeDetailStore.setSelectedIndex(null);
     Stores.routeDetailStore.setFilterKeyword("");
+    _searchFieldController = TextEditingController(text:Stores.routeDetailStore.filterKeyword);
 
     CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound).then((value) {
       Stores.routeDetailStore.setDataFetchingError(!value);
@@ -80,13 +82,25 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
               child:(Stores.routeDetailStore.selectedRouteBusStops != null)?
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     Expanded(flex:1,
-                    child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: TextField(
-                      onChanged: (text){
+                    child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                    Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
+                      Icon(Icons.search),
+                      Expanded(child: TextField(
+                        controller: _searchFieldController,
+                        onChanged: (text){
                         Stores.routeDetailStore.setFilterKeyword(text);
                       },
                       decoration: InputDecoration(
                           hintText: LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForStopSearchTextFieldPlaceholder, Stores.localizationStore.localizationPref)
-                      ),))
+                      ),)),
+                      Stores.routeDetailStore.filterKeyword.length > 0?
+                      IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
+                        _searchFieldController.text = "";
+                        Stores.routeDetailStore.setFilterKeyword("");
+                      },):Container()
+                    ]
+                    )
+                    )
                 ),
 
                 Expanded(flex: 9,child:(Stores.routeDetailStore.displayedStops != null && Stores.routeDetailStore.displayedStops.length > 0?
@@ -94,7 +108,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                   child:
                 Scrollbar(child: Observer(
                     builder: (_) =>ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
                 itemCount:  Stores.routeDetailStore.displayedStops.length ,
                 itemBuilder: (BuildContext context, int index) {
                   ETA eta = Stores.routeDetailStore.displayedStops[index].eta;
@@ -136,8 +150,8 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                               Container(
                                 alignment: Alignment.center,
                                 child:(Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
-                                  Row( mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.remove_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnbookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],):
-                                 Row(mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.add_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],)
+                                  Row( mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.remove_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnbookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],):
+                                 Row(mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.add_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],)
                                  ) , onTap: (){
                               var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
 
@@ -154,7 +168,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                                 alignment: Alignment.center,
                                 child:  Row( mainAxisAlignment: MainAxisAlignment.start,children: [
                                   Icon(Icons.location_on_outlined,),
-                                Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+                                Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
                             ])),
                             onTap: (){
                               _onOpenMapView(Stores.dataManager.busStopDetailMap[Stores.routeDetailStore.selectedStopId]);
@@ -185,8 +199,9 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                 builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref)))
           ,))),
           floatingActionButton:  Observer(
-    builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null?FloatingActionButton(
-            child: Icon(Icons.map),
+    builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null?FloatingActionButton.extended(
+            icon: Icon(Icons.map),
+            label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMap, Stores.localizationStore.localizationPref), ),
             onPressed: (){
               _onOpenMapView(null);
             },):Container()),)

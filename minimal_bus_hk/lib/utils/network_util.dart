@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop.dart';
@@ -27,6 +25,9 @@ class NetworkUtil{
   final String _routeDataAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop";
   final String _busStopDetailAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop";
   final String _etaAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta";
+
+  //Lantau bus
+  final String _lantauBusRouteAPI = "https://rt.data.gov.hk/v1/transport/nlb/route.php?action=list";
 
   static final String companyCodeNWFB = "nwfb";
   static final String companyCodeCTB = "ctb";

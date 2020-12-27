@@ -69,7 +69,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
     return Scaffold(
         appBar: AppBar(
           title: Observer(
-        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}")),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}")),
         ),
         body: Observer(
     builder: (_) =>Center(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -94,15 +94,15 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
 
         )),
           Observer(
-            builder: (_) =>Stores.googleMapStore.selectedBusStop != null && !Stores.googleMapStore.atCenter ?SizedBox( height: 100, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
+            builder: (_) =>Stores.googleMapStore.selectedBusStop != null ? (!Stores.googleMapStore.atCenter ? Container( height: 80, width: 300, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly , children: [
             InkWell(child: Row(mainAxisAlignment: MainAxisAlignment.start ,children:[
               Icon(Icons.location_on_outlined),
-              Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+               Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref),style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline), maxLines: 2,),
               ]),
               onTap: (){
                 _onRecenterClicked();
             },) ,
-          ],)):Container())
+          ],)) : Container(height: 80)):Container())
           
         ],),))
     );
@@ -111,11 +111,13 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   Set<Marker> _getMarkers(List<BusStopDetail> busStops, double zoom){
     Set<Marker> markers = Set();
       if(busStops != null) {
+        var count = 0;
         for (var busStopDetail in busStops) {
+          count += 1;
           MarkerId markerId = MarkerId(busStopDetail.identifier);
-          InfoWindow infoWindow = InfoWindow(title:LocalizationUtil.localizedStringFrom(
+          InfoWindow infoWindow = InfoWindow(title: "$count. ${LocalizationUtil.localizedStringFrom(
               busStopDetail, BusStopDetail.localizationKeyForName,
-              Stores.localizationStore.localizationPref));
+              Stores.localizationStore.localizationPref)}");
           Marker stopMarker = Marker(markerId: markerId,
               position: busStopDetail.positionForMap,
               infoWindow: infoWindow,
@@ -152,6 +154,9 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
       CameraUpdate.newLatLngZoom(Stores.googleMapStore.selectedBusStop.positionForMap, _defaultZoomForStop),
     ).then((value) {
       Stores.googleMapStore.setAtCenter(true);
+      if(Stores.googleMapStore.selectedBusStop != null) {
+        mapController.showMarkerInfoWindow(MarkerId(Stores.googleMapStore.selectedBusStop.identifier));
+      }
     });
   }
 }

@@ -49,9 +49,9 @@
   },
   {
     "key":"etaListViewTitle",
-    "en":"Estimated Time of Arrival",
-    "tc":"預計到站時間",
-    "sc":"預計到站時間"
+    "en":"Bookmarked Route Stops List",
+    "tc":"路線車站收藏列表",
+    "sc":"路線車站收藏列表"
   },
   {
     "key":"routeListViewTitle",
@@ -107,9 +107,9 @@
   "sc":"載入中"
  }, {
   "key":"emptyETAList",
-  "en":"The route stop list is empty.",
-  "tc":"列表裡沒有任何路線的車站。",
-  "sc":"列表裡沒有任何路線的車站。"
+  "en":"No route stop has been bookmarked.",
+  "tc":"未有收藏任何路線車站。",
+  "sc":"未有收藏任何路線車站。"
 }, {
   "key":"failedToLoadData",
   "en":"Encountered error when downloading data, click here to retry",
@@ -144,5 +144,65 @@
     "en":"To show your location on map, please grant location permission.",
     "tc":"請給予位置權限，以在地圖上顯示您的位置。",
     "sc":"請給予位置權限，以在地圖上顯示您的位置。"
+  },
+  {
+    "key": "search",
+    "en": "Search",
+    "tc": "搜尋",
+    "sc": "搜尋"
+  },
+  {
+    "key": "map",
+    "en": "Map",
+    "tc": "地圖",
+    "sc": "地圖"
+  },
+  {
+    "key": "downloadAllDataPopupTitle",
+    "en": "Download all bus data?",
+    "tc": "下載所有路線資料?",
+    "sc": "下載所有路線資料?"
+  },
+  {
+    "key": "downloadAllDataPopupContent",
+    "en": "Download all data in advance to speed up searching and support offline route search.(est. data size: 140 MB)",
+    "tc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。",
+    "sc": "預先下載所有路線資料可加快搜尋速度，並支援離線搜尋。"
+  },
+  {
+    "key": "downloadAllDataPopupYes",
+    "en": "Download all data",
+    "tc": "下載所有路線資料",
+    "sc": "下載所有路線資料"
+  },
+  {
+    "key": "downloadAllDataPopupNo",
+    "en": "Do not download",
+    "tc": "不要下載",
+    "sc": "不要下載"
+  },
+  {
+    "key": "routeDetail",
+    "en": "Route Detail",
+    "tc": "路線詳情",
+    "sc": "路線詳情"
+  },
+  {
+    "key": "routeSearchReminder",
+    "en": "All route data are provided by Hong Kong government's \"data.gov.hk\".\n\nRoutes of KMB & New Lanto Bus are not yet supported.",
+    "tc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援九巴及嶼巴路線。",
+    "sc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援九巴及嶼巴路線。"
+  },
+  {
+    "key": "understand",
+    "en": "Understand",
+    "tc": "明白",
+    "sc": "明白"
+  },
+  {
+    "key": "searchButtonReminder",
+    "en": "Click \"search\" to look up bus routes & stops",
+    "tc": "按 「搜尋」以尋找巴士路線及車站資料",
+    "sc": "按 「搜尋」以尋找巴士路線及車站資料"
   }
-]
+  ]

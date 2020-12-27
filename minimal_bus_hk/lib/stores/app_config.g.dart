@@ -43,6 +43,110 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
     });
   }
 
+  final _$_downloadAllDataAtom =
+      Atom(name: 'AppConfigStoreBase._downloadAllData');
+
+  @override
+  bool get _downloadAllData {
+    _$_downloadAllDataAtom.reportRead();
+    return super._downloadAllData;
+  }
+
+  @override
+  set _downloadAllData(bool value) {
+    _$_downloadAllDataAtom.reportWrite(value, super._downloadAllData, () {
+      super._downloadAllData = value;
+    });
+  }
+
+  final _$_routeSearchReminderAtom =
+      Atom(name: 'AppConfigStoreBase._routeSearchReminder');
+
+  @override
+  bool get _routeSearchReminder {
+    _$_routeSearchReminderAtom.reportRead();
+    return super._routeSearchReminder;
+  }
+
+  @override
+  set _routeSearchReminder(bool value) {
+    _$_routeSearchReminderAtom.reportWrite(value, super._routeSearchReminder,
+        () {
+      super._routeSearchReminder = value;
+    });
+  }
+
+  final _$showSearchButtonReminderAtom =
+      Atom(name: 'AppConfigStoreBase.showSearchButtonReminder');
+
+  @override
+  bool get showSearchButtonReminder {
+    _$showSearchButtonReminderAtom.reportRead();
+    return super.showSearchButtonReminder;
+  }
+
+  @override
+  set showSearchButtonReminder(bool value) {
+    _$showSearchButtonReminderAtom
+        .reportWrite(value, super.showSearchButtonReminder, () {
+      super.showSearchButtonReminder = value;
+    });
+  }
+
+  final _$shouldDownloadAllDataAsyncAction =
+      AsyncAction('AppConfigStoreBase.shouldDownloadAllData');
+
+  @override
+  Future<bool> shouldDownloadAllData() {
+    return _$shouldDownloadAllDataAsyncAction
+        .run(() => super.shouldDownloadAllData());
+  }
+
+  final _$setShouldDownloadAllDataAsyncAction =
+      AsyncAction('AppConfigStoreBase.setShouldDownloadAllData');
+
+  @override
+  Future<void> setShouldDownloadAllData(bool shouldDownload) {
+    return _$setShouldDownloadAllDataAsyncAction
+        .run(() => super.setShouldDownloadAllData(shouldDownload));
+  }
+
+  final _$shouldShowRouteSearchReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.shouldShowRouteSearchReminder');
+
+  @override
+  Future<bool> shouldShowRouteSearchReminder() {
+    return _$shouldShowRouteSearchReminderAsyncAction
+        .run(() => super.shouldShowRouteSearchReminder());
+  }
+
+  final _$setShouldShowRouteSearchReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.setShouldShowRouteSearchReminder');
+
+  @override
+  Future<void> setShouldShowRouteSearchReminder(bool shouldRemind) {
+    return _$setShouldShowRouteSearchReminderAsyncAction
+        .run(() => super.setShouldShowRouteSearchReminder(shouldRemind));
+  }
+
+  final _$checkShowSearchButtonReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.checkShowSearchButtonReminder');
+
+  @override
+  Future<void> checkShowSearchButtonReminder() {
+    return _$checkShowSearchButtonReminderAsyncAction
+        .run(() => super.checkShowSearchButtonReminder());
+  }
+
+  final _$setShowSearchButtonReminderAsyncAction =
+      AsyncAction('AppConfigStoreBase.setShowSearchButtonReminder');
+
+  @override
+  Future<void> setShowSearchButtonReminder(bool shouldShow) {
+    return _$setShowSearchButtonReminderAsyncAction
+        .run(() => super.setShowSearchButtonReminder(shouldShow));
+  }
+
   final _$AppConfigStoreBaseActionController =
       ActionController(name: 'AppConfigStoreBase');
 
@@ -72,7 +176,8 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
   String toString() {
     return '''
 arrivalImminentTimeMilliseconds: ${arrivalImminentTimeMilliseconds},
-arrivalExpiryTimeMilliseconds: ${arrivalExpiryTimeMilliseconds}
+arrivalExpiryTimeMilliseconds: ${arrivalExpiryTimeMilliseconds},
+showSearchButtonReminder: ${showSearchButtonReminder}
     ''';
   }
 }

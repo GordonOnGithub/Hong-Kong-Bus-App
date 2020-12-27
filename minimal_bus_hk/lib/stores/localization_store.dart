@@ -17,7 +17,7 @@ class LocalizationStore = LocalizationStoreBase
 abstract class LocalizationStoreBase with Store {
 
   @observable
-  var localizationPref = LocalizationPref.TC;
+  var localizationPref = LocalizationPref.english;
 
   @action
   void setLocalizationPref(LocalizationPref pref){

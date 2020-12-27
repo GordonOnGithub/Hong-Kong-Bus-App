@@ -32,6 +32,12 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
     CacheUtils.sharedInstance().getRoutes().then((value) => Stores.routeListStore.setDataFetchingError(!value));
     Stores.routeListStore.setFilterKeyword("");
     _searchFieldController = TextEditingController(text:Stores.routeListStore.filterKeyword);
+
+    Stores.appConfig.shouldShowRouteSearchReminder().then((value){
+      if(value){
+        showDialog(context: context, builder: (context) => _buildReminderDialog(context));
+      }
+    });
   }
 
   @override
@@ -59,7 +65,10 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(flex:1,
-                child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: TextField(
+                child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
+                  Icon(Icons.search),
+                Expanded(child: TextField(
                   controller: _searchFieldController,
                   onChanged: (text){
                   Stores.routeListStore.setFilterKeyword(text);
@@ -67,7 +76,14 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   decoration: InputDecoration(
                       hintText: LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearchTextFieldPlaceholder, Stores.localizationStore.localizationPref)
                   ),
-                ))
+                ),
+                ),
+                Stores.routeListStore.filterKeyword.length > 0?
+                IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
+                  _searchFieldController.text = "";
+                 Stores.routeListStore.setFilterKeyword("");
+                },):Container()
+                ]))
             ),
             Expanded(flex: 9,
             child:Scrollbar(child:
@@ -79,20 +95,21 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   return Observer(
                       builder: (_) =>Container(
                         height:  80,
-                        color:  Colors.grey[50],
+                        color:  Stores.routeListStore.selectedDirectionalRoute ==  Stores.routeListStore.displayedDirectionalRoutes[index]? Colors.blue[50] : Colors.grey[50],
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
                         Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children:[
-                        Row(children: [
+                        Expanded(child: Row(children: [
                           Flexible(flex:10, child:
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                                InkWell(child:
                                Column(
+                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
                                Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( directionalBusRoute.route.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
@@ -103,7 +120,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                             ])),
                           Flexible(flex: 1, child: Icon(Icons.arrow_forward))
 
-                        ],),
+                        ],)),
                               Container(height: 1, color: Colors.grey,)
                             ])),
                   ),
@@ -142,5 +159,17 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
       context,
       MaterialPageRoute(builder: (context) => BusRouteDetailView()),
     );
+  }
+
+  Widget _buildReminderDialog(BuildContext context) {
+    return WillPopScope(child: AlertDialog(title: Text(""),
+      content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearchReminder, Stores.localizationStore.localizationPref)),
+      actions: [
+        FlatButton(onPressed: (){
+          Stores.appConfig.setShouldShowRouteSearchReminder(false);
+          Navigator.of(context).pop();
+        }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnderstand, Stores.localizationStore.localizationPref))),
+            ],), onWillPop: () async => false ,);
+
   }
 }

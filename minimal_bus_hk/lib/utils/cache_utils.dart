@@ -64,7 +64,7 @@ class CacheUtils{
             await CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier);
           }
           count += 1;
-          debugPrint("$count/${Stores.dataManager.routes.length}");
+          debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
       }
       for(var list in Stores.dataManager.outboundBusStopsMap.values){
         for(var busStop in list){
@@ -184,7 +184,7 @@ class CacheUtils{
   Future<void> getBookmarkedRouteStop() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(bookmarkedRouteStop);
-    List<RouteStop> list = List<RouteStop>();
+    List<RouteStop> list = <RouteStop>[];
     if(content != null){
         List<dynamic> decodedList = jsonDecode(content);
         for(var obj in decodedList) {
@@ -195,9 +195,11 @@ class CacheUtils{
     Stores.dataManager.setRoutStopBookmarks(list);
   }
 
-  Future<void> getETAForBookmarkedRouteStops() async{
+  Future<bool> getETAForBookmarkedRouteStops() async{
     var queries = <ETAQuery>[];
-    if(Stores.dataManager.bookmarkedRouteStops == null)return;
+    bool result = true;
+    if(Stores.dataManager.bookmarkedRouteStops == null)return result;
+
     List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
     for(RouteStop routeStop in list){
 
@@ -207,9 +209,10 @@ class CacheUtils{
       }
 
       for(var query in queries){
-        await getETA(query);
+        result = await getETA(query) && result;
       }
     }
+    return result;
   }
 
   Future<void> getETAForRoute(BusRoute route, bool isInbound) async{
