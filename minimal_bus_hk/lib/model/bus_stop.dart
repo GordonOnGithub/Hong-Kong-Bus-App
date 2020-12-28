@@ -11,5 +11,5 @@ class BusStop{
         companyCode = json["co"],
         sequence =  (json["seq"] is int)? json["seq"]: 0 ,
         identifier = json["stop"],
-        timestamp = DateTime.tryParse(json["data_timestamp"]);
+        timestamp = DateTime.tryParse(json["data_timestamp"]) ?? DateTime.now();
 }

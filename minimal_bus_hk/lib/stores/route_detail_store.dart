@@ -91,6 +91,8 @@ abstract class RouteDetailStoreBase with Store {
     if(filterKeyword != null && selectedRouteBusStops != null) {
       var filteredList =  ObservableList<BusStopDetail>();
       filteredList.addAll(selectedRouteBusStops.where((element) {
+        if(element == null) return false;
+
         for(var keyword in _keywords) {
           if(( element.englishName.toLowerCase().contains(
                   keyword.toLowerCase()))
@@ -135,7 +137,7 @@ abstract class RouteDetailStoreBase with Store {
       return result;
     }else {
 
-      return null;
+      return ObservableList<BusStopDetailWithETA>();
     }
   }
 
@@ -181,7 +183,11 @@ abstract class RouteDetailStoreBase with Store {
         if(filteredETAs.length == 0){
           filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
         }
-        filteredETAs.sort((a,b)=> a.etaTimestamp.compareTo(b.etaTimestamp));
+        filteredETAs.sort((a,b){
+          if(a.etaTimestamp == null || b.etaTimestamp == null){
+            return 0;
+          }
+          return a.etaTimestamp.compareTo(b.etaTimestamp);});
         result.add(filteredETAs);
       }else{
         result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);

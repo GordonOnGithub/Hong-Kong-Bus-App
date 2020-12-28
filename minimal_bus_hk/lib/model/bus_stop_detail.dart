@@ -20,7 +20,7 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
       SCName = json["name_sc"] ?? "",
       latitude = double.tryParse(json["lat"]),
       longitude = double.tryParse(json["long"]),
-      timestamp = DateTime.tryParse(json["data_timestamp"]){
+      timestamp = DateTime.tryParse(json["data_timestamp"]) ?? DateTime.now(){
       Map<String, String> nameData = Map();
       nameData["en"] = englishName;
       nameData["tc"] = TCName;

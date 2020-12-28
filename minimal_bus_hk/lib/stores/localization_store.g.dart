@@ -41,26 +41,30 @@ mixin _$LocalizationStore on LocalizationStoreBase, Store {
     });
   }
 
+  final _$checkLocalizationPrefAsyncAction =
+      AsyncAction('LocalizationStoreBase.checkLocalizationPref');
+
+  @override
+  Future<LocalizationPref> checkLocalizationPref() {
+    return _$checkLocalizationPrefAsyncAction
+        .run(() => super.checkLocalizationPref());
+  }
+
+  final _$setLocalizationPrefAsyncAction =
+      AsyncAction('LocalizationStoreBase.setLocalizationPref');
+
+  @override
+  Future<void> setLocalizationPref(LocalizationPref pref) {
+    return _$setLocalizationPrefAsyncAction
+        .run(() => super.setLocalizationPref(pref));
+  }
+
   final _$loadDataFromAssetAsyncAction =
       AsyncAction('LocalizationStoreBase.loadDataFromAsset');
 
   @override
   Future<void> loadDataFromAsset() {
     return _$loadDataFromAssetAsyncAction.run(() => super.loadDataFromAsset());
-  }
-
-  final _$LocalizationStoreBaseActionController =
-      ActionController(name: 'LocalizationStoreBase');
-
-  @override
-  void setLocalizationPref(LocalizationPref pref) {
-    final _$actionInfo = _$LocalizationStoreBaseActionController.startAction(
-        name: 'LocalizationStoreBase.setLocalizationPref');
-    try {
-      return super.setLocalizationPref(pref);
-    } finally {
-      _$LocalizationStoreBaseActionController.endAction(_$actionInfo);
-    }
   }
 
   @override

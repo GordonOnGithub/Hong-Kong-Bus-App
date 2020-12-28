@@ -43,38 +43,64 @@ class CacheUtils{
     return "${_busStopDetailCacheKey}_$stopId";
   }
 
+  bool _isFetchingAllData = false;
+
   Future<void> fetchAllData() async{
+    if(_isFetchingAllData) return;
+    _isFetchingAllData = true;
     await getRoutes();
     if(Stores.dataManager.routes != null){
+      int count = 0;
+      List<Future<bool>> futures = [];
       for(var route in Stores.dataManager.routes) {
-        await CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, true);
-        await CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, false);
+        if(Stores.appConfig.downloadAllData != true){
+          _isFetchingAllData = false;
+          return;
+        }
+        futures.add( CacheUtils.sharedInstance().getRouteDetail(
+            route.routeCode, route.companyCode, true));
+        futures.add( CacheUtils.sharedInstance().getRouteDetail(
+            route.routeCode, route.companyCode, false));
 
-        var inboundBusRouteCount = Stores.dataManager.inboundBusStopsMap != null? Stores.dataManager.inboundBusStopsMap.values.length : 0;
-        var outboundBusRouteCount = Stores.dataManager.outboundBusStopsMap != null? Stores.dataManager.outboundBusStopsMap.values.length : 0;
-
-        debugPrint("route data fetch progress: ${inboundBusRouteCount + outboundBusRouteCount}/${Stores.dataManager.routes.length * 2}");
+        if(futures.length > 9) {
+          await Future.wait(futures);
+          debugPrint("route data fetch progress: ${count += futures.length}/${Stores.dataManager.routes.length * 2}");
+          futures = [];
+        }
 
       }
-        int count = 0;
+      count = 0;
       for(var list in Stores.dataManager.inboundBusStopsMap.values){
-          for(var busStop in list){
-            await CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier);
-          }
-          count += 1;
+        if(Stores.appConfig.downloadAllData != true){
+          _isFetchingAllData = false;
+          return;
+        }
+        List<Future<bool>> futures = [];
+         for(var busStop in list){
+           futures.add(CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier));
+         }
+        count += 1;
+
+        await Future.wait(futures);
           debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
       }
+
       for(var list in Stores.dataManager.outboundBusStopsMap.values){
+        if(Stores.appConfig.downloadAllData != true){
+          _isFetchingAllData = false;
+          return;
+        }
+        List<Future<bool>> futures = [];
         for(var busStop in list){
-          await CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier);
+          futures.add(CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier));
         }
         count += 1;
+
+        await Future.wait(futures);
         debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
       }
     }
-
+    _isFetchingAllData = false;
   }
 
   Future<bool> getRoutes() async {
@@ -171,9 +197,18 @@ class CacheUtils{
     if(success){
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
       if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
+        var futures = <Future<bool>>[];
+
         for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            success = success && await getBusStopDetail(stop.identifier, silentUpdate: silentUpdate);
+            futures.add(getBusStopDetail(stop.identifier, silentUpdate: silentUpdate));
+          }
+        }
+        List<bool> results = await Future.wait(futures);
+        for(bool result in results){
+          if(!result){
+            success = false;
+            break;
           }
         }
       }
@@ -207,10 +242,12 @@ class CacheUtils{
       if(!queries.contains(query)){
         queries.add(query);
       }
-
+      List <Future<bool>> futures = [];
       for(var query in queries){
         result = await getETA(query) && result;
+        futures.add(getETA(query));
       }
+      await Future.wait(futures);
     }
     return result;
   }
@@ -224,11 +261,12 @@ class CacheUtils{
     if(busStopsList == null){
       return;
     }
+   List <Future<bool>> futures = [];
     for(BusStop busStop in busStopsList){
       var query = ETAQuery.fromBusStop(busStop);
-      await getETA(query);
-
+      futures.add(getETA(query));
     }
+    await Future.wait(futures);
   }
 
   Future<bool> getETA(ETAQuery query) async {

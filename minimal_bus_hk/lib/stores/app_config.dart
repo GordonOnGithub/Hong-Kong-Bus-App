@@ -25,23 +25,23 @@ abstract class AppConfigStoreBase with Store {
   final int etaExpiryTimeMilliseconds = 30000;
 
   @observable
-  bool _downloadAllData;
+  bool downloadAllData;
 
   static final String _downloadAllDataConfigKey = "downloadAllData";
   @action
   Future<bool> shouldDownloadAllData() async{
-    if(_downloadAllData != null){
-      return _downloadAllData;
+    if(downloadAllData != null){
+      return downloadAllData;
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    _downloadAllData = prefs.getBool(_downloadAllDataConfigKey);
-    return _downloadAllData;
+    downloadAllData = prefs.getBool(_downloadAllDataConfigKey);
+    return downloadAllData;
   }
 
   @action
   Future<void> setShouldDownloadAllData(bool shouldDownload) async{
-    _downloadAllData = shouldDownload;
+    downloadAllData = shouldDownload;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(_downloadAllDataConfigKey, shouldDownload);
   }

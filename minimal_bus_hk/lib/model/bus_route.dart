@@ -25,7 +25,7 @@ BusRoute.fromJson(Map<String, dynamic> json):
       destinationEnglishName = json["dest_en"],
       destinationTCName = json["dest_tc"],
       destinationSCName = json["dest_sc"],
-      timestamp = DateTime.tryParse(json["data_timestamp"]){
+      timestamp = DateTime.tryParse(json["data_timestamp"])  ?? DateTime.now(){
       Map<String, String> destinationNameData = Map();
       destinationNameData["en"] = destinationEnglishName;
       destinationNameData["tc"] = destinationTCName;

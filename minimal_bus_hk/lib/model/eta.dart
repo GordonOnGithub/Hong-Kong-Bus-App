@@ -32,7 +32,7 @@ class ETA extends LocalizedData{
         TCRemark = json["rmk_tc"],
         SCRemark = json["rmk_sc"],
         etaTimestamp = DateTime.tryParse(json["eta"]),
-        dataTimestamp = DateTime.tryParse(json["data_timestamp"]),
+        dataTimestamp = DateTime.tryParse(json["data_timestamp"]) ?? DateTime.now(),
         isInbound = json["dir"] == "I",
         status = ETAStatus.found{
     Map<String, String> nameData = Map();
@@ -68,10 +68,8 @@ class ETA extends LocalizedData{
         status = ETAStatus.unknown;
 
 
-  String toClockDescription(DateTime timestampForChecking){
-    if(timestampForChecking == null){
-      timestampForChecking = DateTime.now();
-    }
+  String toClockDescription(){
+
     if(status == ETAStatus.unknown){
       return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref);
     }
@@ -97,7 +95,7 @@ class ETA extends LocalizedData{
     if(timestampForChecking == null){
       timestampForChecking = DateTime.now();
     }
-    return  (etaTimestamp != null? etaTimestamp.millisecondsSinceEpoch:0) - DateTime.now().millisecondsSinceEpoch;
+    return  (etaTimestamp != null? etaTimestamp.millisecondsSinceEpoch:0) - timestampForChecking.millisecondsSinceEpoch;
   }
   @override
   Map<String, Map<String, String>> getLocalizedData() {

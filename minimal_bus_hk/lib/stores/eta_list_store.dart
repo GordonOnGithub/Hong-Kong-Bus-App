@@ -55,7 +55,11 @@ abstract class ETAListStoreBase with Store {
         if(filteredETAs.length == 0){
           filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
         }
-        filteredETAs.sort((a,b)=> a.etaTimestamp.compareTo(b.etaTimestamp));
+        filteredETAs.sort((a,b){
+          if(a.etaTimestamp == null || b.etaTimestamp == null){
+            return 0;
+          }
+          return a.etaTimestamp.compareTo(b.etaTimestamp);});
         result.add(filteredETAs);
       }else{
         result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);

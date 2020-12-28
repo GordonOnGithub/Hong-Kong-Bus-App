@@ -114,6 +114,10 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         var count = 0;
         for (var busStopDetail in busStops) {
           count += 1;
+          if(busStopDetail.positionForMap.latitude == 0 && busStopDetail.positionForMap.longitude == 0){
+            continue;
+          }
+
           MarkerId markerId = MarkerId("${busStopDetail.identifier}");
           InfoWindow infoWindow = InfoWindow(title: "$count. ${LocalizationUtil.localizedStringFrom(
               busStopDetail, BusStopDetail.localizationKeyForName,

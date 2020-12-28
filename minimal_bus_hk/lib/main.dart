@@ -74,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    Stores.localizationStore.checkLocalizationPref();
     Stores.etaListStore.setSelectedETAListIndex(null);
 
     _bookmarkReaction = autorun( (_) {
@@ -181,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
                                       Icon(Icons.access_time_outlined, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
-                                     Expanded(child:Text(" ${ eta.toClockDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,)),
+                                     Expanded(child:Text(" ${ eta.toClockDescription()}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,)),
                                       Icon(Icons.timer, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
                                       Text(" ${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),
                                     ],), height: 20,)
@@ -305,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildDownloadAllDataDialog(BuildContext context) {
-     return AlertDialog(title: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle, Stores.localizationStore.localizationPref)),
+     return WillPopScope(child: AlertDialog(title: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle, Stores.localizationStore.localizationPref)),
        content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref)),
      actions: [
        FlatButton(onPressed: (){
@@ -317,7 +318,7 @@ class _MyHomePageState extends State<MyHomePage> {
          Stores.appConfig.setShouldDownloadAllData(false);
          Navigator.of(context).pop();
        }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupNo, Stores.localizationStore.localizationPref))),
-     ],);
+     ],), onWillPop: () async => false ,);
 
   }
 

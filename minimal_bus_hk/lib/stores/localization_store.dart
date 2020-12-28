@@ -4,6 +4,8 @@ import 'package:mobx/mobx.dart';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:ui' as ui;
 
 part 'localization_store.g.dart';
 enum LocalizationPref{
@@ -11,17 +13,50 @@ enum LocalizationPref{
   TC,
   SC
 }
+
 class LocalizationStore = LocalizationStoreBase
     with _$LocalizationStore;
 
 abstract class LocalizationStoreBase with Store {
 
+  Map<LocalizationPref, String> _localizationStringMap = {LocalizationPref.english : "en",LocalizationPref.TC : "tc",LocalizationPref.SC : "sc"};
+
   @observable
   var localizationPref = LocalizationPref.english;
 
+  String _localeKey = "localization";
+
   @action
-  void setLocalizationPref(LocalizationPref pref){
+  Future<LocalizationPref> checkLocalizationPref()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String systemLangCode = ui.window.locale.languageCode;
+    String systemScriptCode = ui.window.locale.scriptCode;
+
+    String locale = prefs.getString(_localeKey);
+    if(locale != null){
+      for(LocalizationPref p in _localizationStringMap.keys){
+        if(_localizationStringMap[p] == locale){
+          localizationPref = p;
+          break;
+        }
+      }
+    }else if (systemLangCode == "zh"){
+      if(systemScriptCode == "Hans"){
+        localizationPref = LocalizationPref.SC;
+      }else{
+        localizationPref = LocalizationPref.TC;
+      }
+    }
+    return localizationPref;
+  }
+
+  @action
+  Future<void> setLocalizationPref(LocalizationPref pref) async{
     localizationPref = pref;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(_localeKey, _localizationStringMap[pref]);
+
   }
 
   @observable

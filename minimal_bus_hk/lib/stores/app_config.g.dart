@@ -43,19 +43,19 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
     });
   }
 
-  final _$_downloadAllDataAtom =
-      Atom(name: 'AppConfigStoreBase._downloadAllData');
+  final _$downloadAllDataAtom =
+      Atom(name: 'AppConfigStoreBase.downloadAllData');
 
   @override
-  bool get _downloadAllData {
-    _$_downloadAllDataAtom.reportRead();
-    return super._downloadAllData;
+  bool get downloadAllData {
+    _$downloadAllDataAtom.reportRead();
+    return super.downloadAllData;
   }
 
   @override
-  set _downloadAllData(bool value) {
-    _$_downloadAllDataAtom.reportWrite(value, super._downloadAllData, () {
-      super._downloadAllData = value;
+  set downloadAllData(bool value) {
+    _$downloadAllDataAtom.reportWrite(value, super.downloadAllData, () {
+      super.downloadAllData = value;
     });
   }
 
@@ -212,6 +212,7 @@ mixin _$AppConfigStore on AppConfigStoreBase, Store {
     return '''
 arrivalImminentTimeMilliseconds: ${arrivalImminentTimeMilliseconds},
 arrivalExpiryTimeMilliseconds: ${arrivalExpiryTimeMilliseconds},
+downloadAllData: ${downloadAllData},
 showSearchButtonReminder: ${showSearchButtonReminder},
 showRouteDetailReminder: ${showRouteDetailReminder}
     ''';

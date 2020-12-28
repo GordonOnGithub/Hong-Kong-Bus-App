@@ -7,6 +7,7 @@ class SettingViewStore = SettingViewStoreBase with _$SettingViewStore;
 enum SelectedOption{
   none,
   language,
+  data,
   about
 
 }

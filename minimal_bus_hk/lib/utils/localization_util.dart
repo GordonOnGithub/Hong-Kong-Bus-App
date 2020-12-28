@@ -39,6 +39,9 @@ class LocalizationUtil{
   static final String localizationKeyForUnderstand = "understand";
   static final String localizationKeyForSearchButtonReminder = "searchButtonReminder";
   static final String localizationKeyForRouteDetailReminder = "routeDetailReminder";
+  static final String localizationKeyForSettingData = "settingData";
+  static final String localizationKeyForDownloadData = "settingDownloadData";
+  static final String localizationKeyForDisableDownloadData = "settingDisableDownloadData";
 
   static String localizedString(String key, LocalizationPref pref){
     if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {

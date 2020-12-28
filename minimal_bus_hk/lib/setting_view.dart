@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/stores/localization_store.dart';
+import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -34,8 +35,8 @@ class _SettingViewPageState extends State<SettingViewPage> {
         ),
         body: Center( child: Observer(
     builder: (_) => Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: _getWidgetList(Stores.settingViewStore.selectedOption),))
         ),)
     );
@@ -53,16 +54,24 @@ class _SettingViewPageState extends State<SettingViewPage> {
     , onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.language);
           },),
-
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
+          Row( mainAxisAlignment: MainAxisAlignment.center, children:[
+            Icon(Icons.archive_outlined),
+            Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
+          ]))
+            , onTap: (){
+              Stores.settingViewStore.setSelectedOption(SelectedOption.data);
+            },),
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
           Row( mainAxisAlignment: MainAxisAlignment.center, children:[
               Icon(Icons.info_outline),
           Text("About", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
-            ]
+          ]
           )), onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
 
           },),
+          Expanded(child: Container())
         ];
       case SelectedOption.language:
         return [
@@ -78,9 +87,21 @@ class _SettingViewPageState extends State<SettingViewPage> {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.SC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),
+          Expanded(child: Container())
+        ];
+      case SelectedOption.data:
+        return [
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
+          Text(LocalizationUtil.localizedString( Stores.appConfig.downloadAllData == true ? LocalizationUtil.localizationKeyForDisableDownloadData:LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.english? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
+            Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
+            if(Stores.appConfig.downloadAllData ){
+              CacheUtils.sharedInstance().fetchAllData();
+            }
+            Stores.settingViewStore.setSelectedOption(SelectedOption.none);
+          },),
+          Expanded(child: Container())
 
         ];
-
       case SelectedOption.about:
         return [];
   }
