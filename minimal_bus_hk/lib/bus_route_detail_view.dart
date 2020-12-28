@@ -4,10 +4,12 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/google_map_view.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
+import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/route_list_view.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'model/bus_route.dart';
+import 'model/bus_stop.dart';
 import 'model/eta.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
@@ -47,17 +49,15 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) {
       Stores.routeDetailStore.setDataFetchingError(!value);
       if(value) {
-        CacheUtils.sharedInstance().getETAForRoute(
-            Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
+      //   CacheUtils.sharedInstance().getETAForRoute(
+      //       Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
+        updateSelectedBusStopETA();
       }
     });
 
     _updateTimer = Timer.periodic(Duration(seconds: 30), (timer) {
       Stores.routeDetailStore.updateTimeStampForChecking();
-      if(_callETAApi) {
-        CacheUtils.sharedInstance().getETAForRoute(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
-      }
-      _callETAApi = !_callETAApi;
+      updateSelectedBusStopETA();
     });
   }
 
@@ -238,9 +238,26 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
           stop.busStopDetail.identifier);
       if(Stores.routeDetailStore.selectedSequence != stop.sequence) {
         Stores.routeDetailStore.setSelectedSequence(stop.sequence);
+        updateSelectedBusStopETA();
+
       }else{
         Stores.routeDetailStore.setSelectedSequence(null);
+      }
+    }
+  }
 
+  void updateSelectedBusStopETA(){
+    var routeStopsMap = Stores.routeDetailStore.isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
+    if(routeStopsMap != null){
+      var busStopsList = routeStopsMap[Stores.routeDetailStore.route.routeCode];
+      if(busStopsList != null){
+        for(BusStop busStop in busStopsList) {
+          if(busStop.sequence == Stores.routeDetailStore.lastSelectedSequence) {
+            CacheUtils.sharedInstance().getETA(
+                ETAQuery.fromBusStop(busStop));
+            break;
+          }
+        }
       }
     }
   }

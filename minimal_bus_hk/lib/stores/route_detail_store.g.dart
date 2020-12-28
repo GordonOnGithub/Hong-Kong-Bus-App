@@ -143,6 +143,23 @@ mixin _$RouteDetailStore on RouteDetailStoreBase, Store {
     });
   }
 
+  final _$lastSelectedSequenceAtom =
+      Atom(name: 'RouteDetailStoreBase.lastSelectedSequence');
+
+  @override
+  int get lastSelectedSequence {
+    _$lastSelectedSequenceAtom.reportRead();
+    return super.lastSelectedSequence;
+  }
+
+  @override
+  set lastSelectedSequence(int value) {
+    _$lastSelectedSequenceAtom.reportWrite(value, super.lastSelectedSequence,
+        () {
+      super.lastSelectedSequence = value;
+    });
+  }
+
   final _$timeStampForCheckingAtom =
       Atom(name: 'RouteDetailStoreBase.timeStampForChecking');
 
@@ -249,6 +266,7 @@ selectedStopId: ${selectedStopId},
 dataFetchingError: ${dataFetchingError},
 filterKeyword: ${filterKeyword},
 selectedSequence: ${selectedSequence},
+lastSelectedSequence: ${lastSelectedSequence},
 timeStampForChecking: ${timeStampForChecking},
 selectedRouteBusStops: ${selectedRouteBusStops},
 displayedStops: ${displayedStops},

@@ -145,9 +145,15 @@ abstract class RouteDetailStoreBase with Store {
   @observable
   int selectedSequence;
 
+  @observable
+  int lastSelectedSequence;
+
   @action
   void setSelectedSequence(int seq){
     selectedSequence = seq;
+    if(seq != null){
+      lastSelectedSequence = selectedSequence;
+    }
   }
 
   @observable

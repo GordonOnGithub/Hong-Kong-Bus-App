@@ -1,9 +1,9 @@
 [
   {
     "key":"minutes",
-    "en":"minute(s)",
-    "tc":"分鐘",
-    "sc":"分鐘"
+    "en":"minute(s) left",
+    "tc":"分鐘後",
+    "sc":"分鐘後"
   },
   {
     "key":"eta",
