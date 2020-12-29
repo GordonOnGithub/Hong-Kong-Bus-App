@@ -45,7 +45,7 @@ abstract class DataManagerBase with Store {
   }
 
   @action
-  void setRoutes(List<Map<String, dynamic>> dataArray,String companyCode){
+  Future<void> setRoutes(List<Map<String, dynamic>> dataArray,String companyCode) async{
 
     ObservableList<BusRoute> result = ObservableList();
     for(Map<String, dynamic> data in dataArray){
@@ -75,7 +75,7 @@ abstract class DataManagerBase with Store {
   ObservableMap<String, List<BusStop>> outboundBusStopsMap;
 
   @action
-  void updateBusStopsMap(String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray){
+  Future<void> updateBusStopsMap(String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray) async{
     ObservableList<BusStop> result = ObservableList();
     for(Map<String, dynamic> data in dataArray){
       result.add(BusStop.fromJson(data));
@@ -172,6 +172,15 @@ abstract class DataManagerBase with Store {
     for(var routeStop in list){
       bookmarkedRouteStops.add(routeStop);
     }
-
   }
+
+  @observable
+  int allDataFetchCount = 0;
+
+  @action
+  void addAllDataFetchCount(int increment){
+    allDataFetchCount += increment;
+  }
+
+
 }

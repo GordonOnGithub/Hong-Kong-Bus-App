@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/bus_route_detail_view.dart';
+import 'package:minimal_bus_hk/journey_planner_view.dart';
 import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
@@ -95,31 +96,31 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   DirectionalRoute directionalBusRoute = Stores.routeListStore.displayedDirectionalRoutes[index];
                   return Observer(
                       builder: (_) =>Container(
-                        height:  80,
+                        height:  100,
                         color:  Stores.routeListStore.selectedDirectionalRoute ==  Stores.routeListStore.displayedDirectionalRoutes[index]? Colors.blue[50] : Colors.grey[50],
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
                         Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children:[
                         Expanded(child: Row(children: [
-                          Flexible(flex:10, child:
+                          Expanded(child:
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                                InkWell(child:
                                Column(
-                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( directionalBusRoute.route.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( directionalBusRoute.route.routeCode, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),))),
                                Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(directionalBusRoute.route, directionalBusRoute.isInbound? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
                              ]), onTap:  (){
                                  _onRouteSelected(index);
                                },),
                             ])),
-                          Flexible(flex: 1, child: Icon(Icons.arrow_forward))
+                            Icon(Icons.arrow_forward)
 
                         ],)),
                               Container(height: 1, color: Colors.grey,)
@@ -144,7 +145,10 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
         ) : Observer(
             builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
-
+        floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text("Journey Planner"),
+        onPressed: (){
+          _onJourneyPlannerClicked();
+        },),
     );
   }
   
@@ -159,6 +163,15 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => BusRouteDetailView()),
+    );
+  }
+
+  void _onJourneyPlannerClicked(){
+    Stores.routeListStore.setFilterKeyword("");
+    _searchFieldController.text = "";
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => JourneyPlannerView()),
     );
   }
 

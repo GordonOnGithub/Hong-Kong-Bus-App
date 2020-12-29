@@ -127,6 +127,41 @@ mixin _$DataManager on DataManagerBase, Store {
     });
   }
 
+  final _$allDataFetchCountAtom =
+      Atom(name: 'DataManagerBase.allDataFetchCount');
+
+  @override
+  int get allDataFetchCount {
+    _$allDataFetchCountAtom.reportRead();
+    return super.allDataFetchCount;
+  }
+
+  @override
+  set allDataFetchCount(int value) {
+    _$allDataFetchCountAtom.reportWrite(value, super.allDataFetchCount, () {
+      super.allDataFetchCount = value;
+    });
+  }
+
+  final _$setRoutesAsyncAction = AsyncAction('DataManagerBase.setRoutes');
+
+  @override
+  Future<void> setRoutes(
+      List<Map<String, dynamic>> dataArray, String companyCode) {
+    return _$setRoutesAsyncAction
+        .run(() => super.setRoutes(dataArray, companyCode));
+  }
+
+  final _$updateBusStopsMapAsyncAction =
+      AsyncAction('DataManagerBase.updateBusStopsMap');
+
+  @override
+  Future<void> updateBusStopsMap(
+      String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray) {
+    return _$updateBusStopsMapAsyncAction
+        .run(() => super.updateBusStopsMap(routeCode, isInbound, dataArray));
+  }
+
   final _$addRouteStopToBookmarkAsyncAction =
       AsyncAction('DataManagerBase.addRouteStopToBookmark');
 
@@ -147,29 +182,6 @@ mixin _$DataManager on DataManagerBase, Store {
 
   final _$DataManagerBaseActionController =
       ActionController(name: 'DataManagerBase');
-
-  @override
-  void setRoutes(List<Map<String, dynamic>> dataArray, String companyCode) {
-    final _$actionInfo = _$DataManagerBaseActionController.startAction(
-        name: 'DataManagerBase.setRoutes');
-    try {
-      return super.setRoutes(dataArray, companyCode);
-    } finally {
-      _$DataManagerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void updateBusStopsMap(
-      String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray) {
-    final _$actionInfo = _$DataManagerBaseActionController.startAction(
-        name: 'DataManagerBase.updateBusStopsMap');
-    try {
-      return super.updateBusStopsMap(routeCode, isInbound, dataArray);
-    } finally {
-      _$DataManagerBaseActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData) {
@@ -206,6 +218,17 @@ mixin _$DataManager on DataManagerBase, Store {
   }
 
   @override
+  void addAllDataFetchCount(int increment) {
+    final _$actionInfo = _$DataManagerBaseActionController.startAction(
+        name: 'DataManagerBase.addAllDataFetchCount');
+    try {
+      return super.addAllDataFetchCount(increment);
+    } finally {
+      _$DataManagerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 companyRoutesMap: ${companyRoutesMap},
@@ -214,6 +237,7 @@ outboundBusStopsMap: ${outboundBusStopsMap},
 busStopDetailMap: ${busStopDetailMap},
 ETAMap: ${ETAMap},
 bookmarkedRouteStops: ${bookmarkedRouteStops},
+allDataFetchCount: ${allDataFetchCount},
 routes: ${routes},
 routesMap: ${routesMap},
 directionalRouteList: ${directionalRouteList}

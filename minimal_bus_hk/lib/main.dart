@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (_) => Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.stretch , children:[
         (Stores.connectivityStore.connected?  Container() :
         Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),)),
-      Expanded( child: ((Stores.dataManager.routes != null &&  Stores.dataManager.bookmarkedRouteStops != null )?
+      Expanded( child: ((Stores.dataManager.bookmarkedRouteStops != null && ( Stores.dataManager.bookmarkedRouteStops.length == 0 || Stores.dataManager.routes != null)  )?
         Padding(padding: const EdgeInsets.all(0), child: (
                      Stores.dataManager.bookmarkedRouteStops.length > 0 ? Scrollbar( child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),

@@ -25,6 +25,29 @@ mixin _$SettingViewStore on SettingViewStoreBase, Store {
     });
   }
 
+  final _$versionAtom = Atom(name: 'SettingViewStoreBase.version');
+
+  @override
+  String get version {
+    _$versionAtom.reportRead();
+    return super.version;
+  }
+
+  @override
+  set version(String value) {
+    _$versionAtom.reportWrite(value, super.version, () {
+      super.version = value;
+    });
+  }
+
+  final _$checkVersionAsyncAction =
+      AsyncAction('SettingViewStoreBase.checkVersion');
+
+  @override
+  Future<void> checkVersion() {
+    return _$checkVersionAsyncAction.run(() => super.checkVersion());
+  }
+
   final _$SettingViewStoreBaseActionController =
       ActionController(name: 'SettingViewStoreBase');
 
@@ -42,7 +65,8 @@ mixin _$SettingViewStore on SettingViewStoreBase, Store {
   @override
   String toString() {
     return '''
-selectedOption: ${selectedOption}
+selectedOption: ${selectedOption},
+version: ${version}
     ''';
   }
 }

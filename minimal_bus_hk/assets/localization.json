@@ -85,15 +85,9 @@
   },
   {
     "key":"settingDownloadData",
-    "en":"Enable automatic update of route data.",
-    "tc":"允許自動更新所有路線資料",
-    "sc":"允許自動更新所有路線資料"
-  },
-  {
-    "key":"settingDisableDownloadData",
-    "en":"Disable automatic update of route data.",
-    "tc":"停止自動更新路線資料",
-    "sc":"停止自動更新路線資料"
+    "en":"Automatic route data update",
+    "tc":"自動更新所有路線資料",
+    "sc":"自動更新所有路線資料"
   },
   {
     "key":"routeListViewRouteSearchTextFieldPlaceholder",

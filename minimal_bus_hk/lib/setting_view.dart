@@ -21,6 +21,14 @@ class SettingViewPage extends StatefulWidget {
 }
 
 class _SettingViewPageState extends State<SettingViewPage> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Stores.settingViewStore.checkVersion();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -28,7 +36,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(child:Scaffold(
         appBar: AppBar(
           title: Observer(
               builder: (_) => Text(_getTitle(Stores.settingViewStore.selectedOption))),
@@ -37,12 +45,19 @@ class _SettingViewPageState extends State<SettingViewPage> {
     builder: (_) => Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: _getWidgetList(Stores.settingViewStore.selectedOption),))
+      children: _getWidgetList(Stores.settingViewStore.selectedOption, Stores.settingViewStore.version),))
         ),)
-    );
+    ), onWillPop: () async{
+      if(Stores.settingViewStore.selectedOption != SelectedOption.none){
+        Stores.settingViewStore.setSelectedOption(SelectedOption.none);
+        return false;
+      }else{
+        return true;
+      }
+    },);
   }
 
-  List<Widget> _getWidgetList(SelectedOption option){
+  List<Widget> _getWidgetList(SelectedOption option, String version){
     switch(option) {
       case SelectedOption.none:
         return [
@@ -71,34 +86,42 @@ class _SettingViewPageState extends State<SettingViewPage> {
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
 
           },),
-          Expanded(child: Container())
+          Expanded(child: Container()),
+          Text("v $version")
         ];
       case SelectedOption.language:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("English", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.english? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
+          Row( mainAxisAlignment:  MainAxisAlignment.center, children: [
+            Stores.localizationStore.localizationPref == LocalizationPref.english? Icon(Icons.check_circle_outline): Container() ,
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("English", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.english);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("繁體中文", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.TC? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
+          ],),
+         Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
+           Stores.localizationStore.localizationPref == LocalizationPref.TC? Icon(Icons.check_circle_outline): Container() ,
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("繁體中文", style: TextStyle(fontSize: 20,fontWeight:FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.TC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
-          },),
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡體中文", style: TextStyle(fontSize: 20,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.SC? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
+          },),]),
+          Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
+         Stores.localizationStore.localizationPref == LocalizationPref.SC? Icon(Icons.check_circle_outline): Container() ,
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡體中文", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.SC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
-          },),
+          },),]),
           Expanded(child: Container())
         ];
       case SelectedOption.data:
         return [
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
-          Text(LocalizationUtil.localizedString( Stores.appConfig.downloadAllData == true ? LocalizationUtil.localizationKeyForDisableDownloadData:LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: Stores.localizationStore.localizationPref == LocalizationPref.english? FontWeight.bold : FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
-            Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
-            if(Stores.appConfig.downloadAllData ){
-              CacheUtils.sharedInstance().fetchAllData();
-            }
-            Stores.settingViewStore.setSelectedOption(SelectedOption.none);
-          },),
+        Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
+        Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400 ),),
+          Switch(value: Stores.appConfig.downloadAllData == true, onChanged: (_){
+              Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
+              if(Stores.appConfig.downloadAllData ){
+                CacheUtils.sharedInstance().fetchAllData();
+              }
+          })]),
           Expanded(child: Container())
 
         ];
@@ -114,6 +137,8 @@ class _SettingViewPageState extends State<SettingViewPage> {
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingView, Stores.localizationStore.localizationPref);
       case SelectedOption.language:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref);
+      case SelectedOption.data:
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingData, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
         return "About";
     }

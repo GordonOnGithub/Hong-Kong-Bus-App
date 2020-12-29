@@ -48,9 +48,10 @@ class CacheUtils{
   Future<void> fetchAllData() async{
     if(_isFetchingAllData) return;
     _isFetchingAllData = true;
+    Stores.dataManager.addAllDataFetchCount(0);
+
     await getRoutes();
     if(Stores.dataManager.routes != null){
-      int count = 0;
       List<Future<bool>> futures = [];
       for(var route in Stores.dataManager.routes) {
         if(Stores.appConfig.downloadAllData != true){
@@ -62,42 +63,57 @@ class CacheUtils{
         futures.add( CacheUtils.sharedInstance().getRouteDetail(
             route.routeCode, route.companyCode, false));
 
-        if(futures.length > 9) {
+        if(futures.length > 19) {
           await Future.wait(futures);
-          debugPrint("route data fetch progress: ${count += futures.length}/${Stores.dataManager.routes.length * 2}");
+          Stores.dataManager.addAllDataFetchCount(futures.length);
           futures = [];
         }
-
       }
-      count = 0;
-      for(var list in Stores.dataManager.inboundBusStopsMap.values){
+      if(futures.length > 0) {
+        await Future.wait(futures);
+        Stores.dataManager.addAllDataFetchCount(futures.length);
+        futures = [];
+      }
+
+      Set<String> stopIdSet = Set();
+
+      var inboundBusStopsMap = Map.from(Stores.dataManager.inboundBusStopsMap);
+      var outboundBusStopsMap =  Map.from(Stores.dataManager.outboundBusStopsMap);
+
+      for(var list in inboundBusStopsMap.values){
         if(Stores.appConfig.downloadAllData != true){
           _isFetchingAllData = false;
           return;
         }
         List<Future<bool>> futures = [];
          for(var busStop in list){
-           futures.add(CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier));
+           if(!stopIdSet.contains(busStop.identifier)) {
+             futures.add(CacheUtils.sharedInstance().getBusStopDetail(
+                 busStop.identifier));
+             stopIdSet.add(busStop.identifier);
+           }
          }
-        count += 1;
 
         await Future.wait(futures);
-          debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
+        Stores.dataManager.addAllDataFetchCount(1);
       }
-
-      for(var list in Stores.dataManager.outboundBusStopsMap.values){
+      stopIdSet.clear();
+      for(var list in outboundBusStopsMap.values){
         if(Stores.appConfig.downloadAllData != true){
           _isFetchingAllData = false;
           return;
         }
         List<Future<bool>> futures = [];
         for(var busStop in list){
-          futures.add(CacheUtils.sharedInstance().getBusStopDetail(busStop.identifier));
+          if(!stopIdSet.contains(busStop.identifier)) {
+            futures.add(CacheUtils.sharedInstance().getBusStopDetail(
+                busStop.identifier));
+            stopIdSet.add(busStop.identifier);
+          }
         }
-        count += 1;
 
         await Future.wait(futures);
-        debugPrint("bus stop data fetch progress: $count/${Stores.dataManager.routes.length * 2}");
+        Stores.dataManager.addAllDataFetchCount(1);
       }
     }
     _isFetchingAllData = false;
@@ -124,7 +140,7 @@ class CacheUtils{
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
       if(Stores.dataManager.routesMap == null || !Stores.dataManager.routesMap.containsKey(companyCode)) {
-        NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
+        await NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
       }
 
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate){
@@ -152,7 +168,7 @@ class CacheUtils{
       Map<String, dynamic> cachedData = jsonDecode(content);
       if((isInbound && (Stores.dataManager.inboundBusStopsMap == null || !Stores.dataManager.inboundBusStopsMap.containsKey(routeCode))) ||
           (!isInbound && (Stores.dataManager.outboundBusStopsMap == null || !Stores.dataManager.outboundBusStopsMap.containsKey(routeCode)))){
-        NetworkUtil.sharedInstance().parseRouteDetail(
+        await NetworkUtil.sharedInstance().parseRouteDetail(
             routeCode, companyCode, isInbound, cachedData);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
@@ -178,7 +194,7 @@ class CacheUtils{
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
       if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stopId)) {
-        NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData);
+        await NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;

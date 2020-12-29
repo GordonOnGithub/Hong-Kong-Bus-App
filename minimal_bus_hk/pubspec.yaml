@@ -39,6 +39,7 @@ dependencies:
   connectivity: 2.0.2
   google_maps_flutter: 1.0.6
   permission_handler: 5.0.1+1
+  package_info: 0.4.3+2
 dev_dependencies:
   flutter_test:
     sdk: flutter

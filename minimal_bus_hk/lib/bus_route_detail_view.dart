@@ -118,7 +118,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
-                    height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 120 : 60,
+                    height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 140 : 80,
                     color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? Colors.lightBlue[50] : Colors.grey[50],
                     child:Observer(
                       builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
@@ -126,8 +126,8 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                      Padding(padding: const EdgeInsets.fromLTRB(0 , 15, 0, 0),child:
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween ,children:[
+                      Padding(padding: const EdgeInsets.fromLTRB(0 , 25, 0, 0),child:
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween , crossAxisAlignment: CrossAxisAlignment.center,children:[
                           Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
                        Icons.bookmark:Icons.bookmark_border),
 

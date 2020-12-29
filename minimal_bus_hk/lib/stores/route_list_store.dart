@@ -60,6 +60,9 @@ abstract class RouteListStoreBase with Store {
     if(filterKeyword != null && Stores.dataManager.directionalRouteList != null) {
       var result =  ObservableList<DirectionalRoute>();
       result.addAll(Stores.dataManager.directionalRouteList.where((element) {
+        if(element == null){
+          return false;
+        }
         for(var keyword in _keywords) {
           if(element.route.routeCode.toLowerCase().contains(keyword.toLowerCase())
             || (element.isInbound &&

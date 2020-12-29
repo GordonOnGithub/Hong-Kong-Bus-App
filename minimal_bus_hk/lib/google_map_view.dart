@@ -1,11 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/custom_map_pin_info.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
-import 'package:mobx/mobx.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,7 +27,6 @@ class GoogleMapViewPage extends StatefulWidget {
 class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   GoogleMapController mapController;
   static final _defaultZoomForStop = 18.0;
-  // static final _defaultZoomForRoute = 10.5;
   static final _customPinInfoList = [
     CustomMapPinInfo("立會",  LatLng(22.28161008355225, 114.16632608035314), "There's no riot, only tyranny.", "沒有暴徒 只有暴政", "沒有暴徒 只有暴政"),
 
@@ -55,7 +53,6 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         Stores.googleMapStore.setLocationPermissionGranted(result == PermissionStatus.granted);
       });
     });
-
   }
   
   void _onMapCreated(GoogleMapController controller) {

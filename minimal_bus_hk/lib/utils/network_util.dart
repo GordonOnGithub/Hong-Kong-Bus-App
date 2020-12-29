@@ -48,7 +48,7 @@ class NetworkUtil{
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       if(Stores.dataManager.routes == null) {
-        Stores.dataManager.setRoutes([], companyCode);
+        await Stores.dataManager.setRoutes([], companyCode);
       }
       return -1;
     }
@@ -62,17 +62,17 @@ class NetworkUtil{
         if(responseData.containsKey("data")){
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("${CacheUtils.routesCacheKey}/$companyCode", response.body);
-          parseRouteData(responseData, companyCode);
+          await parseRouteData(responseData, companyCode);
         }
     }else{
       if(Stores.dataManager.routes == null) {
-        Stores.dataManager.setRoutes([], companyCode);
+        await Stores.dataManager.setRoutes([], companyCode);
       }
     }
     return code;
   }
 
-  void parseRouteData(Map<String, dynamic> responseData, companyCode){
+  Future<void> parseRouteData(Map<String, dynamic> responseData, companyCode) async{
     var list = responseData["data"] as List<dynamic>;
     var dataList = <Map<String, dynamic>>[];
     for(var data in list){
@@ -80,14 +80,14 @@ class NetworkUtil{
         dataList.add(data);
       }
     }
-    Stores.dataManager.setRoutes(dataList, companyCode);
+    await Stores.dataManager.setRoutes(dataList, companyCode);
   }
 
   Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
+        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
       }
       return -1;
     }
@@ -101,17 +101,17 @@ class NetworkUtil{
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getRouteDetailsCacheKey(routeCode, companyCode,isInbound), response.body);
-        parseRouteDetail(routeCode,  companyCode, isInbound, responseData);
+        await parseRouteDetail(routeCode,  companyCode, isInbound, responseData);
       }
     }else{
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
+        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
       }
     }
     return code;
   }
 
-  void parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData){
+  Future<void> parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData) async{
     var list = responseData["data"] as List<dynamic>;
     var dataList = <Map<String, dynamic>>[];
     for (var data in list) {
@@ -119,7 +119,7 @@ class NetworkUtil{
         dataList.add(data);
       }
     }
-    Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList);
+    await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList);
   }
 
   Future<int> getBusStopDetail(String stopId) async {
@@ -137,13 +137,13 @@ class NetworkUtil{
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId), response.body);
-        parseBusStopDetail(stopId, responseData);
+        await parseBusStopDetail(stopId, responseData);
       }
     }
     return code;
   }
 
-  void parseBusStopDetail(String stopId,  Map<String, dynamic> responseData ){
+  Future<void> parseBusStopDetail(String stopId,  Map<String, dynamic> responseData ) async{
       var data = responseData["data"] as Map<String, dynamic>;
       Stores.dataManager.updateBusStopDetailMap(stopId, data);
   }

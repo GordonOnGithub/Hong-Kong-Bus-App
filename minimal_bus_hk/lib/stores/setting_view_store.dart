@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+import 'package:package_info/package_info.dart';
 
 part 'setting_view_store.g.dart';
 
@@ -19,5 +20,16 @@ abstract class SettingViewStoreBase with Store {
   @action
   void setSelectedOption(SelectedOption option){
     selectedOption = option;
+  }
+
+  @observable
+  String version = "";
+
+  @action
+  Future<void> checkVersion() async{
+    if(version.length == 0){
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      version = "${packageInfo.version}(${packageInfo.buildNumber})";
+    }
   }
 }
