@@ -145,10 +145,10 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
         ) : Observer(
             builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
-        floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForJourneyPlanner, Stores.localizationStore.localizationPref)),
-        onPressed: (){
-          _onJourneyPlannerClicked();
-        },),
+        // floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForJourneyPlanner, Stores.localizationStore.localizationPref)),
+        // onPressed: (){
+        //   _onJourneyPlannerClicked();
+        // },),
     );
   }
   

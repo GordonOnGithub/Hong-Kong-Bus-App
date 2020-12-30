@@ -122,7 +122,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           Marker stopMarker = Marker(markerId: markerId,
               position: busStopDetail.positionForMap,
               infoWindow: infoWindow,
-              icon: BitmapDescriptor.defaultMarkerWithHue(  Stores.googleMapStore.selectedBusStop != null && busStopDetail.identifier == Stores.googleMapStore.selectedBusStop.identifier ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed));
+              icon: BitmapDescriptor.defaultMarkerWithHue(  Stores.googleMapStore.selectedBusStop != null && busStopDetail.identifier == Stores.googleMapStore.selectedBusStop.identifier ? BitmapDescriptor.hueGreen : count == 1?BitmapDescriptor.hueAzure:(count == busStops.length? BitmapDescriptor.hueBlue : BitmapDescriptor.hueRed)));
           markers.add(stopMarker);
         }
       }
