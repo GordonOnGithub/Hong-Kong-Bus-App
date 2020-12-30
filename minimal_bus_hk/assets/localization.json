@@ -222,5 +222,11 @@
     "en": "Select a bus stop for more information",
     "tc": "選擇車站以查看更多資料",
     "sc": "選擇車站以查看更多資料"
+  },
+  {
+    "key": "journeyPlanner",
+    "en": "Journey Planner",
+    "tc": "行程規劃",
+    "sc": "行程規劃"
   }
   ]

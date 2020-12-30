@@ -212,5 +212,34 @@ class NetworkUtil{
       }
     }
   }
+
+  Future<void> downloadNewRouteData(List<BusRoute> newRoutes) async{
+    for(BusRoute b in newRoutes){
+     await getRouteDetail(b.routeCode, b.companyCode, true);
+     await getRouteDetail(b.routeCode, b.companyCode, false);
+     Set<String> stopIdSet = Set();
+     List<Future<bool>> futures = [];
+
+     if( Stores.dataManager.inboundBusStopsMap.containsKey(b.routeCode)) {
+       for (BusStop s in Stores.dataManager.inboundBusStopsMap[b.routeCode]) {
+         if(!stopIdSet.contains(s.identifier)) {
+           stopIdSet.add(s.identifier);
+           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier));
+         }
+       }
+     }
+     if( Stores.dataManager.outboundBusStopsMap.containsKey(b.routeCode)) {
+       for (BusStop s in Stores.dataManager.outboundBusStopsMap[b.routeCode]) {
+         if(!stopIdSet.contains(s.identifier)) {
+           stopIdSet.add(s.identifier);
+           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier));
+         }
+       }
+     }
+
+     await Future.wait(futures);
+    }
+  }
+
 }
 

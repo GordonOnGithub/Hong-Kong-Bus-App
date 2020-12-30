@@ -48,6 +48,22 @@ mixin _$DataManager on DataManagerBase, Store {
     });
   }
 
+  final _$stopRoutesMapAtom = Atom(name: 'DataManagerBase.stopRoutesMap');
+
+  @override
+  ObservableMap<String, ObservableList<DirectionalRoute>> get stopRoutesMap {
+    _$stopRoutesMapAtom.reportRead();
+    return super.stopRoutesMap;
+  }
+
+  @override
+  set stopRoutesMap(
+      ObservableMap<String, ObservableList<DirectionalRoute>> value) {
+    _$stopRoutesMapAtom.reportWrite(value, super.stopRoutesMap, () {
+      super.stopRoutesMap = value;
+    });
+  }
+
   final _$inboundBusStopsMapAtom =
       Atom(name: 'DataManagerBase.inboundBusStopsMap');
 
@@ -143,6 +159,21 @@ mixin _$DataManager on DataManagerBase, Store {
     });
   }
 
+  final _$totalDataCountAtom = Atom(name: 'DataManagerBase.totalDataCount');
+
+  @override
+  int get totalDataCount {
+    _$totalDataCountAtom.reportRead();
+    return super.totalDataCount;
+  }
+
+  @override
+  set totalDataCount(int value) {
+    _$totalDataCountAtom.reportWrite(value, super.totalDataCount, () {
+      super.totalDataCount = value;
+    });
+  }
+
   final _$setRoutesAsyncAction = AsyncAction('DataManagerBase.setRoutes');
 
   @override
@@ -182,6 +213,18 @@ mixin _$DataManager on DataManagerBase, Store {
 
   final _$DataManagerBaseActionController =
       ActionController(name: 'DataManagerBase');
+
+  @override
+  void updateStopRouteCodeMap(
+      DirectionalRoute directionalRoute, ObservableList<BusStop> busStops) {
+    final _$actionInfo = _$DataManagerBaseActionController.startAction(
+        name: 'DataManagerBase.updateStopRouteCodeMap');
+    try {
+      return super.updateStopRouteCodeMap(directionalRoute, busStops);
+    } finally {
+      _$DataManagerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData) {
@@ -229,15 +272,28 @@ mixin _$DataManager on DataManagerBase, Store {
   }
 
   @override
+  void setTotalDataCount(int count) {
+    final _$actionInfo = _$DataManagerBaseActionController.startAction(
+        name: 'DataManagerBase.setTotalDataCount');
+    try {
+      return super.setTotalDataCount(count);
+    } finally {
+      _$DataManagerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 companyRoutesMap: ${companyRoutesMap},
+stopRoutesMap: ${stopRoutesMap},
 inboundBusStopsMap: ${inboundBusStopsMap},
 outboundBusStopsMap: ${outboundBusStopsMap},
 busStopDetailMap: ${busStopDetailMap},
 ETAMap: ${ETAMap},
 bookmarkedRouteStops: ${bookmarkedRouteStops},
 allDataFetchCount: ${allDataFetchCount},
+totalDataCount: ${totalDataCount},
 routes: ${routes},
 routesMap: ${routesMap},
 directionalRouteList: ${directionalRouteList}

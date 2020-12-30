@@ -44,4 +44,19 @@ BusRoute.fromJson(Map<String, dynamic> json):
   Map<String, Map<String, String>> getLocalizedData() {
   return _localizedData;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if(other is BusRoute) {
+      return routeCode == other.routeCode && companyCode == other.companyCode;
+    }else{
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode => ("$routeCode$companyCode").hashCode ;
+
+
+
 }

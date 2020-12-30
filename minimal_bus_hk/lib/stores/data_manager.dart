@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
@@ -7,6 +8,8 @@ import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
+import 'package:minimal_bus_hk/utils/network_util.dart';
+import 'package:minimal_bus_hk/utils/stores.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobx/mobx.dart';
 part 'data_manager.g.dart';
@@ -53,8 +56,35 @@ abstract class DataManagerBase with Store {
     }
     if(companyRoutesMap==null){
       companyRoutesMap = ObservableMap();
+    }else if(companyRoutesMap.containsKey(companyCode) && Stores.appConfig.downloadAllData == true){
+      var oldData = companyRoutesMap[companyCode];
+      var delta = result.where((element) {
+        return !oldData.contains(element);
+      });
+
+      if(delta.isNotEmpty){
+          NetworkUtil.sharedInstance().downloadNewRouteData(delta.toList());
+      }
+
     }
     companyRoutesMap[companyCode] = result;
+  }
+
+
+  @observable
+  ObservableMap<String, ObservableList<DirectionalRoute>> stopRoutesMap = ObservableMap<String, ObservableList<DirectionalRoute>>();
+
+  @action
+  void updateStopRouteCodeMap(DirectionalRoute directionalRoute, ObservableList<BusStop> busStops){
+    for(BusStop busStop in busStops){
+      String identifier = busStop.identifier;
+      bool containKey  = stopRoutesMap.containsKey(identifier);
+      ObservableList<DirectionalRoute> routeList = containKey ? stopRoutesMap[identifier] : ObservableList<DirectionalRoute>();
+      if(!containKey){
+        stopRoutesMap[identifier] = routeList;
+      }
+      routeList.add(directionalRoute);
+    }
   }
 
   @computed
@@ -81,6 +111,10 @@ abstract class DataManagerBase with Store {
       result.add(BusStop.fromJson(data));
     }
 
+    if(routesMap.containsKey(routeCode)) {
+      DirectionalRoute directionalRoute = DirectionalRoute(route: routesMap[routeCode], isInbound: isInbound);
+      updateStopRouteCodeMap(directionalRoute, result);
+    }
     if(isInbound) {
       if (inboundBusStopsMap == null) {
         inboundBusStopsMap = ObservableMap();
@@ -180,7 +214,15 @@ abstract class DataManagerBase with Store {
   @action
   void addAllDataFetchCount(int increment){
     allDataFetchCount += increment;
+    debugPrint("allDataFetchCount: $allDataFetchCount");
   }
 
+  @observable
+  int totalDataCount;
+
+  @action
+  void setTotalDataCount(int count){
+    totalDataCount = count;
+  }
 
 }

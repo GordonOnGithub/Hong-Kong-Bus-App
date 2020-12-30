@@ -156,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return Observer(
                           builder: (_) =>Container(
                         height: (Stores.etaListStore.selectedETAListIndex == index) ? 230 : 190,
-                        color:  (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : Colors.grey[50],
+                        color:  (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : ( index % 2 == 0? Colors.white : Colors.grey[100]),
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },)
 
                               ],))) :Container(),
-                              Container(height: 1, color: Colors.grey,),
+                              // Container(height: 1, color: Colors.grey,),
                             ]
                         ))
                           ),);

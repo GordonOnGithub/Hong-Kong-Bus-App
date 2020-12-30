@@ -66,7 +66,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(flex:1,
-                child: Container(color: Colors.grey[200], child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                child: Container(color: Colors.grey[50], child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                 Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
                   Icon(Icons.search),
                 Expanded(child: TextField(
@@ -86,7 +86,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                 },):Container()
                 ])))
             ),
-            Container(height: 1, color: Colors.grey,),
+           // Container(height: 1, color: Colors.grey,),
             Expanded(flex: 9,
             child:Scrollbar(child:
             ListView.builder(
@@ -97,7 +97,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   return Observer(
                       builder: (_) =>Container(
                         height:  100,
-                        color:  Stores.routeListStore.selectedDirectionalRoute ==  Stores.routeListStore.displayedDirectionalRoutes[index]? Colors.blue[50] : Colors.grey[50],
+                        color:  Stores.routeListStore.selectedDirectionalRoute ==  Stores.routeListStore.displayedDirectionalRoutes[index]? Colors.blue[50] :( index % 2 == 0? Colors.white : Colors.grey[100]),
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
                         Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -123,7 +123,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                             Icon(Icons.arrow_forward)
 
                         ],)),
-                              Container(height: 1, color: Colors.grey,)
+                              // Container(height: 1, color: Colors.grey,)
                             ])),
                   ),
                   );
@@ -145,7 +145,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
         ) : Observer(
             builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
-        floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text("Journey Planner"),
+        floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForJourneyPlanner, Stores.localizationStore.localizationPref)),
         onPressed: (){
           _onJourneyPlannerClicked();
         },),

@@ -41,6 +41,7 @@ class LocalizationUtil{
   static final String localizationKeyForRouteDetailReminder = "routeDetailReminder";
   static final String localizationKeyForSettingData = "settingData";
   static final String localizationKeyForDownloadData = "settingDownloadData";
+  static final String localizationKeyForJourneyPlanner = "journeyPlanner";
 
   static String localizedString(String key, LocalizationPref pref){
     if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {

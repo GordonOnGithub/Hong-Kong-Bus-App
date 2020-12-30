@@ -84,7 +84,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
               child:(Stores.routeDetailStore.selectedRouteBusStops != null)?
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     Expanded(flex:1,
-                    child: Container(color: Colors.grey[200], child:
+                    child: Container(color: Colors.grey[50], child:
                     Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                     Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
                       Icon(Icons.search),
@@ -119,7 +119,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
                     height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 140 : 80,
-                    color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? Colors.lightBlue[50] : Colors.grey[50],
+                    color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? Colors.lightBlue[50] : ( index % 2 == 0? Colors.white : Colors.grey[100]),
                     child:Observer(
                       builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,7 +177,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                             },
                             )
                           ],),):Container(height: 0,),
-                          Container(height: 1, color: Colors.grey,)
+                          // Container(height: 1, color: Colors.grey,)
                         ]))),
                   ),
                     onTap: (){

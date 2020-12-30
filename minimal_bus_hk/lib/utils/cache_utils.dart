@@ -51,9 +51,11 @@ class CacheUtils{
     Stores.dataManager.addAllDataFetchCount(0);
 
     await getRoutes();
-    if(Stores.dataManager.routes != null){
+    var routes = Stores.dataManager.routes;
+    if(routes != null){
+      Stores.dataManager.setTotalDataCount(routes.length * 4);
       List<Future<bool>> futures = [];
-      for(var route in Stores.dataManager.routes) {
+      for(var route in routes) {
         if(Stores.appConfig.downloadAllData != true){
           _isFetchingAllData = false;
           return;
