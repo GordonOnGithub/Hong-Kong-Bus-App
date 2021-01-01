@@ -8,6 +8,7 @@ import 'package:minimal_bus_hk/stores/eta_list_store.dart';
 import 'package:minimal_bus_hk/stores/app_config.dart';
 import 'package:minimal_bus_hk/stores/localization_store.dart';
 import 'package:minimal_bus_hk/stores/setting_view_store.dart';
+import 'package:minimal_bus_hk/stores/stop_list_view_store.dart';
 
 class Stores{
   static DataManager _dataManager = DataManager();
@@ -39,4 +40,7 @@ class Stores{
 
   static JourneyPlannerStore _journeyPlannerStore = JourneyPlannerStore();
   static JourneyPlannerStore get journeyPlannerStore => _journeyPlannerStore;
+
+  static StopListViewStore _stopListViewStore = StopListViewStore();
+  static StopListViewStore get stopListViewStore => _stopListViewStore;
 }

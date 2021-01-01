@@ -298,6 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
      if(Stores.dataManager.routesMap.containsKey(eta.routeCode)) {
        Stores.routeDetailStore.route = Stores.dataManager.routesMap[eta.routeCode];
        Stores.routeDetailStore.isInbound = eta.isInbound;
+       Stores.routeDetailStore.setSelectedStopId(eta.stopId);
        Navigator.push(
          context,
          MaterialPageRoute(builder: (context) => BusRouteDetailView()),
@@ -319,7 +320,6 @@ class _MyHomePageState extends State<MyHomePage> {
          Navigator.of(context).pop();
        }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupNo, Stores.localizationStore.localizationPref))),
      ],), onWillPop: () async => false ,);
-
   }
 
 }

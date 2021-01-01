@@ -28,20 +28,6 @@ abstract class RouteListStoreBase with Store {
     return filterKeyword.split(" ");
   }
 
-  // @deprecated
-  // @observable
-  // BusRoute selectedRoute;
-  //
-  // @deprecated
-  // @action
-  // void setSelectedRoute(BusRoute busRoute){
-  //   if(selectedRoute != busRoute) {
-  //     selectedRoute = busRoute;
-  //   }else{
-  //     selectedRoute = null;
-  //   }
-  // }
-
   @observable
   DirectionalRoute selectedDirectionalRoute;
 
@@ -54,12 +40,39 @@ abstract class RouteListStoreBase with Store {
     }
   }
 
+  @observable
+  String filterStopIdentifier = "";
+
+  @action
+  void setFilterStopIdentifier(String identifier){
+    filterStopIdentifier = identifier;
+  }
+
+  @action
+  void clearFilters(){
+    filterKeyword = "";
+    filterStopIdentifier = "";
+  }
 
   @computed
   ObservableList<DirectionalRoute> get displayedDirectionalRoutes {
     if(filterKeyword != null && Stores.dataManager.directionalRouteList != null) {
+
+      var directionalRouteList = filterStopIdentifier != null && filterStopIdentifier.length > 0
+          && Stores.dataManager.stopRoutesMap.containsKey(filterStopIdentifier)?
+      Stores.dataManager.directionalRouteList.where((element) {
+        var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
+        for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
+          if(directionalRoute.route.routeCode == element.route.routeCode && directionalRoute.isInbound == element.isInbound){
+            return true;
+          }
+        }
+        return false;
+      }
+      ) : Stores.dataManager.directionalRouteList;
+
       var result =  ObservableList<DirectionalRoute>();
-      result.addAll(Stores.dataManager.directionalRouteList.where((element) {
+      result.addAll(directionalRouteList.where((element) {
         if(element == null){
           return false;
         }

@@ -85,7 +85,7 @@ abstract class GoogleMapStoreBase with Store {
     this.atCenter = atCenter;
   }
 
-  final LatLng _HKGeoCenter = LatLng(22.32621908589066, 114.1186428366926);
+  final LatLng HKGeoCenter = LatLng(22.32621908589066, 114.1186428366926);
 
   @computed
   LatLng get routeGeoCenter{
@@ -114,7 +114,7 @@ abstract class GoogleMapStoreBase with Store {
     if (maxLat > 0 && minLat < double.infinity && maxLng > 0 && minLng < double.infinity){
       return LatLng((maxLat + minLat) / 2, (minLng + maxLng) / 2);
     }else{
-      return _HKGeoCenter;// approximated geo center of HK
+      return HKGeoCenter;// approximated geo center of HK
     }
   }
 
@@ -136,7 +136,7 @@ abstract class GoogleMapStoreBase with Store {
 
     var lngDetla = maxLng - minLng;
 
-    var distance = lngDetla * 111 * cos( _HKGeoCenter.latitude * 3.1415926 / 180);
+    var distance = lngDetla * 111 * cos( HKGeoCenter.latitude * 3.1415926 / 180);
 
     return distance;
   }

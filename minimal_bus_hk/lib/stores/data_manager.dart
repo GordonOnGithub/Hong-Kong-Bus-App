@@ -90,12 +90,12 @@ abstract class DataManagerBase with Store {
   @computed
   ObservableList<DirectionalRoute> get directionalRouteList {
     var result = ObservableList<DirectionalRoute>();
-
-    for(var route in routes){
-      result.add(DirectionalRoute(route: route, isInbound: true));
-      result.add(DirectionalRoute(route: route, isInbound: false));
+    if(routes != null) {
+      for (var route in routes) {
+        result.add(DirectionalRoute(route: route, isInbound: true));
+        result.add(DirectionalRoute(route: route, isInbound: false));
+      }
     }
-
     return result;
   }
 
@@ -214,11 +214,11 @@ abstract class DataManagerBase with Store {
   @action
   void addAllDataFetchCount(int increment){
     allDataFetchCount += increment;
-    debugPrint("allDataFetchCount: $allDataFetchCount");
+    // debugPrint("allDataFetchCount: $allDataFetchCount");
   }
 
   @observable
-  int totalDataCount;
+  int totalDataCount = 0;
 
   @action
   void setTotalDataCount(int count){

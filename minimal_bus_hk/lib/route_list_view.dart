@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/bus_route_detail_view.dart';
 import 'package:minimal_bus_hk/journey_planner_view.dart';
+import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/directional_route.dart';
+import 'package:minimal_bus_hk/stop_list_view.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:mobx/mobx.dart';
@@ -45,7 +47,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    Stores.routeListStore.setFilterKeyword("");
+    Stores.routeListStore.clearFilters();
   }
 
   @override
@@ -65,11 +67,16 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                 builder: (_) => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
             Expanded(flex:1,
-                child: Container(color: Colors.grey[50], child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
+                child:
+               Container(color: Colors.grey[50], child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                 Row( crossAxisAlignment: CrossAxisAlignment.center, children:[
                   Icon(Icons.search),
-                Expanded(child: TextField(
+                Expanded(child:
+                Stores.routeListStore.filterStopIdentifier != null && Stores.routeListStore.filterStopIdentifier.length > 0?
+                  Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStop, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom( Stores.dataManager.busStopDetailMap[Stores.routeListStore.filterStopIdentifier], BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),)
+                : TextField(
                   controller: _searchFieldController,
                   onChanged: (text){
                   Stores.routeListStore.setFilterKeyword(text);
@@ -79,10 +86,10 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   ),
                 ),
                 ),
-                Stores.routeListStore.filterKeyword.length > 0?
+                Stores.routeListStore.filterKeyword.length > 0 || Stores.routeListStore.filterStopIdentifier.length > 0?
                 IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
                   _searchFieldController.text = "";
-                 Stores.routeListStore.setFilterKeyword("");
+                 Stores.routeListStore.clearFilters();
                 },):Container()
                 ])))
             ),
@@ -97,7 +104,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   return Observer(
                       builder: (_) =>Container(
                         height:  100,
-                        color:  Stores.routeListStore.selectedDirectionalRoute ==  Stores.routeListStore.displayedDirectionalRoutes[index]? Colors.blue[50] :( index % 2 == 0? Colors.white : Colors.grey[100]),
+                        color: ( index % 2 == 0? Colors.white : Colors.grey[100]),
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
                         Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -145,21 +152,28 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
         ) : Observer(
             builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.justify,))
       )),
-        // floatingActionButton: FloatingActionButton.extended(icon: Icon(Icons.timeline), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForJourneyPlanner, Stores.localizationStore.localizationPref)),
-        // onPressed: (){
-        //   _onJourneyPlannerClicked();
-        // },),
+        floatingActionButton:
+        Stores.appConfig.downloadAllData ?
+        FloatingActionButton.extended(icon: Icon(Icons.flag), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)),
+        onPressed: (){
+           _onBusStopListClicked();
+        },) : Container(),
     );
   }
   
   void _onRouteSelected(int index){
     var directionalRoute = Stores.routeListStore.displayedDirectionalRoutes[index];
+    if(Stores.routeListStore.filterStopIdentifier != null && Stores.routeListStore.filterStopIdentifier.length > 0){
+      Stores.routeDetailStore.setSelectedStopId(Stores.routeListStore.filterStopIdentifier);
+    }
+
     Stores.routeListStore.setSelectedDirectionalRoute(directionalRoute);
     FocusScope.of(context).requestFocus(FocusNode());
     Stores.routeDetailStore.route = directionalRoute.route;
     Stores.routeDetailStore.isInbound = directionalRoute.isInbound;
-    Stores.routeListStore.setFilterKeyword("");
+    Stores.routeListStore.clearFilters();
     _searchFieldController.text = "";
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => BusRouteDetailView()),
@@ -167,11 +181,21 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
   }
 
   void _onJourneyPlannerClicked(){
-    Stores.routeListStore.setFilterKeyword("");
+    Stores.routeListStore.clearFilters();
     _searchFieldController.text = "";
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => JourneyPlannerView()),
+    );
+  }
+
+  void _onBusStopListClicked(){
+    Stores.routeListStore.clearFilters();
+    Stores.stopListViewStore.filterKeywords = "";
+    _searchFieldController.text = "";
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => StopListView()),
     );
   }
 

@@ -59,6 +59,23 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
     });
   }
 
+  final _$filterStopIdentifierAtom =
+      Atom(name: 'RouteListStoreBase.filterStopIdentifier');
+
+  @override
+  String get filterStopIdentifier {
+    _$filterStopIdentifierAtom.reportRead();
+    return super.filterStopIdentifier;
+  }
+
+  @override
+  set filterStopIdentifier(String value) {
+    _$filterStopIdentifierAtom.reportWrite(value, super.filterStopIdentifier,
+        () {
+      super.filterStopIdentifier = value;
+    });
+  }
+
   final _$dataFetchingErrorAtom =
       Atom(name: 'RouteListStoreBase.dataFetchingError');
 
@@ -101,6 +118,28 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
   }
 
   @override
+  void setFilterStopIdentifier(String identifier) {
+    final _$actionInfo = _$RouteListStoreBaseActionController.startAction(
+        name: 'RouteListStoreBase.setFilterStopIdentifier');
+    try {
+      return super.setFilterStopIdentifier(identifier);
+    } finally {
+      _$RouteListStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearFilters() {
+    final _$actionInfo = _$RouteListStoreBaseActionController.startAction(
+        name: 'RouteListStoreBase.clearFilters');
+    try {
+      return super.clearFilters();
+    } finally {
+      _$RouteListStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setDataFetchingError(bool hasError) {
     final _$actionInfo = _$RouteListStoreBaseActionController.startAction(
         name: 'RouteListStoreBase.setDataFetchingError');
@@ -116,6 +155,7 @@ mixin _$RouteListStore on RouteListStoreBase, Store {
     return '''
 filterKeyword: ${filterKeyword},
 selectedDirectionalRoute: ${selectedDirectionalRoute},
+filterStopIdentifier: ${filterStopIdentifier},
 dataFetchingError: ${dataFetchingError},
 displayedDirectionalRoutes: ${displayedDirectionalRoutes}
     ''';

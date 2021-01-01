@@ -42,6 +42,10 @@ class LocalizationUtil{
   static final String localizationKeyForSettingData = "settingData";
   static final String localizationKeyForDownloadData = "settingDownloadData";
   static final String localizationKeyForJourneyPlanner = "journeyPlanner";
+  static final String localizationKeyForBusStopList = "busStopList";
+  static final String localizationKeyForBusStop = "busStop";
+  static final String localizationKeyForDataPreparationProgress= "dataPreparationProgress";
+  static final String localizationKeyForDataPreparationReminder = "dataPreparationReminder";
 
   static String localizedString(String key, LocalizationPref pref){
     if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {

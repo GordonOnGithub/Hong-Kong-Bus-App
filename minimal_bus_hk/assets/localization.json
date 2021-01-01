@@ -177,9 +177,9 @@
   },
   {
     "key": "downloadAllDataPopupContent",
-    "en": "Download all data in advance to speed up searching and support offline route search.(est. data size: 50 MB)",
-    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋。(資料大小: 約50MB)",
-    "sc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋。(資料大小: 約50MB)"
+    "en": "Download all data in advance to speed up searching and support offline search and bus stop search.(est. data size: 50 MB)",
+    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。(資料大小: 約50MB)",
+    "sc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。(資料大小: 約50MB)"
   },
   {
     "key": "downloadAllDataPopupYes",
@@ -228,5 +228,30 @@
     "en": "Journey Planner",
     "tc": "行程規劃",
     "sc": "行程規劃"
+  },
+  {
+    "key": "busStopList",
+    "en": "Bus Stops List",
+    "tc": "車站列表",
+    "sc": "車站列表"
+  },
+  {
+    "key": "busStop",
+    "en": "Bus Stop",
+    "tc": "車站",
+    "sc": "車站"
+  },
+  {
+    "key": "dataPreparationProgress",
+    "en": "Full route data preparation is in progress",
+    "tc": "正在準備完整路線資料",
+    "sc": "正在準備完整路線資料"
+  },
+  {
+    "key": "dataPreparationReminder",
+    "en": "This could take several minutes for the first time, leaving this page does not disrupt the process.",
+    "tc": "首次使用時可能需要幾分鐘的時間下載, 離開此頁並不影響進度。",
+    "sc": "首次使用時可能需要幾分鐘的時間下載, 離開此頁並不影響進度。"
   }
+
   ]

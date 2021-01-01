@@ -115,13 +115,14 @@ class _SettingViewPageState extends State<SettingViewPage> {
       case SelectedOption.data:
         return [
         Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
-        Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w400 ),),
+        Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w500 ),),
           Switch(value: Stores.appConfig.downloadAllData == true, onChanged: (_){
               Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
               if(Stores.appConfig.downloadAllData ){
                 CacheUtils.sharedInstance().fetchAllData();
               }
           })]),
+          Row(children:[ Expanded(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref), maxLines: 3,))]),
           Expanded(child: Container())
 
         ];

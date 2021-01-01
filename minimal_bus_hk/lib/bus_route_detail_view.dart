@@ -8,6 +8,7 @@ import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/route_list_view.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
+import 'package:mobx/mobx.dart';
 import 'model/bus_route.dart';
 import 'model/bus_stop.dart';
 import 'model/eta.dart';
@@ -34,23 +35,26 @@ class BusRouteDetailPage extends StatefulWidget {
 
 class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   Timer _updateTimer;
-  bool _callETAApi = false;
   TextEditingController _searchFieldController;
+  final _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
     Stores.appConfig.checkShowRouteDetailReminder();
-    Stores.routeDetailStore.setSelectedStopId(null);
+    // Stores.routeDetailStore.setSelectedStopId(null);
     Stores.routeDetailStore.setSelectedSequence(null);
     Stores.routeDetailStore.setFilterKeyword("");
-    _searchFieldController = TextEditingController(text:Stores.routeDetailStore.filterKeyword);
+    _searchFieldController =
+        TextEditingController(text: Stores.routeDetailStore.filterKeyword);
 
-    CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) {
+    CacheUtils.sharedInstance().getRouteAndStopsDetail(
+        Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound,
+        silentUpdate: true).then((value) {
       Stores.routeDetailStore.setDataFetchingError(!value);
-      if(value) {
-      //   CacheUtils.sharedInstance().getETAForRoute(
-      //       Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
+      if (value) {
+        //   CacheUtils.sharedInstance().getETAForRoute(
+        //       Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound);
         updateSelectedBusStopETA();
       }
     });
@@ -59,6 +63,23 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
       Stores.routeDetailStore.updateTimeStampForChecking();
       updateSelectedBusStopETA();
     });
+    // if (Stores.routeDetailStore.selectedStopId != null) {
+    //   final dispose = when((_) =>
+    //   Stores.routeDetailStore.displayedStops != null &&
+    //       Stores.routeDetailStore.displayedStops.length > 0 &&
+    //       _controller.hasClients, () {
+    //       for (var stop in Stores.routeDetailStore.displayedStops) {
+    //         if (stop.busStopDetail.identifier ==
+    //             Stores.routeDetailStore.selectedStopId) {
+    //           _controller.animateTo(
+    //               80.0 * (Stores.routeDetailStore.displayedStops.indexOf(stop)),
+    //               duration: Duration(seconds: 1), curve: Curves.easeOut);
+    //           break;
+    //         }
+    //
+    //     }
+    //   });
+    // }
   }
 
   @override
@@ -109,9 +130,12 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                 Expanded(flex: 9,child:(Stores.routeDetailStore.displayedStops != null && Stores.routeDetailStore.displayedStops.length > 0?
                 Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   child:
-                Scrollbar(child: Observer(
+                Scrollbar(
+                    child: Observer(
                     builder: (_) =>ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+                        controller: _controller,
+
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 80),
                 itemCount:  Stores.routeDetailStore.displayedStops.length ,
                 itemBuilder: (BuildContext context, int index) {
                   ETA eta = Stores.routeDetailStore.displayedStops[index].eta;
