@@ -3,37 +3,37 @@
     "key":"minutes",
     "en":"minute(s) left",
     "tc":"分鐘後",
-    "sc":"分鐘後"
+    "sc":"分钟后"
   },
   {
     "key":"eta",
     "en":"Est. Time",
     "tc":"預計時間",
-    "sc":"預計時間"
+    "sc":"预计时间"
   },
   {
     "key":"inbound",
     "en":"Inbound",
     "tc":"回程路線",
-    "sc":"回程路線"
+    "sc":"回程路线"
   },
   {
     "key":"outbound",
     "en":"Outbound",
     "tc":"去程路線",
-    "sc":"去程路線"
+    "sc":"去程路线"
   },
   {
     "key":"location",
     "en":"Location",
     "tc":"車站位置",
-    "sc":"車站位置"
+    "sc":"车站位置"
   },
   {
     "key":"bookmark",
     "en":"Bookmark",
     "tc":"收藏車站",
-    "sc":"收藏車站"
+    "sc":"收藏车站"
   },
   {
     "key":"unbookmark",
@@ -51,49 +51,49 @@
     "key":"etaListViewTitle",
     "en":"Bookmarked Route Stops List",
     "tc":"路線車站收藏列表",
-    "sc":"路線車站收藏列表"
+    "sc":"路线车站收藏列表"
   },
   {
     "key":"routeListViewTitle",
     "en":"Routes",
     "tc":"路線",
-    "sc":"路線"
+    "sc":"路线"
   },
   {
     "key":"route",
     "en":"Route",
     "tc":"路線",
-    "sc":"路線"
+    "sc":"路线"
   },
   {
     "key":"settingViewTitle",
     "en":"Setting",
     "tc":"設定",
-    "sc":"設定"
+    "sc":"设定"
   },
   {
   "key":"settingLanguage",
   "en":"Language",
   "tc":"語言",
-  "sc":"語言"
+  "sc":"语言"
 },
   {
     "key":"settingData",
     "en":"Route Data",
     "tc":"路線資料",
-    "sc":"資料"
+    "sc":"路线资料"
   },
   {
     "key":"settingDownloadData",
     "en":"Automatic route data update",
     "tc":"自動更新所有路線資料",
-    "sc":"自動更新所有路線資料"
+    "sc":"自动更新所有路线资料"
   },
   {
     "key":"routeListViewRouteSearchTextFieldPlaceholder",
     "en":"Type to search, e.g.\"796C\" \"Mongkok\"",
     "tc":"輸入關鍵字以搜尋路線，例:\"796C\" \"旺角\"",
-    "sc":"輸入關鍵字以搜尋路線，例:\"796C\" \"旺角\""
+    "sc":"输入关键字以搜寻路线，例:\"796C\" \"旺角\""
   },
   {
     "key":"to",
@@ -116,34 +116,34 @@
   "key":"loading",
   "en":"Loading",
   "tc":"載入中",
-  "sc":"載入中"
+  "sc":"载入中"
  }, {
   "key":"emptyETAList",
   "en":"No route stop has been bookmarked.",
   "tc":"未有收藏任何路線車站。",
-  "sc":"未有收藏任何路線車站。"
+  "sc":"未有收藏任何路线车站。"
 }, {
   "key":"failedToLoadData",
   "en":"Encountered error when downloading data, click here to retry",
   "tc":"載入資料時發生錯誤，按此重試。",
-  "sc":"載入資料時發生錯誤，按此重試。"
+  "sc":"载入资料时發生错误，按此重试。"
 }, {
   "key":"connectivityWarning",
   "en":"Please check the internet connection.",
   "tc":"請檢查網絡連線。",
-  "sc":"請檢查網絡連線。"
+  "sc":"请检查网络连线。"
 },
   {
     "key":"routeListViewStopSearchTextFieldPlaceholder",
     "en":"Type to search for stops.",
     "tc":"輸入關鍵字以搜尋車站。",
-    "sc":"輸入關鍵字以搜尋車站。"
+    "sc":"输入关键字以搜寻车站。"
   },
   {
     "key":"noRouteDataFound",
     "en":"No route data is found.",
     "tc":"找不到路線資料。",
-    "sc":"找不到路線資料。"
+    "sc":"找不到路线资料。"
   },
   {
     "key":"recenter",
@@ -155,55 +155,55 @@
     "key":"locationPermissionNotGranted",
     "en":"To show your location on map, please grant location permission.",
     "tc":"請給予位置權限，以在地圖上顯示您的位置。",
-    "sc":"請給予位置權限，以在地圖上顯示您的位置。"
+    "sc":"请给予位置权限，以在地图上显示您的位置。"
   },
   {
-    "key": "search",
-    "en": "Search",
-    "tc": "搜尋",
-    "sc": "搜尋"
+    "key": "routeSearch",
+    "en": "Route Search",
+    "tc": "路線搜尋",
+    "sc": "路线搜寻"
   },
   {
     "key": "map",
     "en": "Map",
     "tc": "地圖",
-    "sc": "地圖"
+    "sc": "地图"
   },
   {
     "key": "downloadAllDataPopupTitle",
     "en": "Download all bus data?",
     "tc": "下載所有路線資料?",
-    "sc": "下載所有路線資料?"
+    "sc": "下载所有路线资料?"
   },
   {
     "key": "downloadAllDataPopupContent",
-    "en": "Download all data in advance to speed up searching and support offline search and bus stop search.(est. data size: 50 MB)",
-    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。(資料大小: 約50MB)",
-    "sc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。(資料大小: 約50MB)"
+    "en": "Download all data to speed up searching and support offline search and bus stop search. You can use this app while downloading.(est. data size: 50 MB)",
+    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。下載過程中仍可正常使用此程式。(資料大小: 約50MB)",
+    "sc": "下载所有路线资料可加快搜寻速度，并支援离线搜寻和车站搜寻。下载过程中仍可正常使用此程式。(资料大小: 约50MB)"
   },
   {
     "key": "downloadAllDataPopupYes",
     "en": "Download all data",
     "tc": "下載所有路線資料",
-    "sc": "下載所有路線資料"
+    "sc": "下载所有路线资料"
   },
   {
     "key": "downloadAllDataPopupNo",
     "en": "Do not download",
     "tc": "不要下載",
-    "sc": "不要下載"
+    "sc": "不要下载"
   },
   {
     "key": "routeDetail",
     "en": "Route Detail",
     "tc": "路線詳情",
-    "sc": "路線詳情"
+    "sc": "路线详情"
   },
   {
     "key": "routeSearchReminder",
     "en": "All route data are provided by Hong Kong government's \"data.gov.hk\".\n\nRoutes of KMB & New Lanto Bus are not yet supported.",
     "tc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援九巴及嶼巴路線。",
-    "sc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援九巴及嶼巴路線。"
+    "sc": "所有路线资料皆由香港政府「资料一线通」提供。\n\n此程式尚未支援九巴及屿巴路线。"
   },
   {
     "key": "understand",
@@ -215,43 +215,61 @@
     "key": "searchButtonReminder",
     "en": "Click \"search\" to look up bus routes & stops",
     "tc": "按 「搜尋」以尋找巴士路線及車站資料",
-    "sc": "按 「搜尋」以尋找巴士路線及車站資料"
+    "sc": "按 「搜寻」以寻找巴士路线及车站资料"
   },
   {
     "key": "routeDetailReminder",
     "en": "Select a bus stop for more information",
     "tc": "選擇車站以查看更多資料",
-    "sc": "選擇車站以查看更多資料"
+    "sc": "选择车站以查看更多资料"
   },
   {
     "key": "journeyPlanner",
     "en": "Journey Planner",
     "tc": "行程規劃",
-    "sc": "行程規劃"
+    "sc": "行程规划"
   },
   {
     "key": "busStopList",
     "en": "Bus Stops List",
     "tc": "車站列表",
-    "sc": "車站列表"
+    "sc": "车站列表"
   },
   {
     "key": "busStop",
     "en": "Bus Stop",
     "tc": "車站",
-    "sc": "車站"
+    "sc": "车站"
   },
   {
     "key": "dataPreparationProgress",
     "en": "Full route data preparation is in progress",
     "tc": "正在準備完整路線資料",
-    "sc": "正在準備完整路線資料"
+    "sc": "正在准备完整路线资料"
   },
   {
     "key": "dataPreparationReminder",
     "en": "This could take several minutes for the first time, leaving this page does not disrupt the process.",
     "tc": "首次使用時可能需要幾分鐘的時間下載, 離開此頁並不影響進度。",
-    "sc": "首次使用時可能需要幾分鐘的時間下載, 離開此頁並不影響進度。"
+    "sc": "首次使用时可能需要几分钟的时间下载, 离开此页并不影响进度。"
+  },
+  {
+    "key": "lastUpdateTime",
+    "en": "Last update time",
+    "tc": "最後更新時間",
+    "sc": "最后更新时间"
+  },
+  {
+    "key": "aboutThisAppDetail",
+    "en": "Source of data: data.gov.hk\nDeveloper: Gordon\nContact: gordonthedeveloper@protonmail.com",
+    "tc": "資料來源: data.gov.hk\n開發者: Gordon \n聯絡方式: gordonthedeveloper@protonmail.com",
+    "sc": "资料来源: data.gov.hk\n开發者: Gordon \n联络方式: gordonthedeveloper@protonmail.com"
+  },
+  {
+    "key": "aboutThisApp",
+    "en": "About This App",
+    "tc": "關於此應用程式",
+    "sc": "关于此应用程式"
   }
 
   ]

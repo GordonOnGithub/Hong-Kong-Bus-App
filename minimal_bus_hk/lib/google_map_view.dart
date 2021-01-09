@@ -73,7 +73,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           title: Observer(
         builder: (_) =>Stores.googleMapStore.selectedRoute != null?
         Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}", maxLines: 2,)
-          :Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref))),
+          : ( Stores.googleMapStore.selectedBusStop != null? Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref)) :Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)))),
         ),
         body: Observer(
     builder: (_) =>Center(child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -85,7 +85,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
             zoom:   Stores.googleMapStore.selectedBusStop != null? _defaultZoomForStop:
             ( Stores.googleMapStore.selectedRoute != null? Stores.googleMapStore.getDefaultZoomLevelForRoute : _defaultZoomForAllStops),
           ),
-          markers: _getMarkers(Stores.googleMapStore.busStops, Stores.googleMapStore.currentZoomLevel),
+          markers: _getMarkers(Stores.googleMapStore.busStops, Stores.googleMapStore.currentZoomLevel, Stores.googleMapStore.selectedBusStop),
           onMapCreated: _onMapCreated,
           onCameraMoveStarted: (){
             Stores.googleMapStore.setAtCenter(false);
@@ -103,18 +103,18 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         ],),)),
             floatingActionButton:Observer(
            builder: (_) =>  !Stores.googleMapStore.atCenter ?
-               ( Stores.googleMapStore.selectedRoute != null? FloatingActionButton.extended(
+                FloatingActionButton.extended(
              onPressed: (){
                _onRecenterClicked();
              },
              icon: Icon(Icons.zoom_in),
                  label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRecenter, Stores.localizationStore.localizationPref)),
-           ) :Container() ): Container()),
+           ) : Container()),
 
     );
   }
 
-  Set<Marker> _getMarkers(List<BusStopDetail> busStops, double zoom){
+  Set<Marker> _getMarkers(List<BusStopDetail> busStops, double zoom, BusStopDetail selectedBusStop ){
     Set<Marker> markers = Set();
       if(busStops != null && busStops.length > 0) {
         var count = 0;
@@ -134,23 +134,35 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
               icon: BitmapDescriptor.defaultMarkerWithHue(  Stores.googleMapStore.selectedBusStop != null && busStopDetail.identifier == Stores.googleMapStore.selectedBusStop.identifier ? BitmapDescriptor.hueGreen : count == 1?BitmapDescriptor.hueAzure:(count == busStops.length? BitmapDescriptor.hueBlue : BitmapDescriptor.hueRed)));
           markers.add(stopMarker);
         }
-      }else if(zoom >= _defaultZoomForAllStops){
-        for(BusStopDetail busStopDetail in Stores.dataManager.busStopDetailMap.values){
-          MarkerId markerId = MarkerId("${busStopDetail.identifier}");
-          InfoWindow infoWindow = InfoWindow(title: "${LocalizationUtil.localizedStringFrom(
-              busStopDetail, BusStopDetail.localizationKeyForName,
-              Stores.localizationStore.localizationPref)}");
-          Marker stopMarker = Marker(markerId: markerId,
-              position: busStopDetail.positionForMap,
-              infoWindow: infoWindow,
-              icon: BitmapDescriptor.defaultMarkerWithHue(  BitmapDescriptor.hueRed),
-          onTap: (){
-
-          });
-          markers.add(stopMarker);
-        }
-
+      }else if(selectedBusStop != null){
+        MarkerId markerId = MarkerId("${selectedBusStop.identifier}");
+        InfoWindow infoWindow = InfoWindow(title: "${LocalizationUtil.localizedStringFrom(
+            selectedBusStop, BusStopDetail.localizationKeyForName,
+            Stores.localizationStore.localizationPref)}");
+        Marker stopMarker = Marker(markerId: markerId,
+            position: selectedBusStop.positionForMap,
+            infoWindow: infoWindow,
+            icon: BitmapDescriptor.defaultMarkerWithHue(  BitmapDescriptor.hueGreen));
+        markers.add(stopMarker);
       }
+
+      // else if(zoom >= _defaultZoomForAllStops){
+      //   for(BusStopDetail busStopDetail in Stores.dataManager.busStopDetailMap.values){
+      //     MarkerId markerId = MarkerId("${busStopDetail.identifier}");
+      //     InfoWindow infoWindow = InfoWindow(title: "${LocalizationUtil.localizedStringFrom(
+      //         busStopDetail, BusStopDetail.localizationKeyForName,
+      //         Stores.localizationStore.localizationPref)}");
+      //     Marker stopMarker = Marker(markerId: markerId,
+      //         position: busStopDetail.positionForMap,
+      //         infoWindow: infoWindow,
+      //         icon: BitmapDescriptor.defaultMarkerWithHue(  BitmapDescriptor.hueRed),
+      //     onTap: (){
+      //
+      //     });
+      //     markers.add(stopMarker);
+      //   }
+      //
+      // }
 //debug
     // MarkerId markerId = MarkerId("geocenter");
     // Marker stopMarker = Marker(markerId: markerId,

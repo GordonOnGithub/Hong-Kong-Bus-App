@@ -67,7 +67,7 @@ class _StopListViewPageState extends State<StopListViewPage> {
                  var busStop = Stores.stopListViewStore.filteredBusStopDetailList[index];
                  return InkWell(child: Container( height: 80, color: index % 2 == 0? Colors.white : Colors.grey[100],alignment: Alignment.centerLeft, child:
                  Padding( padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
-                 Row(children:[ Expanded(child: Text(LocalizationUtil.localizedStringFrom(busStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w500), maxLines: 2,))])),
+                 Row(children:[ Expanded(child: Text(LocalizationUtil.localizedStringFrom(busStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600), maxLines: 2,)), Icon(Icons.arrow_forward)])),
                  ), onTap: (){
                       Stores.routeListStore.setFilterStopIdentifier(busStop.identifier);
                       Navigator.pop(context);

@@ -104,8 +104,11 @@ abstract class DataManagerBase with Store {
   @observable
   ObservableMap<String, List<BusStop>> outboundBusStopsMap;
 
+  Map<String, List<BusStop>> _tmpInboundBusStopsMap;
+  Map<String, List<BusStop>> _tmpOutboundBusStopsMap;
+
   @action
-  Future<void> updateBusStopsMap(String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray) async{
+  Future<void> updateBusStopsMap(String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray, {bool saveInTmp = false}) async{
     ObservableList<BusStop> result = ObservableList();
     for(Map<String, dynamic> data in dataArray){
       result.add(BusStop.fromJson(data));
@@ -115,29 +118,83 @@ abstract class DataManagerBase with Store {
       DirectionalRoute directionalRoute = DirectionalRoute(route: routesMap[routeCode], isInbound: isInbound);
       updateStopRouteCodeMap(directionalRoute, result);
     }
-    if(isInbound) {
-      if (inboundBusStopsMap == null) {
-        inboundBusStopsMap = ObservableMap();
+    if(saveInTmp){
+      if (isInbound) {
+        if (_tmpInboundBusStopsMap == null) {
+          _tmpInboundBusStopsMap = Map();
+        }
+        _tmpInboundBusStopsMap[routeCode] = result;
+      } else {
+        if (_tmpOutboundBusStopsMap == null) {
+          _tmpOutboundBusStopsMap = Map();
+        }
+        _tmpOutboundBusStopsMap[routeCode] = result;
       }
-      inboundBusStopsMap[routeCode] = result;
-    }else{
-      if (outboundBusStopsMap == null) {
-        outboundBusStopsMap = ObservableMap();
+    }else {
+      if (isInbound) {
+        if (inboundBusStopsMap == null) {
+          inboundBusStopsMap = ObservableMap();
+        }
+        inboundBusStopsMap[routeCode] = result;
+      } else {
+        if (outboundBusStopsMap == null) {
+          outboundBusStopsMap = ObservableMap();
+        }
+        outboundBusStopsMap[routeCode] = result;
       }
-      outboundBusStopsMap[routeCode] = result;
     }
   }
 
   @observable
   ObservableMap<String, BusStopDetail> busStopDetailMap;
+  Map<String, BusStopDetail> _tmpBusStopDetailMap;
 
   @action
-  void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData){
+  void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData, {bool saveInTmp = false}){
     var busStopDetail = busStopData.keys.length > 0 ? BusStopDetail.fromJson(busStopData) : BusStopDetail.invalid(stopId);
-    if(busStopDetailMap == null){
+
+    if(saveInTmp) {
+      if (_tmpBusStopDetailMap == null) {
+        _tmpBusStopDetailMap = Map();
+      }
+      _tmpBusStopDetailMap[stopId] = busStopDetail;
+    }else{
+      if (busStopDetailMap == null) {
+        busStopDetailMap = ObservableMap();
+      }
+      busStopDetailMap[stopId] = busStopDetail;
+    }
+  }
+
+  @action
+  void applyTmpBusStopsDetailData(){
+    if (busStopDetailMap == null) {
       busStopDetailMap = ObservableMap();
     }
-    busStopDetailMap[stopId] = busStopDetail;
+    if(_tmpBusStopDetailMap != null) {
+      busStopDetailMap.addAll(_tmpBusStopDetailMap);
+      _tmpBusStopDetailMap.clear();
+    }
+  }
+
+  @action
+  void applyTmpBusStopsData(){
+    if (inboundBusStopsMap == null) {
+      inboundBusStopsMap = ObservableMap();
+    }
+
+    if(_tmpInboundBusStopsMap != null) {
+      inboundBusStopsMap.addAll(_tmpInboundBusStopsMap);
+      _tmpInboundBusStopsMap.clear();
+    }
+
+    if (outboundBusStopsMap == null) {
+      outboundBusStopsMap = ObservableMap();
+    }
+    if(_tmpOutboundBusStopsMap != null) {
+      outboundBusStopsMap.addAll(_tmpOutboundBusStopsMap);
+      _tmpOutboundBusStopsMap.clear();
+    }
   }
 
   @observable
@@ -223,6 +280,13 @@ abstract class DataManagerBase with Store {
   @action
   void setTotalDataCount(int count){
     totalDataCount = count;
+  }
+  @observable
+  int lastFetchDataCompleteTimestamp = 0;
+
+  @action
+  void setLastFetchDataCompleteTimestamp(int timestamp){
+    lastFetchDataCompleteTimestamp = timestamp;
   }
 
 }

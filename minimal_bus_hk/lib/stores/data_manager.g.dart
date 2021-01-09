@@ -188,9 +188,11 @@ mixin _$DataManager on DataManagerBase, Store {
 
   @override
   Future<void> updateBusStopsMap(
-      String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray) {
-    return _$updateBusStopsMapAsyncAction
-        .run(() => super.updateBusStopsMap(routeCode, isInbound, dataArray));
+      String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray,
+      {bool saveInTmp = false}) {
+    return _$updateBusStopsMapAsyncAction.run(() => super.updateBusStopsMap(
+        routeCode, isInbound, dataArray,
+        saveInTmp: saveInTmp));
   }
 
   final _$addRouteStopToBookmarkAsyncAction =
@@ -227,11 +229,35 @@ mixin _$DataManager on DataManagerBase, Store {
   }
 
   @override
-  void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData) {
+  void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData,
+      {bool saveInTmp = false}) {
     final _$actionInfo = _$DataManagerBaseActionController.startAction(
         name: 'DataManagerBase.updateBusStopDetailMap');
     try {
-      return super.updateBusStopDetailMap(stopId, busStopData);
+      return super
+          .updateBusStopDetailMap(stopId, busStopData, saveInTmp: saveInTmp);
+    } finally {
+      _$DataManagerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void applyTmpBusStopsDetailData() {
+    final _$actionInfo = _$DataManagerBaseActionController.startAction(
+        name: 'DataManagerBase.applyTmpBusStopsDetailData');
+    try {
+      return super.applyTmpBusStopsDetailData();
+    } finally {
+      _$DataManagerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void applyTmpBusStopsData() {
+    final _$actionInfo = _$DataManagerBaseActionController.startAction(
+        name: 'DataManagerBase.applyTmpBusStopsData');
+    try {
+      return super.applyTmpBusStopsData();
     } finally {
       _$DataManagerBaseActionController.endAction(_$actionInfo);
     }

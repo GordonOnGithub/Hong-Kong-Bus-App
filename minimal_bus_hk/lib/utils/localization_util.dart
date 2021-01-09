@@ -28,7 +28,7 @@ class LocalizationUtil{
   static final String localizationKeyForNoRouteDataFound = "noRouteDataFound";
   static final String localizationKeyForRecenter = "recenter";
   static final String localizationKeyForLocationPermissionNotGranted = "locationPermissionNotGranted";
-  static final String localizationKeyForSearch = "search";
+  static final String localizationKeyForRouteSearch = "routeSearch";
   static final String localizationKeyForMap = "map";
   static final String localizationKeyForDownloadAllDataPopupTitle = "downloadAllDataPopupTitle";
   static final String localizationKeyForDownloadAllDataPopupContent = "downloadAllDataPopupContent";
@@ -46,6 +46,9 @@ class LocalizationUtil{
   static final String localizationKeyForBusStop = "busStop";
   static final String localizationKeyForDataPreparationProgress= "dataPreparationProgress";
   static final String localizationKeyForDataPreparationReminder = "dataPreparationReminder";
+  static final String localizationKeyForLastUpdateTime = "lastUpdateTime";
+  static final String localizationKeyForAboutThisApp = "aboutThisApp";
+  static final String localizationKeyForAboutThisAppDetail = "aboutThisAppDetail";
 
   static String localizedString(String key, LocalizationPref pref){
     if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {

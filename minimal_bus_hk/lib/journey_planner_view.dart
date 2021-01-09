@@ -140,7 +140,7 @@ class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
             ],))
             : _getProgressView(Stores.dataManager.allDataFetchCount),)),
       floatingActionButton: Stores.journeyPlannerStore.originStopId != null && Stores.journeyPlannerStore.destinationStopId != null ?
-      FloatingActionButton.extended(icon: Icon(Icons.search), label:  Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearch, Stores.localizationStore.localizationPref)), onPressed: (){
+      FloatingActionButton.extended(icon: Icon(Icons.search), label:  Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearch, Stores.localizationStore.localizationPref)), onPressed: (){
 
     },):Container(),
     );

@@ -5,7 +5,6 @@ import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'package:mobx/mobx.dart';
 import 'google_map_view.dart';
-import 'utils/network_util.dart';
 import 'route_list_view.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'utils/stores.dart';
@@ -15,6 +14,7 @@ import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'dart:async';
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/setting_view.dart';
+
 void main() {
   runApp(ETAListView());
 }
@@ -44,7 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer _updateTimer;
   bool _callETAApi = false;
   ReactionDisposer _bookmarkReaction;
-  StreamSubscription _connectivityStream;
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
    Future<void> updateETAData(List<RouteStop> routeStops) async{
      if(routeStops == null)return;
@@ -87,11 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
     CacheUtils.sharedInstance().getBookmarkedRouteStop();
     Stores.localizationStore.loadDataFromAsset();
 
-     Connectivity().checkConnectivity().then((result) {
+    _connectivity.checkConnectivity().then((result) {
        Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
      });
 
-    _connectivityStream = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    _connectivitySubscription =
+    _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
         Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
     });
 
@@ -121,9 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _updateTimer = null;
     }
 
-    if(_connectivityStream != null){
-      _connectivityStream.cancel();
-      _connectivityStream = null;
+    if(_connectivitySubscription != null){
+      _connectivitySubscription.cancel();
+      _connectivitySubscription = null;
     }
   }
 
@@ -264,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         tooltip: 'Search',
         icon: Icon(Icons.search),
-        label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearch, Stores.localizationStore.localizationPref)),
+        label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearch, Stores.localizationStore.localizationPref)),
       )), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

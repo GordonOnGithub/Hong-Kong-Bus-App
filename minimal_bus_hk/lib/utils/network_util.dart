@@ -72,7 +72,7 @@ class NetworkUtil{
     return code;
   }
 
-  Future<void> parseRouteData(Map<String, dynamic> responseData, companyCode) async{
+  Future<void> parseRouteData(Map<String, dynamic> responseData, companyCode, {bool saveInTmp = false}) async{
     var list = responseData["data"] as List<dynamic>;
     var dataList = <Map<String, dynamic>>[];
     for(var data in list){
@@ -83,11 +83,11 @@ class NetworkUtil{
     await Stores.dataManager.setRoutes(dataList, companyCode);
   }
 
-  Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound) async {
+  Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool saveInTmp = false}) async {
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
+        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, [], saveInTmp: saveInTmp);
       }
       return -1;
     }
@@ -101,17 +101,17 @@ class NetworkUtil{
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getRouteDetailsCacheKey(routeCode, companyCode,isInbound), response.body);
-        await parseRouteDetail(routeCode,  companyCode, isInbound, responseData);
+        await parseRouteDetail(routeCode,  companyCode, isInbound, responseData, saveInTmp: saveInTmp);
       }
     }else{
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, []);
+        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, [], saveInTmp: saveInTmp);
       }
     }
     return code;
   }
 
-  Future<void> parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData) async{
+  Future<void> parseRouteDetail(String routeCode, String companyCode, bool isInbound, Map<String, dynamic> responseData, {bool saveInTmp = false}) async{
     var list = responseData["data"] as List<dynamic>;
     var dataList = <Map<String, dynamic>>[];
     for (var data in list) {
@@ -119,10 +119,10 @@ class NetworkUtil{
         dataList.add(data);
       }
     }
-    await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList);
+    await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList, saveInTmp: saveInTmp);
   }
 
-  Future<int> getBusStopDetail(String stopId) async {
+  Future<int> getBusStopDetail(String stopId, {bool saveInTmp = false}) async {
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       return -1;
@@ -137,15 +137,15 @@ class NetworkUtil{
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId), response.body);
-        await parseBusStopDetail(stopId, responseData);
+        await parseBusStopDetail(stopId, responseData, saveInTmp: saveInTmp);
       }
     }
     return code;
   }
 
-  Future<void> parseBusStopDetail(String stopId,  Map<String, dynamic> responseData ) async{
+  Future<void> parseBusStopDetail(String stopId,  Map<String, dynamic> responseData, {bool saveInTmp = false} ) async{
       var data = responseData["data"] as Map<String, dynamic>;
-      Stores.dataManager.updateBusStopDetailMap(stopId, data);
+      Stores.dataManager.updateBusStopDetailMap(stopId, data, saveInTmp: saveInTmp);
   }
 
   Future<int> getETA(ETAQuery query) async {

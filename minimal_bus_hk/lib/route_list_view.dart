@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/bus_route_detail_view.dart';
+import 'package:minimal_bus_hk/google_map_view.dart';
 import 'package:minimal_bus_hk/journey_planner_view.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/directional_route.dart';
@@ -60,7 +61,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
       body: Observer(
       builder: (_) => Center(
 
-        child:  Stores.routeListStore.displayedDirectionalRoutes != null ?(
+        child:  Stores.routeListStore.displayedDirectionalRoutes != null &&  Stores.dataManager.routes != null && Stores.dataManager.routes.length > 0?(
             Padding(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             child:Observer(
@@ -86,6 +87,16 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                   ),
                 ),
                 ),
+                  Stores.routeListStore.filterStopIdentifier != null && Stores.routeListStore.filterStopIdentifier.length > 0?
+                  IconButton(icon: Icon(Icons.location_on_outlined), onPressed: (){
+                    Stores.googleMapStore.setSelectedBusStop(Stores.dataManager.busStopDetailMap[Stores.routeListStore.filterStopIdentifier]);
+                    Stores.googleMapStore.setSelectedRoute(null);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GoogleMapView()),
+                    );
+                  },) : Container()
+                ,
                 Stores.routeListStore.filterKeyword.length > 0 || Stores.routeListStore.filterStopIdentifier.length > 0?
                 IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
                   _searchFieldController.text = "";

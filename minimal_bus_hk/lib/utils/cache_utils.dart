@@ -6,6 +6,7 @@ import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'package:minimal_bus_hk/utils/network_util.dart';
+import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 class CacheUtils{
@@ -45,10 +46,12 @@ class CacheUtils{
 
   bool _isFetchingAllData = false;
 
+
   Future<void> fetchAllData() async{
     if(_isFetchingAllData) return;
     _isFetchingAllData = true;
     Stores.dataManager.addAllDataFetchCount(0);
+
 
     await getRoutes();
     var routes = Stores.dataManager.routes;
@@ -61,9 +64,9 @@ class CacheUtils{
           return;
         }
         futures.add( CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, true));
+            route.routeCode, route.companyCode, true, saveInTmp: true));
         futures.add( CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, false));
+            route.routeCode, route.companyCode, false, saveInTmp: true));
 
         if(futures.length > 19) {
           await Future.wait(futures);
@@ -76,6 +79,7 @@ class CacheUtils{
         Stores.dataManager.addAllDataFetchCount(futures.length);
         futures = [];
       }
+      Stores.dataManager.applyTmpBusStopsData();
 
       Set<String> stopIdSet = Set();
 
@@ -91,7 +95,7 @@ class CacheUtils{
          for(var busStop in list){
            if(!stopIdSet.contains(busStop.identifier)) {
              futures.add(CacheUtils.sharedInstance().getBusStopDetail(
-                 busStop.identifier));
+                 busStop.identifier, saveInTmp: true));
              stopIdSet.add(busStop.identifier);
            }
          }
@@ -109,7 +113,7 @@ class CacheUtils{
         for(var busStop in list){
           if(!stopIdSet.contains(busStop.identifier)) {
             futures.add(CacheUtils.sharedInstance().getBusStopDetail(
-                busStop.identifier));
+                busStop.identifier, saveInTmp: true));
             stopIdSet.add(busStop.identifier);
           }
         }
@@ -118,6 +122,9 @@ class CacheUtils{
         Stores.dataManager.addAllDataFetchCount(1);
       }
     }
+    Stores.dataManager.applyTmpBusStopsDetailData();
+    Stores.dataManager.setLastFetchDataCompleteTimestamp( DateTime.now().millisecondsSinceEpoch);
+    // prefs.setInt("lastFetchDataCompleteTimestamp", lastFetchDataCompleteTimestamp);
     _isFetchingAllData = false;
   }
 
@@ -157,7 +164,7 @@ class CacheUtils{
 
   }
 
-  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool silentUpdate = false}) async {
+  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
     var expiryDay = prefs.getInt(routeDetailsCacheExpiryDaysKey);
@@ -171,21 +178,21 @@ class CacheUtils{
       if((isInbound && (Stores.dataManager.inboundBusStopsMap == null || !Stores.dataManager.inboundBusStopsMap.containsKey(routeCode))) ||
           (!isInbound && (Stores.dataManager.outboundBusStopsMap == null || !Stores.dataManager.outboundBusStopsMap.containsKey(routeCode)))){
         await NetworkUtil.sharedInstance().parseRouteDetail(
-            routeCode, companyCode, isInbound, cachedData);
+            routeCode, companyCode, isInbound, cachedData,  saveInTmp: saveInTmp);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
+        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, saveInTmp: saveInTmp);
         return code == 200 || silentUpdate;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound);
+      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, saveInTmp: saveInTmp);
       return code == 200;
 
   }
 
-  Future<bool> getBusStopDetail(String stopId, {bool silentUpdate = false}) async {
+  Future<bool> getBusStopDetail(String stopId, {bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getBusStopDetailCacheKey(stopId));
     var expiryDay = prefs.getInt(busStopDetailsCacheExpiryDaysKey);
@@ -196,16 +203,16 @@ class CacheUtils{
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
       if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stopId)) {
-        await NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData);
+        await NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData, saveInTmp: saveInTmp);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId);
+        var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId,  saveInTmp: saveInTmp);
         return code == 200 || !silentUpdate;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId);
+      var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId,  saveInTmp: saveInTmp);
       return code == 200;
   }
 

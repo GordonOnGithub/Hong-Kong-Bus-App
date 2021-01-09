@@ -61,10 +61,11 @@ class _SettingViewPageState extends State<SettingViewPage> {
     switch(option) {
       case SelectedOption.none:
         return [
+          Container(height: 20),
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
           Row( mainAxisAlignment: MainAxisAlignment.center, children:[
             Icon(Icons.language),
-          Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
+          Text(_getTitle(SelectedOption.language), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
               ]))
     , onTap: (){
             Stores.settingViewStore.setSelectedOption(SelectedOption.language);
@@ -72,7 +73,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
           Row( mainAxisAlignment: MainAxisAlignment.center, children:[
             Icon(Icons.archive_outlined),
-            Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
+            Text(_getTitle(SelectedOption.data), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
           ]))
             , onTap: (){
               Stores.settingViewStore.setSelectedOption(SelectedOption.data);
@@ -80,10 +81,10 @@ class _SettingViewPageState extends State<SettingViewPage> {
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
           Row( mainAxisAlignment: MainAxisAlignment.center, children:[
               Icon(Icons.info_outline),
-          Text("About", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
+          Text(_getTitle(SelectedOption.about), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
           ]
           )), onTap: (){
-            Stores.settingViewStore.setSelectedOption(SelectedOption.none);
+            Stores.settingViewStore.setSelectedOption(SelectedOption.about);
 
           },),
           Expanded(child: Container()),
@@ -91,6 +92,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
         ];
       case SelectedOption.language:
         return [
+          Container(height: 20),
           Row( mainAxisAlignment:  MainAxisAlignment.center, children: [
             Stores.localizationStore.localizationPref == LocalizationPref.english? Icon(Icons.check_circle_outline): Container() ,
           InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("English", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400 , decoration: TextDecoration.underline),),), onTap: () {
@@ -106,7 +108,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
           },),]),
           Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
          Stores.localizationStore.localizationPref == LocalizationPref.SC? Icon(Icons.check_circle_outline): Container() ,
-          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡體中文", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child: Text("簡体中文", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400 , decoration: TextDecoration.underline)),), onTap: () {
             Stores.localizationStore.setLocalizationPref(LocalizationPref.SC);
             Stores.settingViewStore.setSelectedOption(SelectedOption.none);
           },),]),
@@ -114,20 +116,29 @@ class _SettingViewPageState extends State<SettingViewPage> {
         ];
       case SelectedOption.data:
         return [
-        Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
-        Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w500 ),),
+        Container(height: 20),
+          Row(children:[ Expanded(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref), maxLines: 3,))]),
+          Row(mainAxisAlignment:  MainAxisAlignment.center, children: [
+        Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600 ),),
           Switch(value: Stores.appConfig.downloadAllData == true, onChanged: (_){
               Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
               if(Stores.appConfig.downloadAllData ){
                 CacheUtils.sharedInstance().fetchAllData();
               }
           })]),
-          Row(children:[ Expanded(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref), maxLines: 3,))]),
+    Observer(
+    builder: (_) =>(Stores.appConfig.downloadAllData == true?
+           (Stores.dataManager.allDataFetchCount >= Stores.dataManager.totalDataCount?
+    Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLastUpdateTime, Stores.localizationStore.localizationPref)}: ${new DateTime.fromMillisecondsSinceEpoch( Stores.dataManager.lastFetchDataCompleteTimestamp).toString()}")
+        : Container(height: 200, child:_getProgressView(Stores.dataManager.allDataFetchCount))):Container())),
           Expanded(child: Container())
 
         ];
       case SelectedOption.about:
-        return [];
+        return [
+          Container(height: 20),
+          Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisAppDetail, Stores.localizationStore.localizationPref)}"),
+          Expanded(child: Container())];
   }
   return [];
   }
@@ -141,9 +152,17 @@ class _SettingViewPageState extends State<SettingViewPage> {
       case SelectedOption.data:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingData, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
-        return "About";
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisApp, Stores.localizationStore.localizationPref);
     }
     return "";
+  }
 
+  Widget _getProgressView(int currentCount){
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [
+      //Padding(padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),child: Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDataPreparationProgress, Stores.localizationStore.localizationPref)}", style: TextStyle(fontWeight: FontWeight.w600),)),
+      Padding(padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),child:Container( height: 40, width: 250, color: Colors.grey, alignment: Alignment.centerLeft, child: Container(height: 40, width: 250 * currentCount / Stores.dataManager.totalDataCount, color: Colors.blue,),)),//Text("$currentCount/${(Stores.dataManager.totalDataCount)}"),
+     Padding(padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDataPreparationReminder, Stores.localizationStore.localizationPref)}", maxLines: 3,)),
+      Expanded(child: Container())
+    ],);
   }
 }
