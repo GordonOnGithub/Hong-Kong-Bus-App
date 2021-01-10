@@ -249,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Stores.appConfig.showSearchButtonReminder ? Container(height: 80,color: Colors.yellow,alignment: Alignment.center, child:
           Row(children:[
             Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearchButtonReminder, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600)))),
-            Container(width: 120)
+            Container(width: 160)
           ])
           )
           :Container()

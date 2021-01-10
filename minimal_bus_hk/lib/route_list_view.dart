@@ -7,7 +7,6 @@ import 'package:minimal_bus_hk/model/directional_route.dart';
 import 'package:minimal_bus_hk/stop_list_view.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
-import 'package:mobx/mobx.dart';
 import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

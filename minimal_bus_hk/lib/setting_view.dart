@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/stores/localization_store.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
-import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:minimal_bus_hk/stores/setting_view_store.dart';

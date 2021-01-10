@@ -22,3 +22,4 @@ doc/api/
 
 #generated codes
 *.g.dart
+minimal_bus_hk/android/app/key.jks

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:minimal_bus_hk/google_map_view.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
 import 'model/bus_stop_detail.dart';
-import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -77,16 +75,6 @@ class _StopListViewPageState extends State<StopListViewPage> {
         ])
       ) : _getProgressView(Stores.dataManager.allDataFetchCount)
     )),
-    // floatingActionButton: FloatingActionButton(child: Icon(Icons.map), onPressed: (){
-    //   Stores.googleMapStore.setSelectedBusStop(null);
-    //   Stores.googleMapStore.setIsInbound(false);
-    //   Stores.googleMapStore.setSelectedRoute(null);
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => GoogleMapView()),
-    //   );
-    //
-    // },)
       ));
   }
 

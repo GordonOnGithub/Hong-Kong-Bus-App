@@ -146,23 +146,6 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         markers.add(stopMarker);
       }
 
-      // else if(zoom >= _defaultZoomForAllStops){
-      //   for(BusStopDetail busStopDetail in Stores.dataManager.busStopDetailMap.values){
-      //     MarkerId markerId = MarkerId("${busStopDetail.identifier}");
-      //     InfoWindow infoWindow = InfoWindow(title: "${LocalizationUtil.localizedStringFrom(
-      //         busStopDetail, BusStopDetail.localizationKeyForName,
-      //         Stores.localizationStore.localizationPref)}");
-      //     Marker stopMarker = Marker(markerId: markerId,
-      //         position: busStopDetail.positionForMap,
-      //         infoWindow: infoWindow,
-      //         icon: BitmapDescriptor.defaultMarkerWithHue(  BitmapDescriptor.hueRed),
-      //     onTap: (){
-      //
-      //     });
-      //     markers.add(stopMarker);
-      //   }
-      //
-      // }
 //debug
     // MarkerId markerId = MarkerId("geocenter");
     // Marker stopMarker = Marker(markerId: markerId,

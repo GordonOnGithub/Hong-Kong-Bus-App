@@ -6,16 +6,12 @@ import 'package:minimal_bus_hk/google_map_view.dart';
 import 'package:minimal_bus_hk/model/bus_stop_detail.dart';
 import 'package:minimal_bus_hk/model/eta_query.dart';
 import 'package:minimal_bus_hk/model/route_stop.dart';
-import 'package:minimal_bus_hk/route_list_view.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
-import 'package:mobx/mobx.dart';
 import 'model/bus_route.dart';
 import 'model/bus_stop.dart';
 import 'model/eta.dart';
-import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'main.dart';
 import 'package:minimal_bus_hk/utils/cache_utils.dart';
 
 class BusRouteDetailView extends StatelessWidget {
