@@ -5,6 +5,8 @@ import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:minimal_bus_hk/stores/setting_view_store.dart';
 import 'package:minimal_bus_hk/utils/localization_util.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 class SettingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -79,6 +81,21 @@ class _SettingViewPageState extends State<SettingViewPage> {
             },),
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
           Row( mainAxisAlignment: MainAxisAlignment.center, children:[
+            Icon(Icons.star_border),
+            Text(_getTitle(SelectedOption.appStore), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))
+          ]))
+            , onTap: (){
+
+            String appStoreUrl = "https://play.google.com/store/apps/details?id=com.gordon.minimal_bus_hk";
+              canLaunch(appStoreUrl).then((result) {
+                if (result) {
+                  launch(appStoreUrl);
+                }
+              });
+
+            },),
+          InkWell(child: Container(height: 50, alignment: Alignment.center, child:
+          Row( mainAxisAlignment: MainAxisAlignment.center, children:[
               Icon(Icons.info_outline),
           Text(_getTitle(SelectedOption.about), style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
           ]
@@ -150,6 +167,8 @@ class _SettingViewPageState extends State<SettingViewPage> {
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingLanguage, Stores.localizationStore.localizationPref);
       case SelectedOption.data:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingData, Stores.localizationStore.localizationPref);
+      case SelectedOption.appStore:
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingAppStore, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisApp, Stores.localizationStore.localizationPref);
     }

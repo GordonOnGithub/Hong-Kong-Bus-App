@@ -40,6 +40,7 @@ class LocalizationUtil{
   static final String localizationKeyForSearchButtonReminder = "searchButtonReminder";
   static final String localizationKeyForRouteDetailReminder = "routeDetailReminder";
   static final String localizationKeyForSettingData = "settingData";
+  static final String localizationKeyForSettingAppStore = "settingAppStore";
   static final String localizationKeyForDownloadData = "settingDownloadData";
   static final String localizationKeyForJourneyPlanner = "journeyPlanner";
   static final String localizationKeyForBusStopList = "busStopList";

@@ -9,6 +9,7 @@ enum SelectedOption{
   none,
   language,
   data,
+  appStore,
   about
 
 }

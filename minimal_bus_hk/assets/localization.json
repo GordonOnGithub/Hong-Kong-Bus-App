@@ -76,7 +76,13 @@
   "en":"Language",
   "tc":"語言",
   "sc":"语言"
-},
+  },
+  {
+    "key":"settingAppStore",
+    "en":"Rate This App",
+    "tc":"為此應用程式評分",
+    "sc":"为此应用程序评分"
+  },
   {
     "key":"settingData",
     "en":"Route Data",
