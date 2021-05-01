@@ -97,6 +97,9 @@ abstract class GoogleMapStoreBase with Store {
     double minLng = double.infinity;
 
     for(var busStop in busStops){
+      if( busStop.latitude == null || busStop.longitude == null){
+        continue;
+      }
       if(busStop.positionForMap.latitude > maxLat){
         maxLat = busStop.latitude;
       }
@@ -125,7 +128,9 @@ abstract class GoogleMapStoreBase with Store {
     double minLng = double.infinity;
 
     for(var busStop in busStops){
-
+      if( busStop.latitude == null || busStop.longitude == null){
+        continue;
+      }
       if(busStop.positionForMap.longitude > maxLng){
         maxLng = busStop.longitude;
       }
@@ -148,7 +153,9 @@ abstract class GoogleMapStoreBase with Store {
     double minLat = double.infinity;
 
     for(var busStop in busStops){
-
+      if( busStop.latitude == null || busStop.longitude == null){
+        continue;
+      }
       if(busStop.positionForMap.longitude > maxLat){
         maxLat = busStop.latitude;
       }
