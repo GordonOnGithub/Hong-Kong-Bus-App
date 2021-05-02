@@ -205,20 +205,20 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                     },));
                 }
                 ).build(context))))
-                    : Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForNoRouteDataFound, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,))),
+                    : Padding(padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForNoRouteDataFound, Stores.localizationStore.localizationPref), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),)))),
                  Observer( builder: (_) =>(Stores.routeDetailStore.dataFetchingError ) ?
                   InkWell(child:
-                  Container( color: Colors.yellow, height: 50, alignment: Alignment.center, child:
-                  Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),)),
+                  Container( color: Colors.yellow, height: 80, alignment: Alignment.center, child:
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.left,style: TextStyle(fontWeight: FontWeight.bold),))),
                     onTap: (){
                       Stores.routeDetailStore.setDataFetchingError(false);
                       CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) => Stores.routeDetailStore.setDataFetchingError(!value));
                     },)
                       : ( Stores.appConfig.showRouteDetailReminder?
                      InkWell(child:
-                   Container( color: Colors.yellow, height: 50, alignment: Alignment.center, child:
+                   Container( color: Colors.yellow, height: 80, alignment: Alignment.centerLeft, child:
                    Row(children:[
-                   Expanded(child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteDetailReminder, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),)),
+                   Expanded(child:  Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteDetailReminder, Stores.localizationStore.localizationPref), textAlign: TextAlign.left,style: TextStyle(fontWeight: FontWeight.bold),))),
                     Container(width:120)
                    ])),onTap: (){
                       Stores.appConfig.setShowRouteDetailReminder(false);
@@ -227,7 +227,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                      :Container()))
                 ]):
             Observer(
-                builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref)))
+                builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.bold),))
           ,))),
           floatingActionButton:  Observer(
     builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null && !Stores.routeDetailStore.dataFetchingError?FloatingActionButton.extended(

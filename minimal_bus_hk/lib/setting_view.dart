@@ -86,7 +86,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
           ]))
             , onTap: (){
 
-            String appStoreUrl = "https://play.google.com/store/apps/details?id=com.gordon.minimal_bus_hk";
+            String appStoreUrl = Stores.appConfig.appStoreUrl;
               canLaunch(appStoreUrl).then((result) {
                 if (result) {
                   launch(appStoreUrl);

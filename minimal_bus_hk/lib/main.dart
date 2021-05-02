@@ -14,6 +14,7 @@ import 'package:minimal_bus_hk/model/route_stop.dart';
 import 'dart:async';
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/setting_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(ETAListView());
@@ -109,6 +110,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     Stores.appConfig.checkShowSearchButtonReminder();
+    Stores.appConfig.checkAppLaunchCount().then((_){
+      Stores.appConfig.increaseAppLaunchCount().then((_){
+        Stores.appConfig.setHideRatingDialogue(false);
+      });
+    });
   }
 
   @override
@@ -146,7 +152,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
         child: Observer(
       builder: (_) => Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.stretch , children:[
-        (Stores.connectivityStore.connected?  Container() :
+        (Stores.connectivityStore.connected?  ( Stores.appConfig.appLaunchCount == Stores.appConfig.launchCountToShowRatingMessage && !Stores.appConfig.hideRatingDialogue ?
+        Container(height: 50,color: Colors.green,alignment: Alignment.centerLeft, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Expanded( child:
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0), child: InkWell(child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRateThisApp, Stores.localizationStore.localizationPref), textAlign: TextAlign.left, style: TextStyle(color: Colors.white),), onTap: (){
+          String appStoreUrl = Stores.appConfig.appStoreUrl;
+          canLaunch(appStoreUrl).then((result) {
+            if (result) {
+              launch(appStoreUrl);
+            }
+            Stores.appConfig.setHideRatingDialogue(true);
+          });
+        },))),  IconButton(icon: Icon(Icons.cancel_outlined), color: Colors.white, onPressed: (){
+          Stores.appConfig.setHideRatingDialogue(true);
+        }) ],),) :
+        Container()) :
         Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),)),
       Expanded( child: ((Stores.dataManager.bookmarkedRouteStops != null && ( Stores.dataManager.bookmarkedRouteStops.length == 0 || Stores.dataManager.routes != null)  )?
         Padding(padding: const EdgeInsets.all(0), child: (
@@ -248,8 +268,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
           Stores.appConfig.showSearchButtonReminder ? Container(height: 80,color: Colors.yellow,alignment: Alignment.center, child:
           Row(children:[
-            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearchButtonReminder, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600)))),
-            Container(width: 160)
+            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearchButtonReminder, Stores.localizationStore.localizationPref),textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w600)))),
+            Container(width: 180)
           ])
           )
           :Container()

@@ -213,15 +213,15 @@
   },
   {
     "key": "understand",
-    "en": "Understand",
+    "en": "Understood",
     "tc": "明白",
     "sc": "明白"
   },
   {
     "key": "searchButtonReminder",
-    "en": "Click \"search\" to look up bus routes & stops",
-    "tc": "按 「搜尋」以尋找巴士路線及車站資料",
-    "sc": "按 「搜寻」以寻找巴士路线及车站资料"
+    "en": "Click \"route search\" to look up bus routes & stops",
+    "tc": "按 「路線搜尋」以尋找巴士路線及車站資料",
+    "sc": "按 「路线搜寻」以寻找巴士路线及车站资料"
   },
   {
     "key": "routeDetailReminder",
@@ -276,6 +276,12 @@
     "en": "About This App",
     "tc": "關於此應用程式",
     "sc": "关于此应用程式"
+  },
+  {
+    "key": "rateThisApp",
+    "en": "Please click here to rate this app if you enjoy it!",
+    "tc": "若你喜歡這個應用程式, 請按此評分!",
+    "sc": "若你喜欢这个应用程序, 请按此评分!"
   }
 
   ]

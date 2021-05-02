@@ -50,6 +50,7 @@ class LocalizationUtil{
   static final String localizationKeyForLastUpdateTime = "lastUpdateTime";
   static final String localizationKeyForAboutThisApp = "aboutThisApp";
   static final String localizationKeyForAboutThisAppDetail = "aboutThisAppDetail";
+  static final String localizationKeyForRateThisApp = "rateThisApp";
 
   static String localizedString(String key, LocalizationPref pref){
     if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {

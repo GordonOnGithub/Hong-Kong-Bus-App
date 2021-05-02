@@ -6,6 +6,9 @@ part 'app_config.g.dart';
 class AppConfigStore = AppConfigStoreBase with _$AppConfigStore;
 
 abstract class AppConfigStoreBase with Store {
+
+  final String appStoreUrl = "https://play.google.com/store/apps/details?id=com.gordon.minimal_bus_hk";
+  final int launchCountToShowRatingMessage = 10;
   @observable
   int arrivalImminentTimeMilliseconds = 60000;
 
@@ -88,6 +91,34 @@ abstract class AppConfigStoreBase with Store {
     showSearchButtonReminder = shouldShow;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(_showSearchButtonReminderConfigKey, shouldShow);
+  }
+
+  @observable
+  bool hideRatingDialogue = true;
+
+  @action
+  void setHideRatingDialogue(bool hide){
+    hideRatingDialogue = hide;
+  }
+
+  @observable
+  int appLaunchCount = 0;
+  static final String _appLaunchCountConfigKey = "appLaunchCount";
+
+  @action
+  Future<void> checkAppLaunchCount() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    appLaunchCount = prefs.getInt(_appLaunchCountConfigKey);
+    if(appLaunchCount == null){
+      appLaunchCount = 0;
+    }
+  }
+
+  @action
+  Future<void> increaseAppLaunchCount() async{
+    appLaunchCount += 1;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(_appLaunchCountConfigKey, appLaunchCount);
   }
 
   @observable
