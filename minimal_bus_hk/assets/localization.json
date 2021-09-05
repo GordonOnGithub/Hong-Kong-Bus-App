@@ -183,9 +183,9 @@
   },
   {
     "key": "downloadAllDataPopupContent",
-    "en": "Download all data to speed up searching and support offline search and bus stop search. You can use this app while downloading.(est. data size: 50 MB)",
-    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。下載過程中仍可正常使用此程式。(資料大小: 約50MB)",
-    "sc": "下载所有路线资料可加快搜寻速度，并支援离线搜寻和车站搜寻。下载过程中仍可正常使用此程式。(资料大小: 约50MB)"
+    "en": "Download all data to speed up searching and support offline search and bus stop search. You can use this app while downloading.(est. data size: 5.4 MB)",
+    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。下載過程中仍可正常使用此程式。(資料大小: 約5.4 MB)",
+    "sc": "下载所有路线资料可加快搜寻速度，并支援离线搜寻和车站搜寻。下载过程中仍可正常使用此程式。(资料大小: 约5.4 MB)"
   },
   {
     "key": "downloadAllDataPopupYes",
@@ -282,6 +282,12 @@
     "en": "Please click here to rate this app if you enjoy it!",
     "tc": "若你喜歡這個應用程式, 請按此評分!",
     "sc": "若你喜欢这个应用程序, 请按此评分!"
+  },
+  {
+    "key": "donation",
+    "en": "Donation",
+    "tc": "捐款",
+    "sc": "捐款"
   }
 
   ]

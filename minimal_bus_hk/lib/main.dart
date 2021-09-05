@@ -172,8 +172,11 @@ class _MyHomePageState extends State<MyHomePage> {
         Padding(padding: const EdgeInsets.all(0), child: (
                      Stores.dataManager.bookmarkedRouteStops.length > 0 ? Scrollbar( child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-                    itemCount: Stores.etaListStore.displayedETAs.length ,
+                    itemCount: Stores.etaListStore.displayedETAs.length + 1 ,
                     itemBuilder: (BuildContext context, int index) {
+                      if (index >= Stores.etaListStore.displayedETAs.length ) {
+                        return Container(height: 60);
+                      }
                       ETA eta = Stores.etaListStore.displayedETAs[index];
                       return Observer(
                           builder: (_) =>Container(

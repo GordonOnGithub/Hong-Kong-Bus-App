@@ -155,6 +155,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
           Container(height: 20),
           Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisAppDetail, Stores.localizationStore.localizationPref)}"),
           Expanded(child: Container())];
+
   }
   return [];
   }
@@ -171,6 +172,9 @@ class _SettingViewPageState extends State<SettingViewPage> {
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingAppStore, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisApp, Stores.localizationStore.localizationPref);
+      case SelectedOption.donation:
+        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDonation, Stores.localizationStore.localizationPref);
+
     }
     return "";
   }

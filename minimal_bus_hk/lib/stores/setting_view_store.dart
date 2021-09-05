@@ -10,8 +10,8 @@ enum SelectedOption{
   language,
   data,
   appStore,
-  about
-
+  about,
+  donation
 }
 
 abstract class SettingViewStoreBase with Store {

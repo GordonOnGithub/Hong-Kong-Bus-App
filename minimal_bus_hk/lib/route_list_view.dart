@@ -108,8 +108,12 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
             child:Scrollbar(child:
             ListView.builder(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-                itemCount:   Stores.routeListStore.displayedDirectionalRoutes.length ,
+                itemCount:   Stores.routeListStore.displayedDirectionalRoutes.length + 1,
                 itemBuilder: (BuildContext context, int index) {
+                  if (index >= Stores.routeListStore.displayedDirectionalRoutes.length){
+                    return Container(height: 60);
+                  }
+
                   DirectionalRoute directionalBusRoute = Stores.routeListStore.displayedDirectionalRoutes[index];
                   return Observer(
                       builder: (_) =>Container(
