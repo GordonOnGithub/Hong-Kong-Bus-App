@@ -12,6 +12,7 @@ RouteStop _$RouteStopFromJson(Map<String, dynamic> json) {
     json['stopId'] as String,
     json['companyCode'] as String,
     json['isInbound'] as bool,
+    json['serviceType'] as String,
   );
 }
 
@@ -20,4 +21,5 @@ Map<String, dynamic> _$RouteStopToJson(RouteStop instance) => <String, dynamic>{
       'stopId': instance.stopId,
       'companyCode': instance.companyCode,
       'isInbound': instance.isInbound,
+      'serviceType': instance.serviceType,
     };

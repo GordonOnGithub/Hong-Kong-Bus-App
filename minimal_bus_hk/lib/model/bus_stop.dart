@@ -5,11 +5,13 @@ class BusStop{
   final int sequence;
   final String identifier;
   final DateTime timestamp;
+  final String serviceType;
 
   BusStop.fromJson(Map<String, dynamic> json):
         routeCode = json["route"],
-        companyCode = json["co"],
-        sequence =  (json["seq"] is int)? json["seq"]: 0 ,
+        companyCode = (json["co"] as String).toLowerCase(),
+        sequence =  (json["seq"] is int)? json["seq"]: (int.tryParse(json["seq"]) ?? 0) ,
         identifier = json["stop"],
-        timestamp = DateTime.tryParse(json["data_timestamp"]) ?? DateTime.now();
+        timestamp = DateTime.tryParse(json["data_timestamp"]?? "") ?? DateTime.now(),
+        serviceType = json["service_type"] ?? "";
 }

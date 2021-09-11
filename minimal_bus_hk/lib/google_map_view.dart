@@ -72,7 +72,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
         appBar: AppBar(
           title: Observer(
         builder: (_) =>Stores.googleMapStore.selectedRoute != null?
-        Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}", maxLines: 2,)
+        Text("${LocalizationUtil.localizedString(Stores.googleMapStore.selectedRoute.companyCode, Stores.localizationStore.localizationPref)} ${Stores.googleMapStore.selectedRoute.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedRoute, Stores.googleMapStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref)}", maxLines: 2,)
           : ( Stores.googleMapStore.selectedBusStop != null? Text(LocalizationUtil.localizedStringFrom(Stores.googleMapStore.selectedBusStop, BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref)) :Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)))),
         ),
         body: Observer(

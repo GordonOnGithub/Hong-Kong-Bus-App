@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
        _callETAApi = false;
      }
     for(RouteStop s in routeStops){
-      await CacheUtils.sharedInstance().getBusStopDetail(s.stopId);
+      await CacheUtils.sharedInstance().getBusStopDetail(s.stopId, companyCode: s.companyCode);
     }
     await CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
 
@@ -192,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                  children:[
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
                                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
-                                   Text(eta.routeCode, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                                   Text("${LocalizationUtil.localizedString(eta.companyCode, Stores.localizationStore.localizationPref)} ${eta.routeCode}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                                      Icon((Stores.etaListStore.selectedETAListIndex == index) ?Icons.keyboard_arrow_up_sharp :Icons.keyboard_arrow_down_sharp)
                                    ])
                                    ),

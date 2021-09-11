@@ -40,8 +40,8 @@ class CacheUtils{
     return "${_routeDetailsCacheKey}_${companyCode}_${routeCode}_${isInbound ? "I":"O"}";
   }
 
-  String getBusStopDetailCacheKey(String stopId){
-    return "${_busStopDetailCacheKey}_$stopId";
+  String getBusStopDetailCacheKey(String stopId, String companyCode){
+    return "${_busStopDetailCacheKey}_$stopId${companyCode == NetworkUtil.companyCodeKMB? "_$companyCode" : ""}";//backward compatibility, no company code needed for CTB/NWFB
   }
 
   bool _isFetchingAllData = false;
@@ -56,18 +56,33 @@ class CacheUtils{
     await getRoutes();
     var routes = Stores.dataManager.routes;
     if(routes != null){
-      Stores.dataManager.setTotalDataCount(routes.length * 4);
+      Stores.dataManager.setTotalDataCount((Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 4 +
+          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length * 2 ); //only KMB has provide if the routes are inbound/outbound
       List<Future<bool>> futures = [];
+
+      if (!Stores.appConfig.didSearchKMBStopList){
+        var result = await NetworkUtil.sharedInstance().getStopListFor(NetworkUtil.companyCodeKMB);
+        Stores.appConfig.didSearchKMBStopList = result == 200;
+      }
+
       for(var route in routes) {
         if(Stores.appConfig.downloadAllData != true){
           _isFetchingAllData = false;
           return;
         }
-        futures.add( CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, true, saveInTmp: true));
-        futures.add( CacheUtils.sharedInstance().getRouteDetail(
-            route.routeCode, route.companyCode, false, saveInTmp: true));
 
+        if (route.bound.length == 0) {//no direction specified
+          futures.add(CacheUtils.sharedInstance().getRouteDetail(
+              route.routeCode, route.companyCode, true, route.serviceType,
+              saveInTmp: true));
+          futures.add(CacheUtils.sharedInstance().getRouteDetail(
+              route.routeCode, route.companyCode, false, route.serviceType,
+              saveInTmp: true));
+        }else{
+          futures.add(CacheUtils.sharedInstance().getRouteDetail(
+              route.routeCode, route.companyCode, route.bound == "I", route.serviceType,
+              saveInTmp: true));
+        }
         if(futures.length > 19) {
           await Future.wait(futures);
           Stores.dataManager.addAllDataFetchCount(futures.length);
@@ -164,7 +179,7 @@ class CacheUtils{
 
   }
 
-  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool silentUpdate = false, bool saveInTmp = false}) async {
+  Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
     var expiryDay = prefs.getInt(routeDetailsCacheExpiryDaysKey);
@@ -183,18 +198,18 @@ class CacheUtils{
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, saveInTmp: saveInTmp);
+        var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, serviceType, saveInTmp: saveInTmp);
         return code == 200 || silentUpdate;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, saveInTmp: saveInTmp);
+      var code = await  NetworkUtil.sharedInstance().getRouteDetail(routeCode, companyCode, isInbound, serviceType, saveInTmp: saveInTmp);
       return code == 200;
 
   }
 
-  Future<bool> getBusStopDetail(String stopId, {bool silentUpdate = false, bool saveInTmp = false}) async {
+  Future<bool> getBusStopDetail(String stopId, {String companyCode = NetworkUtil.companyCodeNWFB, bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(getBusStopDetailCacheKey(stopId));
+    String content = prefs.getString(getBusStopDetailCacheKey(stopId, companyCode));
     var expiryDay = prefs.getInt(busStopDetailsCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -208,17 +223,17 @@ class CacheUtils{
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;
       }else{
-        var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId,  saveInTmp: saveInTmp);
+        var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId, companyCode, saveInTmp: saveInTmp);
         return code == 200 || !silentUpdate;
       }
     }
-      var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId,  saveInTmp: saveInTmp);
+      var code = await  NetworkUtil.sharedInstance().getBusStopDetail(stopId, companyCode, saveInTmp: saveInTmp);
       return code == 200;
   }
 
-  Future<bool> getRouteAndStopsDetail(BusRoute route, bool isInbound, {bool silentUpdate = false}) async {
+  Future<bool> getRouteAndStopsDetail(BusRoute route, bool isInbound,  {bool silentUpdate = false}) async {
 
-    bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound, silentUpdate: silentUpdate);
+    bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound, route.serviceType, silentUpdate: silentUpdate);
     if(success){
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
       if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
@@ -226,7 +241,7 @@ class CacheUtils{
 
         for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            futures.add(getBusStopDetail(stop.identifier, silentUpdate: silentUpdate));
+            futures.add(getBusStopDetail(stop.identifier, companyCode: stop.companyCode, silentUpdate: silentUpdate));
           }
         }
         List<bool> results = await Future.wait(futures);
@@ -248,6 +263,9 @@ class CacheUtils{
     if(content != null){
         List<dynamic> decodedList = jsonDecode(content);
         for(var obj in decodedList) {
+          if (obj["serviceType"] == null){
+            obj["serviceType"] = "";
+          }
           list.add(RouteStop.fromJson(obj));
         }
     }

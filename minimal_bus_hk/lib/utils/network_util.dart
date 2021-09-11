@@ -22,18 +22,19 @@ class NetworkUtil{
 
   NetworkUtil._();
 
-  final String _routeAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route";
-  final String _routeDataAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop";
-  final String _busStopDetailAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop";
-  final String _etaAPI = "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta";
+  final Map<String, String> _routeAPIs = {companyCodeNWFB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route/nwfb", companyCodeCTB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route/ctb", companyCodeKMB : "https://data.etabus.gov.hk/v1/transport/kmb/route/"};
+  final Map<String, String> _routeDataAPIs = {companyCodeNWFB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/nwfb/", companyCodeCTB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/route-stop/ctb/", companyCodeKMB : "https://data.etabus.gov.hk/v1/transport/kmb/route-stop/"};
+  final Map<String, String> _busStopDetailAPIs = {companyCodeNWFB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop/", companyCodeCTB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/stop/", companyCodeKMB : "https://data.etabus.gov.hk/v1/transport/kmb/stop/"};
+  final Map<String, String> _etaAPIs = {companyCodeNWFB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/nwfb/", companyCodeCTB : "https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/", companyCodeKMB : "https://data.etabus.gov.hk/v1/transport/kmb/eta/"};
+  final Map<String, String> _stopListAPIs = {companyCodeNWFB : "", companyCodeCTB : "", companyCodeKMB : "https://data.etabus.gov.hk/v1/transport/kmb/stop"};
 
   //Lantau bus
   final String _lantauBusRouteAPI = "https://rt.data.gov.hk/v1/transport/nlb/route.php?action=list";
 
-  static final String companyCodeNWFB = "nwfb";
-  static final String companyCodeCTB = "ctb";
-
-  static final List<String> companyCodeList = [companyCodeCTB, companyCodeNWFB];
+  static const String companyCodeNWFB = "nwfb";
+  static const String companyCodeCTB = "ctb";
+  static const String companyCodeKMB = "kmb";
+  static final List<String> companyCodeList = [companyCodeCTB, companyCodeNWFB, companyCodeKMB];
 
   Future<bool> getRoute() async {
     bool result = true;
@@ -53,7 +54,7 @@ class NetworkUtil{
       return -1;
     }
 
-    var response = await http.get("$_routeAPI/$companyCode").catchError((e){
+    var response = await http.get(_routeAPIs[companyCode]).catchError((e){
         return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -77,13 +78,59 @@ class NetworkUtil{
     var dataList = <Map<String, dynamic>>[];
     for(var data in list){
       if(data is Map<String, dynamic>){
+        if(data["co"] == null){
+          data["co"] = companyCode;
+        }
         dataList.add(data);
       }
     }
     await Stores.dataManager.setRoutes(dataList, companyCode);
   }
 
-  Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound, {bool saveInTmp = false}) async {
+  Future<int> getStopListFor(String companyCode) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
+      if(Stores.dataManager.routes == null) {
+        await Stores.dataManager.setRoutes([], companyCode);
+      }
+      return -1;
+    }
+
+    var response = await http.get(_stopListAPIs[companyCode]).catchError((e){
+      return null;// connectivity issue
+    });
+    var code = response != null? response.statusCode : -1;
+    if(code == 200){
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      if(responseData.containsKey("data")){
+        await parseStopListData(responseData, companyCode);
+      }
+    }else{
+
+    }
+    return code;
+  }
+
+  Future<void> parseStopListData(Map<String, dynamic> responseData, companyCode, {bool saveInTmp = false}) async{
+    var list = responseData["data"] as List<dynamic>;
+    for(var data in list){
+      if(data is Map<String, dynamic>){
+        String stopId = data["stop"];
+        if(stopId != null) {
+          if (data["co"] == null) {
+            data["co"] = companyCode;
+          }
+          Map<String, dynamic> dataToSave = jsonDecode( jsonEncode(responseData));
+          dataToSave["data"] = data;
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId, companyCode), jsonEncode(dataToSave));
+          await parseBusStopDetail(stopId, data, saveInTmp: saveInTmp);
+        }
+      }
+    }
+  }
+
+  Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool saveInTmp = false}) async {
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
@@ -91,14 +138,15 @@ class NetworkUtil{
       }
       return -1;
     }
+    var url = _routeDataAPIs[companyCode.toLowerCase()];
     var response = await http.get(
-        "$_routeDataAPI/$companyCode/$routeCode/${isInbound ? "inbound" : "outbound"}").catchError((e){
+        "$url$routeCode/${ isInbound ? "inbound" : "outbound"}/$serviceType").catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
     if (code == 200) {
       Map<String, dynamic> responseData = jsonDecode(response.body);
-      if (responseData.containsKey("data")) {
+      if (responseData.containsKey("data") && responseData["data"] is List) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getRouteDetailsCacheKey(routeCode, companyCode,isInbound), response.body);
         await parseRouteDetail(routeCode,  companyCode, isInbound, responseData, saveInTmp: saveInTmp);
@@ -116,19 +164,22 @@ class NetworkUtil{
     var dataList = <Map<String, dynamic>>[];
     for (var data in list) {
       if (data is Map<String, dynamic>) {
+        if (data["co"] == null){
+          data["co"] = companyCode;
+        }
         dataList.add(data);
       }
     }
     await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList, saveInTmp: saveInTmp);
   }
 
-  Future<int> getBusStopDetail(String stopId, {bool saveInTmp = false}) async {
+    Future<int> getBusStopDetail(String stopId, String companyCode, {bool saveInTmp = false}) async {
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       return -1;
     }
     var response = await http.get(
-        "$_busStopDetailAPI/$stopId").catchError((e){
+        "${_busStopDetailAPIs[companyCode.toLowerCase()]}$stopId").catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -136,7 +187,7 @@ class NetworkUtil{
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId), response.body);
+        prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId, companyCode), response.body);
         await parseBusStopDetail(stopId, responseData, saveInTmp: saveInTmp);
       }
     }
@@ -153,7 +204,7 @@ class NetworkUtil{
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       return -1;
     }
-    var response = await http.get("$_etaAPI/${query.companyCode}/${query.stopId}/${query.routeCode}").catchError((e){
+    var response = await http.get("${_etaAPIs[query.companyCode.toLowerCase()]}${query.stopId}/${query.routeCode}/${query.serviceType}").catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -164,10 +215,13 @@ class NetworkUtil{
         var dataList = <Map<String, dynamic>>[];
         for(var data in list){
           if(data is Map<String, dynamic>){
+            if (data["stop"] == null){
+              data["stop"] = query.stopId;
+            }
             dataList.add(data);
           }
         }
-        Stores.dataManager.updateETAMap(query.stopId, query.routeCode,query.companyCode, dataList);
+        Stores.dataManager.updateETAMap(query.stopId, query.routeCode,query.companyCode, query.serviceType, dataList);
       }
     }
     return code;
@@ -215,9 +269,14 @@ class NetworkUtil{
 
   Future<void> downloadNewRouteData(List<BusRoute> newRoutes) async{
     for(BusRoute b in newRoutes){
-     await getRouteDetail(b.routeCode, b.companyCode, true);
-     await getRouteDetail(b.routeCode, b.companyCode, false);
+      if (b.bound.length == 0) {
+        await getRouteDetail(b.routeCode, b.companyCode, true, b.serviceType);
+        await getRouteDetail(b.routeCode, b.companyCode, false, b.serviceType);
+      }else{
+        await getRouteDetail(b.routeCode, b.companyCode, b.bound == "I", b.serviceType);
+      }
      Set<String> stopIdSet = Set();
+
      List<Future<bool>> futures = [];
 
      if( Stores.dataManager.inboundBusStopsMap.containsKey(b.routeCode)) {

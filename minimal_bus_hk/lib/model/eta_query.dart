@@ -5,12 +5,13 @@ class ETAQuery{
   final String routeCode;
   final String stopId;
   final String companyCode;
-  ETAQuery.fromBusStop(BusStop busStop) : routeCode = busStop.routeCode, stopId = busStop.identifier, companyCode = busStop.companyCode;
-  ETAQuery.fromRouteStop(RouteStop routeStop) : routeCode = routeStop.routeCode, stopId = routeStop.stopId, companyCode = routeStop.companyCode;
+  final String serviceType;
+  ETAQuery.fromBusStop(BusStop busStop) : routeCode = busStop.routeCode, stopId = busStop.identifier, companyCode = busStop.companyCode, serviceType = busStop.serviceType;
+  ETAQuery.fromRouteStop(RouteStop routeStop) : routeCode = routeStop.routeCode, stopId = routeStop.stopId, companyCode = routeStop.companyCode, serviceType = routeStop.serviceType;
 
   bool operator ==(Object other){
     if(other is ETAQuery) {
-      return routeCode == other.routeCode && stopId == other.stopId;
+      return routeCode == other.routeCode && stopId == other.stopId && serviceType == other.serviceType;
     }else{
       return false;
     }
@@ -18,7 +19,7 @@ class ETAQuery{
 
   @override
   int get hashCode {
-    return "$routeCode$stopId".hashCode;
+    return "$routeCode$stopId$serviceType".hashCode;
   }
 
 }

@@ -93,7 +93,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return  Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRoute, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }", maxLines: 2,)),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(Stores.routeDetailStore.route.companyCode, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }", maxLines: 2,)),
         ),
         body: Observer(
             builder: (_) =>Center(child:
@@ -148,7 +148,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
                       Padding(padding: const EdgeInsets.fromLTRB(0 , 25, 0, 0),child:
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween , crossAxisAlignment: CrossAxisAlignment.center,children:[
-                          Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
+                          Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType)))?
                        Icons.bookmark:Icons.bookmark_border),
 
                         Expanded(child: Text( "${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
@@ -171,11 +171,11 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                             InkWell(child:
                               Container(
                                 alignment: Alignment.center,
-                                child:(Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound)))?
+                                child:(Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType)))?
                                   Row( mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.remove_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnbookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],):
                                  Row(mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.add_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],)
                                  ) , onTap: (){
-                              var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound);
+                              var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType);
 
                               if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
                                   routeStop)) {

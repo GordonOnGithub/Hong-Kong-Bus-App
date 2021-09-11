@@ -7,13 +7,14 @@ class RouteStop{
   final String stopId;
   final String companyCode;
   final bool isInbound;
+  final String serviceType;
 
-  RouteStop( String routeCode, String stopId, String companyCode, bool isInbound):routeCode = routeCode,this.stopId = stopId, this.companyCode = companyCode, this.isInbound = isInbound;
+  RouteStop( String routeCode, String stopId, String companyCode, bool isInbound, String serviceType ):routeCode = routeCode,this.stopId = stopId, this.companyCode = companyCode, this.isInbound = isInbound, this.serviceType = serviceType;
 
 
   bool operator ==(Object other){
     if(other is RouteStop) {
-      return routeCode == other.routeCode && stopId == other.stopId && isInbound == other.isInbound && companyCode == other.companyCode;
+      return routeCode == other.routeCode && stopId == other.stopId && isInbound == other.isInbound && companyCode == other.companyCode && serviceType == other.serviceType;
     }else{
       return false;
     }

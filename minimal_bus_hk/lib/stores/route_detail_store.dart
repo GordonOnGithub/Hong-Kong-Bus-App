@@ -177,7 +177,7 @@ abstract class RouteDetailStoreBase with Store {
     }
 
     for(BusStop busStop in busStopsList){
-      var routeStop = RouteStop(route.routeCode, busStop.identifier, route.companyCode, isInbound);
+      var routeStop = RouteStop(route.routeCode, busStop.identifier, route.companyCode, isInbound, busStop.serviceType);
       if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
         var ETAs = Stores.dataManager.ETAMap[routeStop];
         var filteredETAs = <ETA>[];

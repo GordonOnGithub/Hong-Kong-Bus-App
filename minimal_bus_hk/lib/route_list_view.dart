@@ -135,7 +135,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> {
                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children:[
-                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( directionalBusRoute.route.routeCode, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),))),
+                               Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child: Text( "${LocalizationUtil.localizedString(directionalBusRoute.route.companyCode, Stores.localizationStore.localizationPref)} ${directionalBusRoute.route.routeCode}", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),))),
                                Container(child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(directionalBusRoute.route, directionalBusRoute.isInbound? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination,Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),))),
                              ]), onTap:  (){
                                  _onRouteSelected(index);

@@ -92,8 +92,12 @@ abstract class DataManagerBase with Store {
     var result = ObservableList<DirectionalRoute>();
     if(routes != null) {
       for (var route in routes) {
-        result.add(DirectionalRoute(route: route, isInbound: true));
-        result.add(DirectionalRoute(route: route, isInbound: false));
+        if (route.bound.length == 0) {
+          result.add(DirectionalRoute(route: route, isInbound: true));
+          result.add(DirectionalRoute(route: route, isInbound: false));
+        }else{
+          result.add(DirectionalRoute(route: route, isInbound: route.bound == "I"));
+        }
       }
     }
     return result;
@@ -201,7 +205,7 @@ abstract class DataManagerBase with Store {
   ObservableMap<RouteStop, List<ETA>> ETAMap;
 
   @action
-  void updateETAMap(String stopId, String routeCode, String companyCode, List<Map<String, dynamic>> dataArray){
+  void updateETAMap(String stopId, String routeCode, String companyCode, String serviceType, List<Map<String, dynamic>> dataArray){
     List<ETA> inboundResult = [];
     List<ETA> outboundResult = [];
 
@@ -216,8 +220,8 @@ abstract class DataManagerBase with Store {
     if(ETAMap == null){
       ETAMap = ObservableMap();
     }
-    ETAMap[RouteStop(routeCode, stopId, companyCode, true)] = inboundResult;
-    ETAMap[RouteStop(routeCode, stopId, companyCode, false)] = outboundResult;
+    ETAMap[RouteStop(routeCode, stopId, companyCode, true, serviceType)] = inboundResult;
+    ETAMap[RouteStop(routeCode, stopId, companyCode, false, serviceType)] = outboundResult;
 
   }
 

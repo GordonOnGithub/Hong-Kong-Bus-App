@@ -94,6 +94,26 @@ abstract class AppConfigStoreBase with Store {
   }
 
   @observable
+  bool didSearchKMBStopList = false;
+  static final String _didSearchKMBStopListConfigKey = "didSearchKMBStopList";
+
+  @action
+  Future<void> checkDidSearchKMBStopList() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    didSearchKMBStopList = prefs.getBool(_didSearchKMBStopListConfigKey);
+    if(didSearchKMBStopList == null){
+      didSearchKMBStopList = false;
+    }
+  }
+
+  @action
+  Future<void> setDidSearchKMBStopList(bool didSearch) async{
+    didSearchKMBStopList = didSearch;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(_didSearchKMBStopListConfigKey, didSearch);
+  }
+
+  @observable
   bool hideRatingDialogue = true;
 
   @action

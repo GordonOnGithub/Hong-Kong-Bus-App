@@ -27,7 +27,7 @@ class ETA extends LocalizedData{
   ETA.fromJson(Map<String, dynamic> json):
         stopId = json["stop"],
         routeCode = json["route"],
-        companyCode = json["co"],
+        companyCode = (json["co"] as String).toLowerCase(),
         englishRemark = json["rmk_en"],
         TCRemark = json["rmk_tc"],
         SCRemark = json["rmk_sc"],
