@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
 import 'package:minimal_bus_hk/model/bus_stop.dart';
@@ -36,6 +37,10 @@ class CacheUtils{
 
   CacheUtils._();
 
+  String getStopListCacheKey( String companyCode){
+    return "${_routeDetailsCacheKey}_stopList_$companyCode}";
+  }
+
   String getRouteDetailsCacheKey(String routeCode, String companyCode, bool isInbound){
     return "${_routeDetailsCacheKey}_${companyCode}_${routeCode}_${isInbound ? "I":"O"}";
   }
@@ -57,13 +62,15 @@ class CacheUtils{
     var routes = Stores.dataManager.routes;
     if(routes != null){
       Stores.dataManager.setTotalDataCount((Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 4 +
-          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length * 2 ); //only KMB has provide if the routes are inbound/outbound
+          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length * 2 ); //assume every route of NWFB/CTB has inbound & outbound route , only KMB has provide if their routes are inbound/outbound
       List<Future<bool>> futures = [];
 
-      if (!Stores.appConfig.didSearchKMBStopList){
-        var result = await NetworkUtil.sharedInstance().getStopListFor(NetworkUtil.companyCodeKMB);
-        Stores.appConfig.didSearchKMBStopList = result == 200;
-      }
+      //not used for performance issue
+    //  if (!Stores.appConfig.didSearchKMBStopList){
+    //    NetworkUtil.sharedInstance().getStopListFor(NetworkUtil.companyCodeKMB).then((value) {
+    //      Stores.appConfig.didSearchKMBStopList = value == 200;
+    //    });
+      //}
 
       for(var route in routes) {
         if(Stores.appConfig.downloadAllData != true){
@@ -100,7 +107,9 @@ class CacheUtils{
 
       var inboundBusStopsMap = Map.from(Stores.dataManager.inboundBusStopsMap);
       var outboundBusStopsMap =  Map.from(Stores.dataManager.outboundBusStopsMap);
-
+      //re-evaluate the progress count
+      Stores.dataManager.setTotalDataCount( (Stores.dataManager.totalDataCount ~/ 2) + (Stores.dataManager.inboundBusStopsMap.length + Stores.dataManager.outboundBusStopsMap.length));
+     // log("revised data count: ${Stores.dataManager.totalDataCount}");
       for(var list in inboundBusStopsMap.values){
         if(Stores.appConfig.downloadAllData != true){
           _isFetchingAllData = false;
@@ -110,7 +119,7 @@ class CacheUtils{
          for(var busStop in list){
            if(!stopIdSet.contains(busStop.identifier)) {
              futures.add(CacheUtils.sharedInstance().getBusStopDetail(
-                 busStop.identifier, saveInTmp: true));
+                 busStop.identifier, busStop.companyCode, saveInTmp: true));
              stopIdSet.add(busStop.identifier);
            }
          }
@@ -128,7 +137,7 @@ class CacheUtils{
         for(var busStop in list){
           if(!stopIdSet.contains(busStop.identifier)) {
             futures.add(CacheUtils.sharedInstance().getBusStopDetail(
-                busStop.identifier, saveInTmp: true));
+                busStop.identifier,busStop.companyCode, saveInTmp: true));
             stopIdSet.add(busStop.identifier);
           }
         }
@@ -137,9 +146,9 @@ class CacheUtils{
         Stores.dataManager.addAllDataFetchCount(1);
       }
     }
+    //log("Stores.dataManager.allDataFetchCount: ${ Stores.dataManager.allDataFetchCount}");
     Stores.dataManager.applyTmpBusStopsDetailData();
     Stores.dataManager.setLastFetchDataCompleteTimestamp( DateTime.now().millisecondsSinceEpoch);
-    // prefs.setInt("lastFetchDataCompleteTimestamp", lastFetchDataCompleteTimestamp);
     _isFetchingAllData = false;
   }
 
@@ -176,7 +185,30 @@ class CacheUtils{
     }
       var code = await  NetworkUtil.sharedInstance().getRouteFor(companyCode);
       return code == 200;
+  }
 
+  Future<bool> getStopListFor(String companyCode, {bool silentUpdate = true}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String content = prefs.getString("${getStopListCacheKey(companyCode)}");
+    var expiryDay = prefs.getInt(routesCacheExpiryDaysKey);
+
+    if(expiryDay == null || expiryDay < 1){
+      expiryDay = _defaultRoutesCacheExpiryDays;
+    }
+
+    if(content != null){
+      Map<String, dynamic> cachedData = jsonDecode(content);
+      await NetworkUtil.sharedInstance().parseStopListData(cachedData, companyCode);
+
+      if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate){
+        return true;
+      }else{
+        var code = await  NetworkUtil.sharedInstance().getStopListFor(companyCode);
+        return code == 200 || silentUpdate;
+      }
+    }
+    var code = await  NetworkUtil.sharedInstance().getStopListFor(companyCode);
+    return code == 200;
   }
 
   Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool silentUpdate = false, bool saveInTmp = false}) async {
@@ -207,7 +239,7 @@ class CacheUtils{
 
   }
 
-  Future<bool> getBusStopDetail(String stopId, {String companyCode = NetworkUtil.companyCodeNWFB, bool silentUpdate = false, bool saveInTmp = false}) async {
+  Future<bool> getBusStopDetail(String stopId,String companyCode, { bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String content = prefs.getString(getBusStopDetailCacheKey(stopId, companyCode));
     var expiryDay = prefs.getInt(busStopDetailsCacheExpiryDaysKey);
@@ -241,7 +273,7 @@ class CacheUtils{
 
         for(var stop in routeStopsMap[route.routeCode]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            futures.add(getBusStopDetail(stop.identifier, companyCode: stop.companyCode, silentUpdate: silentUpdate));
+            futures.add(getBusStopDetail(stop.identifier,  stop.companyCode, silentUpdate: silentUpdate));
           }
         }
         List<bool> results = await Future.wait(futures);

@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
        _callETAApi = false;
      }
     for(RouteStop s in routeStops){
-      await CacheUtils.sharedInstance().getBusStopDetail(s.stopId, companyCode: s.companyCode);
+      await CacheUtils.sharedInstance().getBusStopDetail(s.stopId, s.companyCode);
     }
     await CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
 

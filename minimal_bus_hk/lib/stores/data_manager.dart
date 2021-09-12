@@ -154,6 +154,21 @@ abstract class DataManagerBase with Store {
   Map<String, BusStopDetail> _tmpBusStopDetailMap;
 
   @action
+  void updateBusStopDetailMapFromList(List<Map<String, dynamic>> busStopDataList){
+    Map<String, BusStopDetail> tmpBusStopDetailMap = Map();
+    for (Map<String, dynamic> busStopData in busStopDataList) {
+      String stopId = busStopData["stop"];
+      if (stopId != null) {
+        var busStopDetail = busStopData.keys.length > 0 ? BusStopDetail
+            .fromJson(
+            busStopData) : BusStopDetail.invalid(stopId);
+        tmpBusStopDetailMap[stopId] = busStopDetail;
+      }
+    }
+    _tmpBusStopDetailMap.addAll(tmpBusStopDetailMap);
+  }
+
+  @action
   void updateBusStopDetailMap(String stopId, Map<String, dynamic> busStopData, {bool saveInTmp = false}){
     var busStopDetail = busStopData.keys.length > 0 ? BusStopDetail.fromJson(busStopData) : BusStopDetail.invalid(stopId);
 
@@ -209,12 +224,14 @@ abstract class DataManagerBase with Store {
     List<ETA> inboundResult = [];
     List<ETA> outboundResult = [];
 
-    for(Map<String, dynamic> data in dataArray){
-      var eta = ETA.fromJson(data);
-      if(eta.isInbound) {
-        inboundResult.add(eta);
-      }else{
-        outboundResult.add(eta);
+    for(Map<String, dynamic> data in dataArray) {
+      if (data["eta"] != null) {
+        var eta = ETA.fromJson(data);
+        if (eta.isInbound) {
+          inboundResult.add(eta);
+        } else {
+          outboundResult.add(eta);
+        }
       }
     }
     if(ETAMap == null){

@@ -31,7 +31,7 @@ class ETA extends LocalizedData{
         englishRemark = json["rmk_en"],
         TCRemark = json["rmk_tc"],
         SCRemark = json["rmk_sc"],
-        etaTimestamp = DateTime.tryParse(json["eta"]),
+        etaTimestamp = DateTime.tryParse(json["eta"])?? null,
         dataTimestamp = DateTime.tryParse(json["data_timestamp"]) ?? DateTime.now(),
         isInbound = json["dir"] == "I",
         status = ETAStatus.found{

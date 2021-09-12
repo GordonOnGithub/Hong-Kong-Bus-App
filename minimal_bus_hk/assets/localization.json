@@ -183,9 +183,9 @@
   },
   {
     "key": "downloadAllDataPopupContent",
-    "en": "Download all data to speed up searching and support offline search and bus stop search. You can use this app while downloading.(est. data size: 5.4 MB)",
-    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。下載過程中仍可正常使用此程式。(資料大小: 約5.4 MB)",
-    "sc": "下载所有路线资料可加快搜寻速度，并支援离线搜寻和车站搜寻。下载过程中仍可正常使用此程式。(资料大小: 约5.4 MB)"
+    "en": "Download all data to speed up searching and support offline search and bus stop search. You can use this app while downloading.",
+    "tc": "下載所有路線資料可加快搜尋速度，並支援離線搜尋和車站搜尋。下載過程中仍可正常使用此程式。",
+    "sc": "下载所有路线资料可加快搜寻速度，并支援离线搜寻和车站搜寻。下载过程中仍可正常使用此程式。"
   },
   {
     "key": "downloadAllDataPopupYes",
@@ -207,9 +207,9 @@
   },
   {
     "key": "routeSearchReminder",
-    "en": "All route data are provided by Hong Kong government's \"data.gov.hk\".\n\nRoutes of KMB & New Lanto Bus are not yet supported.",
-    "tc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援九巴及嶼巴路線。",
-    "sc": "所有路线资料皆由香港政府「资料一线通」提供。\n\n此程式尚未支援九巴及屿巴路线。"
+    "en": "All route data are provided by Hong Kong government's \"data.gov.hk\".\n\nRoutes of New Lanto Bus are not yet supported.",
+    "tc": "所有路線資料皆由香港政府「資料一線通」提供。\n\n此程式尚未支援嶼巴路線。",
+    "sc": "所有路线资料皆由香港政府「资料一线通」提供。\n\n此程式尚未支援屿巴路线。"
   },
   {
     "key": "understand",

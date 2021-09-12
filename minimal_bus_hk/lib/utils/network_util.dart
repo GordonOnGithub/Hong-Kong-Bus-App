@@ -103,7 +103,9 @@ class NetworkUtil{
     if(code == 200){
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if(responseData.containsKey("data")){
-        await parseStopListData(responseData, companyCode);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString(CacheUtils.sharedInstance().getStopListCacheKey(companyCode), response.body);
+        await parseStopListData(responseData, companyCode, saveInTmp: true);
       }
     }else{
 
@@ -120,14 +122,10 @@ class NetworkUtil{
           if (data["co"] == null) {
             data["co"] = companyCode;
           }
-          Map<String, dynamic> dataToSave = jsonDecode( jsonEncode(responseData));
-          dataToSave["data"] = data;
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId, companyCode), jsonEncode(dataToSave));
-          await parseBusStopDetail(stopId, data, saveInTmp: saveInTmp);
         }
       }
     }
+    Stores.dataManager.updateBusStopDetailMapFromList(list);
   }
 
   Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool saveInTmp = false}) async {
@@ -283,7 +281,7 @@ class NetworkUtil{
        for (BusStop s in Stores.dataManager.inboundBusStopsMap[b.routeCode]) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
-           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier));
+           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));
          }
        }
      }
@@ -291,7 +289,7 @@ class NetworkUtil{
        for (BusStop s in Stores.dataManager.outboundBusStopsMap[b.routeCode]) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
-           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier));
+           futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));
          }
        }
      }
