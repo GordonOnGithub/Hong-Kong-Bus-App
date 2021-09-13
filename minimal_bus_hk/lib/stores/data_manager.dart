@@ -165,6 +165,9 @@ abstract class DataManagerBase with Store {
         tmpBusStopDetailMap[stopId] = busStopDetail;
       }
     }
+    if (_tmpBusStopDetailMap == null) {
+      _tmpBusStopDetailMap = Map();
+    }
     _tmpBusStopDetailMap.addAll(tmpBusStopDetailMap);
   }
 

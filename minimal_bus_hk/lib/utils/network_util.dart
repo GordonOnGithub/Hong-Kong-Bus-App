@@ -115,6 +115,8 @@ class NetworkUtil{
 
   Future<void> parseStopListData(Map<String, dynamic> responseData, companyCode, {bool saveInTmp = false}) async{
     var list = responseData["data"] as List<dynamic>;
+    var mapList = < Map<String, dynamic>>[];
+
     for(var data in list){
       if(data is Map<String, dynamic>){
         String stopId = data["stop"];
@@ -122,10 +124,11 @@ class NetworkUtil{
           if (data["co"] == null) {
             data["co"] = companyCode;
           }
+          mapList.add(data);
         }
       }
     }
-    Stores.dataManager.updateBusStopDetailMapFromList(list);
+    Stores.dataManager.updateBusStopDetailMapFromList(mapList);
   }
 
   Future<int> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool saveInTmp = false}) async {

@@ -62,15 +62,10 @@ class CacheUtils{
     var routes = Stores.dataManager.routes;
     if(routes != null){
       Stores.dataManager.setTotalDataCount((Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 4 +
-          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length * 2 ); //assume every route of NWFB/CTB has inbound & outbound route , only KMB has provide if their routes are inbound/outbound
+          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length + 1 ); //assume every route of NWFB/CTB has inbound & outbound route , only KMB has provide if their routes are inbound/outbound
       List<Future<bool>> futures = [];
 
-      //not used for performance issue
-    //  if (!Stores.appConfig.didSearchKMBStopList){
-    //    NetworkUtil.sharedInstance().getStopListFor(NetworkUtil.companyCodeKMB).then((value) {
-    //      Stores.appConfig.didSearchKMBStopList = value == 200;
-    //    });
-      //}
+      await getStopListFor(NetworkUtil.companyCodeKMB);
 
       for(var route in routes) {
         if(Stores.appConfig.downloadAllData != true){
@@ -108,7 +103,7 @@ class CacheUtils{
       var inboundBusStopsMap = Map.from(Stores.dataManager.inboundBusStopsMap);
       var outboundBusStopsMap =  Map.from(Stores.dataManager.outboundBusStopsMap);
       //re-evaluate the progress count
-      Stores.dataManager.setTotalDataCount( (Stores.dataManager.totalDataCount ~/ 2) + (Stores.dataManager.inboundBusStopsMap.length + Stores.dataManager.outboundBusStopsMap.length));
+      Stores.dataManager.setTotalDataCount( (Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 2 + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length + 1 + (Stores.dataManager.inboundBusStopsMap.length + Stores.dataManager.outboundBusStopsMap.length));
      // log("revised data count: ${Stores.dataManager.totalDataCount}");
       for(var list in inboundBusStopsMap.values){
         if(Stores.appConfig.downloadAllData != true){
@@ -117,6 +112,10 @@ class CacheUtils{
         }
         List<Future<bool>> futures = [];
          for(var busStop in list){
+           if (busStop.companyCode == NetworkUtil.companyCodeKMB){
+             Stores.dataManager.addAllDataFetchCount(1);
+             break;//no need to download KMB bus stop data individually
+           }
            if(!stopIdSet.contains(busStop.identifier)) {
              futures.add(CacheUtils.sharedInstance().getBusStopDetail(
                  busStop.identifier, busStop.companyCode, saveInTmp: true));
@@ -135,6 +134,10 @@ class CacheUtils{
         }
         List<Future<bool>> futures = [];
         for(var busStop in list){
+          if (busStop.companyCode == NetworkUtil.companyCodeKMB){
+            Stores.dataManager.addAllDataFetchCount(1);
+            break;//no need to download KMB bus stop data individually
+          }
           if(!stopIdSet.contains(busStop.identifier)) {
             futures.add(CacheUtils.sharedInstance().getBusStopDetail(
                 busStop.identifier,busStop.companyCode, saveInTmp: true));
