@@ -103,6 +103,33 @@ abstract class DataManagerBase with Store {
     return result;
   }
 
+  @computed
+  ObservableList<DirectionalRoute> get directionalRouteListOfNWFBAndCTB {
+    var result = ObservableList<DirectionalRoute>();
+    if(routes != null) {
+      for (var route in routes) {
+        if (route.companyCode != NetworkUtil.companyCodeKMB) {
+          result.add(DirectionalRoute(route: route, isInbound: true));
+          result.add(DirectionalRoute(route: route, isInbound: false));
+        }
+      }
+    }
+    return result;
+  }
+
+  @computed
+  ObservableList<DirectionalRoute> get directionalRouteListOfKMB {
+    var result = ObservableList<DirectionalRoute>();
+    if(routes != null) {
+      for (var route in routes) {
+        if (route.companyCode == NetworkUtil.companyCodeKMB) {
+          result.add(DirectionalRoute(route: route, isInbound: route.bound == "I"));
+        }
+      }
+    }
+    return result;
+  }
+
   @observable
   ObservableMap<String, List<BusStop>> inboundBusStopsMap;
   @observable

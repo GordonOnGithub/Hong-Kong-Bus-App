@@ -3,6 +3,7 @@ import 'package:minimal_bus_hk/interface/localized_data.dart';
 
 class BusStopDetail extends LocalizedData{
   final String identifier;
+  final String companyCode;
   final String englishName;
   final String TCName;
   final String SCName;
@@ -15,6 +16,7 @@ class BusStopDetail extends LocalizedData{
 
 BusStopDetail.fromJson(Map<String, dynamic> json):
       identifier = json["stop"] ?? "",
+      companyCode = json["co"] ?? "",
       englishName = json["name_en"] ?? "",
       TCName = json["name_tc"] ?? "",
       SCName = json["name_sc"] ?? "",
@@ -30,6 +32,7 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
 
   BusStopDetail.unknown(String identifier):
         identifier = identifier,
+        companyCode = "",
         englishName = "",
         TCName = "",
         SCName = "",
@@ -45,6 +48,7 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
 
   BusStopDetail.invalid(String identifier):
         identifier = identifier,
+        companyCode = "",
         englishName = "",
         TCName = "",
         SCName = "",

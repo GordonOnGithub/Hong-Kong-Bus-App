@@ -253,7 +253,7 @@ class CacheUtils{
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
       if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stopId)) {
-        await NetworkUtil.sharedInstance().parseBusStopDetail(stopId, cachedData, saveInTmp: saveInTmp);
+        await NetworkUtil.sharedInstance().parseBusStopDetail(stopId,companyCode, cachedData, saveInTmp: saveInTmp);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
         return true;

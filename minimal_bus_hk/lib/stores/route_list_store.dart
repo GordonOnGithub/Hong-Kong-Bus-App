@@ -54,6 +54,7 @@ abstract class RouteListStoreBase with Store {
     filterStopIdentifier = "";
   }
 
+  /*
   @computed
   ObservableList<DirectionalRoute> get displayedDirectionalRoutes {
     if(filterKeyword != null && Stores.dataManager.directionalRouteList != null) {
@@ -114,7 +115,130 @@ abstract class RouteListStoreBase with Store {
 
       return result;
     }
+  }
+*/
+  @computed
+  ObservableList<DirectionalRoute> get displayedDirectionalRoutesForNWFBAndCTB {
+    if(filterKeyword != null && Stores.dataManager.directionalRouteListOfNWFBAndCTB != null) {
 
+      var directionalRouteList = filterStopIdentifier != null && filterStopIdentifier.length > 0
+          && Stores.dataManager.stopRoutesMap.containsKey(filterStopIdentifier)?
+      Stores.dataManager.directionalRouteListOfNWFBAndCTB.where((element) {
+        var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
+        for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
+          if(directionalRoute.route.routeCode == element.route.routeCode && directionalRoute.isInbound == element.isInbound){
+            return true;
+          }
+        }
+        return false;
+      }
+      ) : Stores.dataManager.directionalRouteListOfNWFBAndCTB;
+
+      var result =  ObservableList<DirectionalRoute>();
+      result.addAll(directionalRouteList.where((element) {
+        if(element == null){
+          return false;
+        }
+        for(var keyword in _keywords) {
+          if(element.route.routeCode.toLowerCase().contains(keyword.toLowerCase())
+              || (element.isInbound &&
+                  ((keyword.length > 1 && element.route.originEnglishName.toLowerCase().contains(
+                      keyword.toLowerCase()))
+                      || element.route.originTCName.toLowerCase().contains(
+                          keyword.toLowerCase())
+                      || element.route.originSCName.toLowerCase().contains(
+                          keyword.toLowerCase())))
+              ||(!element.isInbound &&
+                  ((keyword.length > 1 &&  element.route.destinationEnglishName.toLowerCase().contains(
+                      keyword.toLowerCase()))
+                      || element.route.destinationSCName.toLowerCase().contains(
+                          keyword.toLowerCase())
+                      || element.route.destinationTCName.toLowerCase().contains(
+                          keyword.toLowerCase())))){
+
+          }else{
+            return false;
+          }
+        }
+        return true;
+      }
+      ).toList());
+
+      result.sort((a,b){
+        var result = a.route.routeCode.length.compareTo(b.route.routeCode.length);
+        if(result == 0){
+          result = a.route.routeCode.compareTo(b.route.routeCode);
+        }
+        return result;
+      });
+      return result;
+    }else {
+      var result = Stores.dataManager.directionalRouteListOfNWFBAndCTB;
+
+      return result;
+    }
+  }
+
+  @computed
+  ObservableList<DirectionalRoute> get displayedDirectionalRoutesForKMB {
+    if(filterKeyword != null && Stores.dataManager.directionalRouteListOfKMB != null) {
+
+      var directionalRouteList = filterStopIdentifier != null && filterStopIdentifier.length > 0
+          && Stores.dataManager.stopRoutesMap.containsKey(filterStopIdentifier)?
+      Stores.dataManager.directionalRouteListOfKMB.where((element) {
+        var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
+        for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
+          if(directionalRoute.route.routeCode == element.route.routeCode && directionalRoute.isInbound == element.isInbound){
+            return true;
+          }
+        }
+        return false;
+      }
+      ) : Stores.dataManager.directionalRouteListOfKMB;
+
+      var result =  ObservableList<DirectionalRoute>();
+      result.addAll(directionalRouteList.where((element) {
+        if(element == null){
+          return false;
+        }
+        for(var keyword in _keywords) {
+          if(element.route.routeCode.toLowerCase().contains(keyword.toLowerCase())
+              || (element.isInbound &&
+                  ((keyword.length > 1 && element.route.originEnglishName.toLowerCase().contains(
+                      keyword.toLowerCase()))
+                      || element.route.originTCName.toLowerCase().contains(
+                          keyword.toLowerCase())
+                      || element.route.originSCName.toLowerCase().contains(
+                          keyword.toLowerCase())))
+              ||(!element.isInbound &&
+                  ((keyword.length > 1 &&  element.route.destinationEnglishName.toLowerCase().contains(
+                      keyword.toLowerCase()))
+                      || element.route.destinationSCName.toLowerCase().contains(
+                          keyword.toLowerCase())
+                      || element.route.destinationTCName.toLowerCase().contains(
+                          keyword.toLowerCase())))){
+
+          }else{
+            return false;
+          }
+        }
+        return true;
+      }
+      ).toList());
+
+      result.sort((a,b){
+        var result = a.route.routeCode.length.compareTo(b.route.routeCode.length);
+        if(result == 0){
+          result = a.route.routeCode.compareTo(b.route.routeCode);
+        }
+        return result;
+      });
+      return result;
+    }else {
+      var result = Stores.dataManager.directionalRouteListOfKMB;
+
+      return result;
+    }
   }
 
   @observable

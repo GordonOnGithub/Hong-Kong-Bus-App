@@ -165,9 +165,7 @@ class NetworkUtil{
     var dataList = <Map<String, dynamic>>[];
     for (var data in list) {
       if (data is Map<String, dynamic>) {
-        if (data["co"] == null){
-          data["co"] = companyCode;
-        }
+        data["co"] = companyCode;
         dataList.add(data);
       }
     }
@@ -189,14 +187,15 @@ class NetworkUtil{
       if (responseData.containsKey("data")) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString(CacheUtils.sharedInstance().getBusStopDetailCacheKey(stopId, companyCode), response.body);
-        await parseBusStopDetail(stopId, responseData, saveInTmp: saveInTmp);
+        await parseBusStopDetail(stopId, companyCode, responseData, saveInTmp: saveInTmp);
       }
     }
     return code;
   }
 
-  Future<void> parseBusStopDetail(String stopId,  Map<String, dynamic> responseData, {bool saveInTmp = false} ) async{
+  Future<void> parseBusStopDetail(String stopId, String companyCode,  Map<String, dynamic> responseData, {bool saveInTmp = false} ) async{
       var data = responseData["data"] as Map<String, dynamic>;
+      data["co"] = companyCode;
       Stores.dataManager.updateBusStopDetailMap(stopId, data, saveInTmp: saveInTmp);
   }
 
