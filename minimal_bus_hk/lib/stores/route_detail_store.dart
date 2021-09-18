@@ -49,7 +49,7 @@ abstract class RouteDetailStoreBase with Store {
     if(routeStopsMap == null){
       return null;
     }
-    var routeStopsList = routeStopsMap[route.routeCode];
+    var routeStopsList = routeStopsMap[route.routeUniqueIdentifier];
     if(routeStopsList == null){
       return null;
     }
@@ -119,7 +119,7 @@ abstract class RouteDetailStoreBase with Store {
             ? Stores.dataManager.inboundBusStopsMap
             : Stores.dataManager.outboundBusStopsMap;
         if (routeStopsMap != null) {
-           var routeStopsList = routeStopsMap[route.routeCode];
+           var routeStopsList = routeStopsMap[route.routeUniqueIdentifier];
            if (routeStopsList != null) {
               for (BusStop s in routeStopsList) {
                 if(s.identifier == busStopDetail.identifier){
@@ -171,7 +171,7 @@ abstract class RouteDetailStoreBase with Store {
     if(routeStopsMap == null){
       return result;
     }
-    var busStopsList = routeStopsMap[route.routeCode];
+    var busStopsList = routeStopsMap[route.routeUniqueIdentifier];
     if(busStopsList == null){
       return result;
     }

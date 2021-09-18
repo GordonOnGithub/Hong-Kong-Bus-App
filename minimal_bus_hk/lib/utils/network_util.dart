@@ -135,7 +135,7 @@ class NetworkUtil{
     var result = await Connectivity().checkConnectivity();
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, [], saveInTmp: saveInTmp);
+        await Stores.dataManager.updateBusStopsMap(routeCode, companyCode, isInbound, [], saveInTmp: saveInTmp);
       }
       return -1;
     }
@@ -154,7 +154,7 @@ class NetworkUtil{
       }
     }else{
       if((Stores.dataManager.inboundBusStopsMap == null && isInbound)||(Stores.dataManager.outboundBusStopsMap == null && !isInbound)) {
-        await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, [], saveInTmp: saveInTmp);
+        await Stores.dataManager.updateBusStopsMap(routeCode, companyCode, isInbound, [], saveInTmp: saveInTmp);
       }
     }
     return code;
@@ -169,7 +169,7 @@ class NetworkUtil{
         dataList.add(data);
       }
     }
-    await Stores.dataManager.updateBusStopsMap(routeCode, isInbound, dataList, saveInTmp: saveInTmp);
+    await Stores.dataManager.updateBusStopsMap(routeCode, companyCode, isInbound, dataList, saveInTmp: saveInTmp);
   }
 
     Future<int> getBusStopDetail(String stopId, String companyCode, {bool saveInTmp = false}) async {
@@ -250,7 +250,7 @@ class NetworkUtil{
     if(routeStopsMap == null){
       return;
     }
-    var busStopsList = routeStopsMap[route.routeCode];
+    var busStopsList = routeStopsMap[route.routeUniqueIdentifier];
     if(busStopsList == null){
       return;
     }
@@ -279,16 +279,16 @@ class NetworkUtil{
 
      List<Future<bool>> futures = [];
 
-     if( Stores.dataManager.inboundBusStopsMap.containsKey(b.routeCode)) {
-       for (BusStop s in Stores.dataManager.inboundBusStopsMap[b.routeCode]) {
+     if( Stores.dataManager.inboundBusStopsMap.containsKey(b.routeUniqueIdentifier)) {
+       for (BusStop s in Stores.dataManager.inboundBusStopsMap[b.routeUniqueIdentifier]) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
            futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));
          }
        }
      }
-     if( Stores.dataManager.outboundBusStopsMap.containsKey(b.routeCode)) {
-       for (BusStop s in Stores.dataManager.outboundBusStopsMap[b.routeCode]) {
+     if( Stores.dataManager.outboundBusStopsMap.containsKey(b.routeUniqueIdentifier)) {
+       for (BusStop s in Stores.dataManager.outboundBusStopsMap[b.routeUniqueIdentifier]) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
            futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));

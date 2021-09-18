@@ -22,4 +22,5 @@ class ETAQuery{
     return "$routeCode$stopId$serviceType".hashCode;
   }
 
+  String get routeUniqueIdentifier => "${routeCode}_$companyCode";
 }

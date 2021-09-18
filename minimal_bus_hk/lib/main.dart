@@ -197,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                    ])
                                    ),
 
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeCode) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeCode], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeUniqueIdentifier], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
 
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                    Row( mainAxisAlignment: MainAxisAlignment.start, children:[
@@ -300,16 +300,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onOpenMapView(ETA eta){
-    if(Stores.dataManager.routesMap.containsKey(eta.routeCode) && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId)) {
+    if(Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier) && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId)) {
       Stores.googleMapStore.setSelectedBusStop(
           Stores.dataManager.busStopDetailMap[eta.stopId]);
       Stores.googleMapStore.setIsInbound(
           eta.isInbound);
       Stores.googleMapStore.setSelectedRoute(
-          Stores.dataManager.routesMap[eta
-              .routeCode]);
-      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.dataManager.routesMap[eta
-          .routeCode], eta.isInbound);
+          Stores.dataManager.routesMap[eta.routeUniqueIdentifier]);
+      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.dataManager.routesMap[eta.routeUniqueIdentifier], eta.isInbound);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) =>
@@ -320,8 +318,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onRouteInfoButtonClicked(ETA eta){
 
-     if(Stores.dataManager.routesMap.containsKey(eta.routeCode)) {
-       Stores.routeDetailStore.route = Stores.dataManager.routesMap[eta.routeCode];
+     if(Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier)) {
+       Stores.routeDetailStore.route = Stores.dataManager.routesMap[eta.routeUniqueIdentifier];
        Stores.routeDetailStore.isInbound = eta.isInbound;
        Stores.routeDetailStore.setSelectedStopId(eta.stopId);
        Navigator.push(

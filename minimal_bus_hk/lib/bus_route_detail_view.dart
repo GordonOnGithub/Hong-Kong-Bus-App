@@ -269,7 +269,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   void updateSelectedBusStopETA(){
     var routeStopsMap = Stores.routeDetailStore.isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
     if(routeStopsMap != null){
-      var busStopsList = routeStopsMap[Stores.routeDetailStore.route.routeCode];
+      var busStopsList = routeStopsMap[Stores.routeDetailStore.route.routeUniqueIdentifier];
       if(busStopsList != null){
         for(BusStop busStop in busStopsList) {
           if(busStop.sequence == Stores.routeDetailStore.lastSelectedSequence) {

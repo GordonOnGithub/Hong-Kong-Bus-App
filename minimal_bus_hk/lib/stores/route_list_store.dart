@@ -126,7 +126,7 @@ abstract class RouteListStoreBase with Store {
       Stores.dataManager.directionalRouteListOfNWFBAndCTB.where((element) {
         var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
         for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
-          if(directionalRoute.route.routeCode == element.route.routeCode && directionalRoute.isInbound == element.isInbound){
+          if(directionalRoute.route.routeUniqueIdentifier == element.route.routeUniqueIdentifier && directionalRoute.isInbound == element.isInbound){
             return true;
           }
         }
@@ -188,7 +188,7 @@ abstract class RouteListStoreBase with Store {
       Stores.dataManager.directionalRouteListOfKMB.where((element) {
         var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
         for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
-          if(directionalRoute.route.routeCode == element.route.routeCode && directionalRoute.isInbound == element.isInbound){
+          if(directionalRoute.route.routeUniqueIdentifier == element.route.routeUniqueIdentifier && directionalRoute.isInbound == element.isInbound){
             return true;
           }
         }

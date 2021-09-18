@@ -11,7 +11,6 @@ enum SelectedOption{
   data,
   appStore,
   about,
-  donation
 }
 
 abstract class SettingViewStoreBase with Store {

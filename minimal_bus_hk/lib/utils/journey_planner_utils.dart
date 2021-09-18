@@ -13,10 +13,10 @@ class JourneyPlannerUtils{
       List<BusStopDetail> result = [];
       for(DirectionalRoute dr in Stores.dataManager.stopRoutesMap[fromStopId]){
           var map = dr.isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
-          if(!map.containsKey(dr.route.routeCode)){
+          if(!map.containsKey(dr.route.routeUniqueIdentifier)){
             continue;
           }
-          var busStopsList = map[dr.route.routeCode];
+          var busStopsList = map[dr.route.routeUniqueIdentifier];
           bool startSearch = false;
           for(BusStop b in busStopsList){
             if(!startSearch && b.identifier == fromStopId){

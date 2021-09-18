@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
 import 'package:flutter/cupertino.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
@@ -41,7 +42,7 @@ abstract class DataManagerBase with Store {
     var result = ObservableMap<String, BusRoute>();
     if(routes != null) {
       for (var route in routes) {
-        result[route.routeCode] = route;
+        result[route.routeUniqueIdentifier] = route;
       }
     }
     return result;
@@ -139,14 +140,14 @@ abstract class DataManagerBase with Store {
   Map<String, List<BusStop>> _tmpOutboundBusStopsMap;
 
   @action
-  Future<void> updateBusStopsMap(String routeCode, bool isInbound, List<Map<String, dynamic>> dataArray, {bool saveInTmp = false}) async{
+  Future<void> updateBusStopsMap(String routeCode, String companyCode, bool isInbound, List<Map<String, dynamic>> dataArray, {bool saveInTmp = false}) async{
     ObservableList<BusStop> result = ObservableList();
     for(Map<String, dynamic> data in dataArray){
       result.add(BusStop.fromJson(data));
     }
-
-    if(routesMap.containsKey(routeCode)) {
-      DirectionalRoute directionalRoute = DirectionalRoute(route: routesMap[routeCode], isInbound: isInbound);
+    String routeUniqueIdentifier = "${routeCode}_$companyCode";
+    if(routesMap.containsKey(routeUniqueIdentifier)) {
+      DirectionalRoute directionalRoute = DirectionalRoute(route: routesMap[routeUniqueIdentifier], isInbound: isInbound);
       updateStopRouteCodeMap(directionalRoute, result);
     }
     if(saveInTmp){
@@ -154,24 +155,24 @@ abstract class DataManagerBase with Store {
         if (_tmpInboundBusStopsMap == null) {
           _tmpInboundBusStopsMap = Map();
         }
-        _tmpInboundBusStopsMap[routeCode] = result;
+        _tmpInboundBusStopsMap[routeUniqueIdentifier] = result;
       } else {
         if (_tmpOutboundBusStopsMap == null) {
           _tmpOutboundBusStopsMap = Map();
         }
-        _tmpOutboundBusStopsMap[routeCode] = result;
+        _tmpOutboundBusStopsMap[routeUniqueIdentifier] = result;
       }
     }else {
       if (isInbound) {
         if (inboundBusStopsMap == null) {
           inboundBusStopsMap = ObservableMap();
         }
-        inboundBusStopsMap[routeCode] = result;
+        inboundBusStopsMap[routeUniqueIdentifier] = result;
       } else {
         if (outboundBusStopsMap == null) {
           outboundBusStopsMap = ObservableMap();
         }
-        outboundBusStopsMap[routeCode] = result;
+        outboundBusStopsMap[routeUniqueIdentifier] = result;
       }
     }
   }
@@ -274,6 +275,34 @@ abstract class DataManagerBase with Store {
 
   @observable
   ObservableList<RouteStop> bookmarkedRouteStops;
+  bool bookmarkUpdating = false;
+  bool savedDataNotUpdated = false;
+  @action
+  Future<void> saveRouteStopToBookmark() async{
+    if (bookmarkUpdating){
+      savedDataNotUpdated = true;
+      return;
+    }
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bookmarkUpdating = true;
+      if (bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+         prefs.setString(CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
+          bookmarkUpdating = false;
+          if(savedDataNotUpdated){
+            savedDataNotUpdated = false;
+            saveRouteStopToBookmark();
+          }
+        });
+      } else {
+         prefs.remove(CacheUtils.bookmarkedRouteStop).then((value) {
+          bookmarkUpdating = false;
+          if(savedDataNotUpdated){
+            savedDataNotUpdated = false;
+            saveRouteStopToBookmark();
+          }
+        });
+      }
+  }
 
   @action
   Future<void> addRouteStopToBookmark(RouteStop routeStop) async{
@@ -282,25 +311,60 @@ abstract class DataManagerBase with Store {
     }
     if(!bookmarkedRouteStops.contains(routeStop)) {
       bookmarkedRouteStops.add(routeStop);
+      if (bookmarkUpdating){
+        savedDataNotUpdated = true;
+        return;
+      }
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      bookmarkUpdating = true;
       if (bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
-       prefs.setString(CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops));
+       prefs.setString(CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
+         bookmarkUpdating = false;
+         if(savedDataNotUpdated){
+           savedDataNotUpdated = false;
+           saveRouteStopToBookmark();
+         }
+       });
       } else {
-        prefs.remove(CacheUtils.bookmarkedRouteStop);
+        prefs.remove(CacheUtils.bookmarkedRouteStop).then((value) {
+          bookmarkUpdating = false;
+          if(savedDataNotUpdated){
+            savedDataNotUpdated = false;
+            saveRouteStopToBookmark();
+          }
+        });
       }
     }
   }
 
 @action
   Future<void> removeRouteStopFromBookmark(RouteStop routeStop) async{
+
     if(bookmarkedRouteStops != null){
       bookmarkedRouteStops.removeWhere((element) => element == routeStop);
-
+      if (bookmarkUpdating){
+        savedDataNotUpdated = true;
+        return;
+      }
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        if( bookmarkedRouteStops != null) {
-         prefs.setString( CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops));
-        }
-
+      bookmarkUpdating = true;
+      if( bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+         prefs.setString( CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
+           bookmarkUpdating = false;
+           if(savedDataNotUpdated){
+             savedDataNotUpdated = false;
+             saveRouteStopToBookmark();
+           }
+         });
+        } else {
+        prefs.remove(CacheUtils.bookmarkedRouteStop).then((value) {
+          bookmarkUpdating = false;
+          if(savedDataNotUpdated){
+            savedDataNotUpdated = false;
+            saveRouteStopToBookmark();
+          }
+        });
+      }
     }
   }
 

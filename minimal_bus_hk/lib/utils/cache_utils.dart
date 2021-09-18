@@ -175,7 +175,7 @@ class CacheUtils{
 
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
-      if(Stores.dataManager.routesMap == null || !Stores.dataManager.routesMap.containsKey(companyCode)) {
+      if(Stores.dataManager.companyRoutesMap == null || !Stores.dataManager.companyRoutesMap.containsKey(companyCode)) {
         await NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
       }
 
@@ -271,10 +271,10 @@ class CacheUtils{
     bool success = await getRouteDetail(route.routeCode, route.companyCode, isInbound, route.serviceType, silentUpdate: silentUpdate);
     if(success){
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
-      if(routeStopsMap != null && routeStopsMap.containsKey(route.routeCode)){
+      if(routeStopsMap != null && routeStopsMap.containsKey(route.routeUniqueIdentifier)){
         var futures = <Future<bool>>[];
 
-        for(var stop in routeStopsMap[route.routeCode]){
+        for(var stop in routeStopsMap[route.routeUniqueIdentifier]){
           if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
             futures.add(getBusStopDetail(stop.identifier,  stop.companyCode, silentUpdate: silentUpdate));
           }
@@ -335,7 +335,7 @@ class CacheUtils{
     if(routeStopsMap == null){
       return;
     }
-    var busStopsList = routeStopsMap[route.routeCode];
+    var busStopsList = routeStopsMap[route.routeUniqueIdentifier];
     if(busStopsList == null){
       return;
     }
@@ -348,9 +348,9 @@ class CacheUtils{
   }
 
   Future<bool> getETA(ETAQuery query) async {
-    if(Stores.dataManager.routesMap != null && Stores.dataManager.routesMap.containsKey(query.routeCode) &&
-        Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey( Stores.dataManager.routesMap[query.routeCode])){
-      List<ETA> ETAs = Stores.dataManager.ETAMap[Stores.dataManager.routesMap[query.routeCode]];
+    if(Stores.dataManager.routesMap != null && Stores.dataManager.routesMap.containsKey(query.routeUniqueIdentifier) &&
+        Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey( Stores.dataManager.routesMap[query.routeUniqueIdentifier])){
+      List<ETA> ETAs = Stores.dataManager.ETAMap[Stores.dataManager.routesMap[query.routeUniqueIdentifier]];
         if(ETAs.length > 0 &&  DateTime.now().millisecondsSinceEpoch - ETAs.first.dataTimestamp.millisecondsSinceEpoch  < Stores.appConfig.etaExpiryTimeMilliseconds && ETAs.first.status == ETAStatus.found){
           return true;
         }

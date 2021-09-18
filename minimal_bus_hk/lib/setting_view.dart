@@ -172,8 +172,6 @@ class _SettingViewPageState extends State<SettingViewPage> {
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSettingAppStore, Stores.localizationStore.localizationPref);
       case SelectedOption.about:
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisApp, Stores.localizationStore.localizationPref);
-      case SelectedOption.donation:
-        return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDonation, Stores.localizationStore.localizationPref);
 
     }
     return "";

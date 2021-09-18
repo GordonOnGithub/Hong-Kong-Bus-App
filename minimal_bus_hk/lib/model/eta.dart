@@ -101,4 +101,7 @@ class ETA extends LocalizedData{
   Map<String, Map<String, String>> getLocalizedData() {
     return _localizedData;
   }
+
+  String get routeUniqueIdentifier =>  "${routeCode}_$companyCode";
+
 }

@@ -61,6 +61,7 @@ BusRoute.fromJson(Map<String, dynamic> json):
   @override
   int get hashCode => ("$routeCode$companyCode").hashCode ;
 
+  String get routeUniqueIdentifier =>  "${routeCode}_$companyCode";
 
 
 }

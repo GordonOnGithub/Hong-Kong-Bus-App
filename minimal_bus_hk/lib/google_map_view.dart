@@ -33,13 +33,14 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   static final _customPinInfoList = [
     CustomMapPinInfo("立會",  LatLng(22.28161008355225, 114.16632608035314), "There's no riot, only tyranny.", "沒有暴徒 只有暴政", "沒有暴徒 只有暴政"),
 
-    CustomMapPinInfo("七二一",  LatLng(22.44607925235589, 114.03473965700638), "Where cops worked with triads on 21 July.", "七二一唔見人", "七二一唔見人"),
-    CustomMapPinInfo("八三一",  LatLng(22.324687846223284, 114.16825423504059), "Where cops terrorized citizens in MTR on 31 Aug.", "八三一打死人", "八三一打死人"),
-    CustomMapPinInfo("十月一",  LatLng( 22.37173657381423, 114.1160214388837), "Where cops attempted to murder on 1 Oct.", "十月一槍殺人", "十月一槍殺人"),
+    CustomMapPinInfo("七二一",  LatLng(22.44607925235589, 114.03473965700638), "The 721 incident.", "七二一唔見人", "七二一唔見人"),
+    CustomMapPinInfo("八三一",  LatLng(22.324687846223284, 114.16825423504059), "Prince Edward station attack.", "八三一打死人", "八三一打死人"),
 
     CustomMapPinInfo("周梓樂",  LatLng( 22.31190876592493, 114.26114652885158), "Rest in power, Chow Tsz-lok.", "永遠懷念 周梓樂", "永遠懷念 周梓樂"),
     CustomMapPinInfo("陳彥霖",  LatLng( 22.299476160808236, 114.26405094959347), "Rest in power, Chan Yin-lam.", "永遠懷念 陳彥霖", "永遠懷念 陳彥霖"),
     CustomMapPinInfo("梁凌杰",  LatLng( 22.277913075110394, 114.16559846333044), "Rest in power, Leung Ling-kit.", "永遠懷念 梁凌杰", "永遠懷念 梁凌杰"),
+
+    CustomMapPinInfo("維園",  LatLng(22.2824877,114.1887615), "🕯️", "🕯️", "🕯️"),
 
     CustomMapPinInfo("Save12HKYouth",  LatLng( 22.586375079606228, 114.25622469111427), "#save12hkyouths", "#save12hkyouths", "#save12hkyouths"),
   ];
@@ -62,7 +63,7 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     Stores.googleMapStore.setAtCenter(true);
-    if(Stores.googleMapStore.selectedBusStop != null) {
+    if(Stores.googleMapStore.selectedBusStop != null && Stores.googleMapStore.selectedBusStop.identifier.isNotEmpty) {
       mapController.showMarkerInfoWindow(MarkerId(Stores.googleMapStore.selectedBusStop.identifier));
     }
   }
@@ -124,6 +125,9 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
             continue;
           }
 
+          if (busStopDetail.identifier.isEmpty){
+            continue;
+          }
           MarkerId markerId = MarkerId("${busStopDetail.identifier}");
           InfoWindow infoWindow = InfoWindow(title: "$count. ${LocalizationUtil.localizedStringFrom(
               busStopDetail, BusStopDetail.localizationKeyForName,
@@ -135,15 +139,19 @@ class _GoogleMapViewPageState extends State<GoogleMapViewPage> {
           markers.add(stopMarker);
         }
       }else if(selectedBusStop != null){
-        MarkerId markerId = MarkerId("${selectedBusStop.identifier}");
-        InfoWindow infoWindow = InfoWindow(title: "${LocalizationUtil.localizedStringFrom(
-            selectedBusStop, BusStopDetail.localizationKeyForName,
-            Stores.localizationStore.localizationPref)}");
-        Marker stopMarker = Marker(markerId: markerId,
-            position: selectedBusStop.positionForMap,
-            infoWindow: infoWindow,
-            icon: BitmapDescriptor.defaultMarkerWithHue(  BitmapDescriptor.hueGreen));
-        markers.add(stopMarker);
+        if (selectedBusStop.identifier.isNotEmpty) {
+          MarkerId markerId = MarkerId("${selectedBusStop.identifier}");
+          InfoWindow infoWindow = InfoWindow(
+              title: "${LocalizationUtil.localizedStringFrom(
+                  selectedBusStop, BusStopDetail.localizationKeyForName,
+                  Stores.localizationStore.localizationPref)}");
+          Marker stopMarker = Marker(markerId: markerId,
+              position: selectedBusStop.positionForMap,
+              infoWindow: infoWindow,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueGreen));
+          markers.add(stopMarker);
+        }
       }
 
 //debug

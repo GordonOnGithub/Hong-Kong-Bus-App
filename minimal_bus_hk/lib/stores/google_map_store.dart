@@ -31,7 +31,7 @@ abstract class GoogleMapStoreBase with Store {
     if(routeStopsMap == null){
       return  ObservableList<BusStopDetail>();
     }
-    var routeStopsList = routeStopsMap[selectedRoute.routeCode];
+    var routeStopsList = routeStopsMap[selectedRoute.routeUniqueIdentifier];
     if(routeStopsList == null){
       return  ObservableList<BusStopDetail>();
     }
