@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:minimal_bus_hk/google_map_view.dart';
@@ -22,7 +21,7 @@ class BusRouteDetailView extends StatelessWidget {
 }
 
 class BusRouteDetailPage extends StatefulWidget {
-  BusRouteDetailPage({Key key}) : super(key: key);
+  BusRouteDetailPage({Key? key}) : super(key: key);
 
 
   @override
@@ -30,8 +29,8 @@ class BusRouteDetailPage extends StatefulWidget {
 }
 
 class BusRouteDetailPageState extends State<BusRouteDetailPage> {
-  Timer _updateTimer;
-  TextEditingController _searchFieldController;
+  Timer? _updateTimer;
+  TextEditingController? _searchFieldController;
   final _controller = ScrollController();
 
   @override
@@ -45,7 +44,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
         TextEditingController(text: Stores.routeDetailStore.filterKeyword);
 
     CacheUtils.sharedInstance().getRouteAndStopsDetail(
-        Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound,
+        Stores.routeDetailStore.route!, Stores.routeDetailStore.isInbound,
         silentUpdate: true).then((value) {
       Stores.routeDetailStore.setDataFetchingError(!value);
       if (value) {
@@ -83,7 +82,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     // TODO: implement dispose
     super.dispose();
     if(_updateTimer != null) {
-      _updateTimer.cancel();
+      _updateTimer!.cancel();
       _updateTimer = null;
     }
   }
@@ -93,7 +92,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
     return  Scaffold(
         appBar: AppBar(
           title:  Observer(
-        builder: (_) =>Text("${LocalizationUtil.localizedString(Stores.routeDetailStore.route.companyCode, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }", maxLines: 2,)),
+        builder: (_) =>Text("${LocalizationUtil.localizedString(Stores.routeDetailStore.route!.companyCode, Stores.localizationStore.localizationPref)} ${Stores.routeDetailStore.route!.routeCode}, ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound ? BusRoute.localizationKeyForOrigin : BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) }", maxLines: 2,)),
         ),
         body: Observer(
             builder: (_) =>Center(child:
@@ -115,7 +114,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                       ),)),
                       Stores.routeDetailStore.filterKeyword.length > 0?
                       IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
-                        _searchFieldController.text = "";
+                        _searchFieldController?.text = "";
                         Stores.routeDetailStore.setFilterKeyword("");
                       },):Container()
                     ]
@@ -123,7 +122,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                     ))
                 ),
                 Container(height: 1, color: Colors.grey,),
-                Expanded(flex: 9,child:(Stores.routeDetailStore.displayedStops != null && Stores.routeDetailStore.displayedStops.length > 0?
+                Expanded(flex: 9,child:( Stores.routeDetailStore.displayedStops.length > 0?
                 Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   child:
                 Scrollbar(
@@ -148,7 +147,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
                       Padding(padding: const EdgeInsets.fromLTRB(0 , 25, 0, 0),child:
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween , crossAxisAlignment: CrossAxisAlignment.center,children:[
-                          Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType)))?
+                          Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops!.contains(RouteStop(  Stores.routeDetailStore.route!.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route!.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route!.serviceType)))?
                        Icons.bookmark:Icons.bookmark_border),
 
                         Expanded(child: Text( "${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
@@ -171,13 +170,13 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                             InkWell(child:
                               Container(
                                 alignment: Alignment.center,
-                                child:(Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops.contains(RouteStop(  Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType)))?
+                                child:(Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops!.contains(RouteStop(  Stores.routeDetailStore.route!.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route!.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route!.serviceType)))?
                                   Row( mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.remove_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnbookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],):
                                  Row(mainAxisAlignment: MainAxisAlignment.start,children: [Icon(Icons.add_circle_outline), Text( LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBookmark,Stores.localizationStore.localizationPref ), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline))],)
                                  ) , onTap: (){
-                              var routeStop = RouteStop( Stores.routeDetailStore.route.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier, Stores.routeDetailStore.route.companyCode ,  Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route.serviceType);
+                              var routeStop = RouteStop( Stores.routeDetailStore.route!.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier, Stores.routeDetailStore.route!.companyCode ,  Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route!.serviceType);
 
-                              if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops.contains(
+                              if (Stores.dataManager.bookmarkedRouteStops == null || !Stores.dataManager.bookmarkedRouteStops!.contains(
                                   routeStop)) {
                                 Stores.dataManager.addRouteStopToBookmark(routeStop);
                               } else {
@@ -193,7 +192,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                                 Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500 , decoration: TextDecoration.underline)),
                             ])),
                             onTap: (){
-                              _onOpenMapView(Stores.dataManager.busStopDetailMap[Stores.routeDetailStore.selectedStopId]);
+                              _onOpenMapView(Stores.dataManager.busStopDetailMap![Stores.routeDetailStore.selectedStopId]);
                             },
                             )
                           ],),):Container(height: 0,),
@@ -212,7 +211,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForFailedToLoadData, Stores.localizationStore.localizationPref), textAlign: TextAlign.left,style: TextStyle(fontWeight: FontWeight.bold),))),
                     onTap: (){
                       Stores.routeDetailStore.setDataFetchingError(false);
-                      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) => Stores.routeDetailStore.setDataFetchingError(!value));
+                      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.routeDetailStore.route!, Stores.routeDetailStore.isInbound, silentUpdate: true).then((value) => Stores.routeDetailStore.setDataFetchingError(!value));
                     },)
                       : ( Stores.appConfig.showRouteDetailReminder?
                      InkWell(child:
@@ -240,7 +239,8 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
         );
   }
 
-  void _onOpenMapView(BusStopDetail busStopDetail){
+  void _onOpenMapView(BusStopDetail? busStopDetail){
+
     Stores.googleMapStore.setSelectedBusStop(busStopDetail);
     Stores.googleMapStore.setIsInbound(Stores.routeDetailStore.isInbound);
     Stores.googleMapStore.setSelectedRoute(Stores.routeDetailStore.route);
@@ -252,7 +252,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
 
   void _onSelectedRouteStop(int index){
     var stop = Stores.routeDetailStore.displayedStops[index];
-    if(stop.busStopDetail.latitude != null && stop.busStopDetail.longitude != null) {
+    if(stop.busStopDetail.latitude != 0 && stop.busStopDetail.longitude != 0) {
       Stores.appConfig.setShowRouteDetailReminder(false);
       Stores.routeDetailStore.setSelectedStopId(
           stop.busStopDetail.identifier);
@@ -269,7 +269,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
   void updateSelectedBusStopETA(){
     var routeStopsMap = Stores.routeDetailStore.isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
     if(routeStopsMap != null){
-      var busStopsList = routeStopsMap[Stores.routeDetailStore.route.routeUniqueIdentifier];
+      var busStopsList = routeStopsMap[Stores.routeDetailStore.route!.routeUniqueIdentifier];
       if(busStopsList != null){
         for(BusStop busStop in busStopsList) {
           if(busStop.sequence == Stores.routeDetailStore.lastSelectedSequence) {

@@ -17,10 +17,10 @@ abstract class ETAListStoreBase with Store {
   }
 
   @observable
-  int selectedETAListIndex;
+  int? selectedETAListIndex;
 
   @action
-  void setSelectedETAListIndex(int index){
+  void setSelectedETAListIndex(int? index){
     if(selectedETAListIndex != index) {
       selectedETAListIndex = index;
     }else{
@@ -43,13 +43,15 @@ abstract class ETAListStoreBase with Store {
       return result;
     }
 
-    for(var routeStop in Stores.dataManager.bookmarkedRouteStops){
-      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
-        var ETAs = Stores.dataManager.ETAMap[routeStop];
+    for(var routeStop in Stores.dataManager.bookmarkedRouteStops!){
+      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap!.containsKey(routeStop)){
+        var ETAs = Stores.dataManager.ETAMap![routeStop];
         var filteredETAs = <ETA>[];
-        for(var eta in ETAs) {
-          if(routeStop.matchETA(eta)) {
-             filteredETAs.add(eta);
+        if(ETAs != null) {
+          for (var eta in ETAs) {
+            if (routeStop.matchETA(eta)) {
+              filteredETAs.add(eta);
+            }
           }
         }
         if(filteredETAs.length == 0){
@@ -59,7 +61,7 @@ abstract class ETAListStoreBase with Store {
           if(a.etaTimestamp == null || b.etaTimestamp == null){
             return 0;
           }
-          return a.etaTimestamp.compareTo(b.etaTimestamp);});
+          return a.etaTimestamp!.compareTo(b.etaTimestamp!);});
         result.add(filteredETAs);
       }else{
         result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);

@@ -22,7 +22,7 @@ abstract class StopListViewStoreBase with Store {
   }
   @computed
   List<BusStopDetail> get filteredBusStopDetailList{
-    List<BusStopDetail> busStops = Stores.dataManager.busStopDetailMap != null? Stores.dataManager.busStopDetailMap.values.toList() : [];
+    List<BusStopDetail> busStops = Stores.dataManager.busStopDetailMap != null? Stores.dataManager.busStopDetailMap!.values.toList() : [];
     if(filterKeywords != null && filterKeywords.length > 0 && busStops.length > 0){
       var filteredList =  <BusStopDetail>[];
       filteredList.addAll(busStops.where((element) {

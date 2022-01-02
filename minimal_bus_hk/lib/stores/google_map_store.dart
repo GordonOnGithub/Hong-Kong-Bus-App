@@ -14,10 +14,10 @@ class GoogleMapStore = GoogleMapStoreBase
 
 abstract class GoogleMapStoreBase with Store {
   @observable
-  BusStopDetail selectedBusStop;
+  BusStopDetail? selectedBusStop;
 
   @action
-  void setSelectedBusStop(BusStopDetail busStop){
+  void setSelectedBusStop(BusStopDetail? busStop){
     selectedBusStop = busStop;
   }
 
@@ -31,25 +31,25 @@ abstract class GoogleMapStoreBase with Store {
     if(routeStopsMap == null){
       return  ObservableList<BusStopDetail>();
     }
-    var routeStopsList = routeStopsMap[selectedRoute.routeUniqueIdentifier];
+    var routeStopsList = routeStopsMap[selectedRoute!.routeUniqueIdentifier];
     if(routeStopsList == null){
       return  ObservableList<BusStopDetail>();
     }
 
     var result = ObservableList<BusStopDetail>();
     for(var stop in routeStopsList){
-      if(Stores.dataManager.busStopDetailMap != null && Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)){
-        result.add(Stores.dataManager.busStopDetailMap[stop.identifier]);
+      if(Stores.dataManager.busStopDetailMap != null && Stores.dataManager.busStopDetailMap!.containsKey(stop.identifier)){
+        result.add(Stores.dataManager.busStopDetailMap![stop.identifier]!);
       }
     }
     return result;
   }
 
   @observable
-  BusRoute selectedRoute;
+  BusRoute? selectedRoute;
 
   @action
-  void setSelectedRoute(BusRoute selectedRoute){
+  void setSelectedRoute(BusRoute? selectedRoute){
     this.selectedRoute = selectedRoute;
   }
 
@@ -62,7 +62,7 @@ abstract class GoogleMapStoreBase with Store {
   }
 
   @observable
-  double currentZoomLevel;
+  double currentZoomLevel = 0;
 
   @action
   void setCurrentZoomLevel(double zoom){

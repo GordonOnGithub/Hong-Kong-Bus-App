@@ -20,8 +20,8 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
       englishName = json["name_en"] ?? "",
       TCName = json["name_tc"] ?? "",
       SCName = json["name_sc"] ?? "",
-      latitude = double.tryParse(json["lat"]?? 0),
-      longitude = double.tryParse(json["long"]?? 0),
+      latitude = double.tryParse(json["lat"]?? 0) ?? 0,
+      longitude = double.tryParse(json["long"]?? 0) ?? 0,
       timestamp = DateTime.tryParse(json["data_timestamp"]??"") ?? DateTime.now(){
       Map<String, String> nameData = Map();
       nameData["en"] = englishName;
@@ -36,8 +36,8 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
         englishName = "",
         TCName = "",
         SCName = "",
-        latitude = null,
-        longitude  = null,
+        latitude = 0,
+        longitude  = 0,
         timestamp = DateTime.now(){
     Map<String, String> nameData = Map();
     nameData["en"] = "loading";
@@ -52,8 +52,8 @@ BusStopDetail.fromJson(Map<String, dynamic> json):
         englishName = "",
         TCName = "",
         SCName = "",
-        latitude = null,
-        longitude  = null,
+        latitude = 0,
+        longitude  = 0,
         timestamp = DateTime.now(){
     Map<String, String> nameData = Map();
     nameData["en"] = "n/a";

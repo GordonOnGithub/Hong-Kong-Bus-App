@@ -10,14 +10,14 @@ import 'package:connectivity/connectivity.dart';
 
 import 'package:minimal_bus_hk/utils/stores.dart';
 class NetworkUtil{
-  static NetworkUtil _sharedInstance;
+  static NetworkUtil? _sharedInstance;
 
   static NetworkUtil sharedInstance(){
     if(_sharedInstance == null){
       _sharedInstance = NetworkUtil._();
     }
 
-    return _sharedInstance;
+    return _sharedInstance!;
   }
 
   NetworkUtil._();
@@ -54,10 +54,10 @@ class NetworkUtil{
       return -1;
     }
 
-    var response = await http.get(_routeAPIs[companyCode]).catchError((e){
-        return null;// connectivity issue
+    var response = await http.get(Uri.parse(_routeAPIs[companyCode] ?? "")).catchError((e){
+        return http.Response("", -1);// connectivity issue
     });
-    var code = response != null? response.statusCode : -1;
+    var code =  response.statusCode;
     if(code == 200){
         Map<String, dynamic> responseData = jsonDecode(response.body);
         if(responseData.containsKey("data")){
@@ -96,10 +96,10 @@ class NetworkUtil{
       return -1;
     }
 
-    var response = await http.get(_stopListAPIs[companyCode]).catchError((e){
-      return null;// connectivity issue
+    var response = await http.get(Uri.parse(_stopListAPIs[companyCode] ?? "")).catchError((e){
+      return http.Response("", -1);// connectivity issue
     });
-    var code = response != null? response.statusCode : -1;
+    var code = response.statusCode;
     if(code == 200){
       Map<String, dynamic> responseData = jsonDecode(response.body);
       if(responseData.containsKey("data")){
@@ -141,7 +141,7 @@ class NetworkUtil{
     }
     var url = _routeDataAPIs[companyCode.toLowerCase()];
     var response = await http.get(
-        "$url$routeCode/${ isInbound ? "inbound" : "outbound"}/$serviceType").catchError((e){
+        Uri.parse("$url$routeCode/${ isInbound ? "inbound" : "outbound"}/$serviceType")).catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -178,7 +178,7 @@ class NetworkUtil{
       return -1;
     }
     var response = await http.get(
-        "${_busStopDetailAPIs[companyCode.toLowerCase()]}$stopId").catchError((e){
+        Uri.parse("${_busStopDetailAPIs[companyCode.toLowerCase()]}$stopId")).catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -204,7 +204,7 @@ class NetworkUtil{
     if(result != ConnectivityResult.wifi && result != ConnectivityResult.mobile){
       return -1;
     }
-    var response = await http.get("${_etaAPIs[query.companyCode.toLowerCase()]}${query.stopId}/${query.routeCode}/${query.serviceType}").catchError((e){
+    var response = await http.get(Uri.parse("${_etaAPIs[query.companyCode.toLowerCase()]}${query.stopId}/${query.routeCode}/${query.serviceType}")).catchError((e){
       return null;// connectivity issue
     });
     var code = response != null? response.statusCode : -1;
@@ -230,7 +230,7 @@ class NetworkUtil{
   Future<void> getETAForBookmarkedRouteStops() async{
     var queries = <ETAQuery>[];
     if(Stores.dataManager.bookmarkedRouteStops == null)return;
-    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
+    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops!);
     for(RouteStop routeStop in list){
 
       var query = ETAQuery.fromRouteStop(routeStop);
@@ -279,16 +279,16 @@ class NetworkUtil{
 
      List<Future<bool>> futures = [];
 
-     if( Stores.dataManager.inboundBusStopsMap.containsKey(b.routeUniqueIdentifier)) {
-       for (BusStop s in Stores.dataManager.inboundBusStopsMap[b.routeUniqueIdentifier]) {
+     if( Stores.dataManager.inboundBusStopsMap!.containsKey(b.routeUniqueIdentifier)) {
+       for (BusStop s in Stores.dataManager.inboundBusStopsMap![b.routeUniqueIdentifier]!) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
            futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));
          }
        }
      }
-     if( Stores.dataManager.outboundBusStopsMap.containsKey(b.routeUniqueIdentifier)) {
-       for (BusStop s in Stores.dataManager.outboundBusStopsMap[b.routeUniqueIdentifier]) {
+     if( Stores.dataManager.outboundBusStopsMap!.containsKey(b.routeUniqueIdentifier)) {
+       for (BusStop s in Stores.dataManager.outboundBusStopsMap![b.routeUniqueIdentifier]!) {
          if(!stopIdSet.contains(s.identifier)) {
            stopIdSet.add(s.identifier);
            futures.add(CacheUtils.sharedInstance().getBusStopDetail(s.identifier, s.companyCode));

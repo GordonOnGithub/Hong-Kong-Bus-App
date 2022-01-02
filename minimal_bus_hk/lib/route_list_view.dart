@@ -20,15 +20,15 @@ class RouteListView extends StatelessWidget {
 }
 
 class RouteListViewPage extends StatefulWidget {
-  RouteListViewPage({Key key }) : super(key: key);
+  RouteListViewPage({Key? key }) : super(key: key);
 
   @override
   _RouteListViewPageState createState() => _RouteListViewPageState();
 }
 
 class _RouteListViewPageState extends State<RouteListViewPage> with TickerProviderStateMixin{
-  TextEditingController _searchFieldController;
-  TabController _tabController;
+  TextEditingController? _searchFieldController;
+  TabController? _tabController;
   @override
   void initState() {
     super.initState();
@@ -84,7 +84,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
         ],
       ),
         floatingActionButton:
-        Stores.appConfig.downloadAllData ?
+        (Stores.appConfig.downloadAllData ?? false) ?
         FloatingActionButton.extended(icon: Icon(Icons.flag), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)),
         onPressed: (){
            _onBusStopListClicked();
@@ -95,7 +95,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
   Widget getDirectionalRouteListView(ObservableList<DirectionalRoute> directionalRouteList){
     return Center(
 
-            child:  directionalRouteList != null &&  Stores.dataManager.routes != null && Stores.dataManager.routes.length > 0?(
+            child:  directionalRouteList != null &&  Stores.dataManager.routes != null && Stores.dataManager.routes!.length > 0?(
                 Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                     child:Observer(
@@ -110,7 +110,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
                                   Icon(Icons.search),
                                   Expanded(child:
                                   Stores.routeListStore.filterStopIdentifier != null && Stores.routeListStore.filterStopIdentifier.length > 0?
-                                  Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStop, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom( Stores.dataManager.busStopDetailMap[Stores.routeListStore.filterStopIdentifier], BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),)
+                                  Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStop, Stores.localizationStore.localizationPref)}: ${LocalizationUtil.localizedStringFrom( Stores.dataManager.busStopDetailMap![Stores.routeListStore.filterStopIdentifier], BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),)
                                       : TextField(
                                     controller: _searchFieldController,
                                     onChanged: (text){
@@ -123,7 +123,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
                                   ),
                                   Stores.routeListStore.filterStopIdentifier != null && Stores.routeListStore.filterStopIdentifier.length > 0?
                                   IconButton(icon: Icon(Icons.location_on_outlined), onPressed: (){
-                                    Stores.googleMapStore.setSelectedBusStop(Stores.dataManager.busStopDetailMap[Stores.routeListStore.filterStopIdentifier]);
+                                    Stores.googleMapStore.setSelectedBusStop(Stores.dataManager.busStopDetailMap![Stores.routeListStore.filterStopIdentifier]);
                                     Stores.googleMapStore.setSelectedRoute(null);
                                     Navigator.push(
                                       context,
@@ -133,7 +133,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
                                   ,
                                   Stores.routeListStore.filterKeyword.length > 0 || Stores.routeListStore.filterStopIdentifier.length > 0?
                                   IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
-                                    _searchFieldController.text = "";
+                                    _searchFieldController?.text = "";
                                     Stores.routeListStore.clearFilters();
                                   },):Container()
                                 ])))
@@ -214,7 +214,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
     Stores.routeDetailStore.route = directionalRoute.route;
     Stores.routeDetailStore.isInbound = directionalRoute.isInbound;
     Stores.routeListStore.clearFilters();
-    _searchFieldController.text = "";
+    _searchFieldController?.text = "";
 
     Navigator.push(
       context,
@@ -224,7 +224,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
 
   void _onJourneyPlannerClicked(){
     Stores.routeListStore.clearFilters();
-    _searchFieldController.text = "";
+    _searchFieldController?.text = "";
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => JourneyPlannerView()),
@@ -234,7 +234,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
   void _onBusStopListClicked(){
     Stores.routeListStore.clearFilters();
     Stores.stopListViewStore.filterKeywords = "";
-    _searchFieldController.text = "";
+    _searchFieldController?.text = "";
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => StopListView()),

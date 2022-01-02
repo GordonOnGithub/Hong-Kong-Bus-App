@@ -29,10 +29,10 @@ abstract class RouteListStoreBase with Store {
   }
 
   @observable
-  DirectionalRoute selectedDirectionalRoute;
+  DirectionalRoute? selectedDirectionalRoute;
 
   @action
-  void setSelectedDirectionalRoute(DirectionalRoute busRoute){
+  void setSelectedDirectionalRoute(DirectionalRoute? busRoute){
     if(selectedDirectionalRoute != busRoute) {
       selectedDirectionalRoute = busRoute;
     }else{
@@ -125,7 +125,7 @@ abstract class RouteListStoreBase with Store {
           && Stores.dataManager.stopRoutesMap.containsKey(filterStopIdentifier)?
       Stores.dataManager.directionalRouteListOfNWFBAndCTB.where((element) {
         var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
-        for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
+        for(DirectionalRoute directionalRoute in directionalRoutesOfStop!){
           if(directionalRoute.route.routeUniqueIdentifier == element.route.routeUniqueIdentifier && directionalRoute.isInbound == element.isInbound){
             return true;
           }
@@ -144,17 +144,17 @@ abstract class RouteListStoreBase with Store {
               || (element.isInbound &&
                   ((keyword.length > 1 && element.route.originEnglishName.toLowerCase().contains(
                       keyword.toLowerCase()))
-                      || element.route.originTCName.toLowerCase().contains(
-                          keyword.toLowerCase())
-                      || element.route.originSCName.toLowerCase().contains(
-                          keyword.toLowerCase())))
+                      || element.route.originTCName.contains(
+                          keyword)
+                      || element.route.originSCName.contains(
+                          keyword)))
               ||(!element.isInbound &&
                   ((keyword.length > 1 &&  element.route.destinationEnglishName.toLowerCase().contains(
                       keyword.toLowerCase()))
-                      || element.route.destinationSCName.toLowerCase().contains(
-                          keyword.toLowerCase())
-                      || element.route.destinationTCName.toLowerCase().contains(
-                          keyword.toLowerCase())))){
+                      || element.route.destinationSCName.contains(
+                          keyword)
+                      || element.route.destinationTCName.contains(
+                          keyword)))){
 
           }else{
             return false;
@@ -187,7 +187,7 @@ abstract class RouteListStoreBase with Store {
           && Stores.dataManager.stopRoutesMap.containsKey(filterStopIdentifier)?
       Stores.dataManager.directionalRouteListOfKMB.where((element) {
         var directionalRoutesOfStop = Stores.dataManager.stopRoutesMap[filterStopIdentifier];
-        for(DirectionalRoute directionalRoute in directionalRoutesOfStop){
+        for(DirectionalRoute directionalRoute in directionalRoutesOfStop!){
           if(directionalRoute.route.routeUniqueIdentifier == element.route.routeUniqueIdentifier && directionalRoute.isInbound == element.isInbound){
             return true;
           }

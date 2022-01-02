@@ -13,7 +13,7 @@ class RouteDetailStore = RouteDetailStoreBase
 
 abstract class RouteDetailStoreBase with Store {
   @observable
-  BusRoute route;
+  BusRoute? route;
 
   @action
   void setBusRoute(BusRoute route){
@@ -28,7 +28,7 @@ abstract class RouteDetailStoreBase with Store {
     this.isInbound = isInbound;
   }
   @observable
-  String selectedStopId;
+  String? selectedStopId;
 
   @action
   void setSelectedStopId(String stopId){
@@ -40,7 +40,7 @@ abstract class RouteDetailStoreBase with Store {
   }
 
   @computed
-  ObservableList<BusStopDetail> get selectedRouteBusStops {
+  ObservableList<BusStopDetail>? get selectedRouteBusStops {
     if(route == null){
       return ObservableList<BusStopDetail>();
     }
@@ -49,15 +49,15 @@ abstract class RouteDetailStoreBase with Store {
     if(routeStopsMap == null){
       return null;
     }
-    var routeStopsList = routeStopsMap[route.routeUniqueIdentifier];
+    var routeStopsList = routeStopsMap[route!.routeUniqueIdentifier];
     if(routeStopsList == null){
       return null;
     }
 
     var result = ObservableList<BusStopDetail>();
     for(var stop in routeStopsList){
-      if(Stores.dataManager.busStopDetailMap != null && Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)){
-        result.add(Stores.dataManager.busStopDetailMap[stop.identifier]);
+      if(Stores.dataManager.busStopDetailMap != null && Stores.dataManager.busStopDetailMap!.containsKey(stop.identifier)){
+        result.add(Stores.dataManager.busStopDetailMap![stop.identifier]!);
       }else{
         result.add(BusStopDetail.unknown(stop.identifier));
       }
@@ -90,7 +90,7 @@ abstract class RouteDetailStoreBase with Store {
   ObservableList<BusStopDetailWithETA> get displayedStops{
     if(filterKeyword != null && selectedRouteBusStops != null) {
       var filteredList =  ObservableList<BusStopDetail>();
-      filteredList.addAll(selectedRouteBusStops.where((element) {
+      filteredList.addAll(selectedRouteBusStops!.where((element) {
         if(element == null) return false;
 
         for(var keyword in _keywords) {
@@ -113,13 +113,16 @@ abstract class RouteDetailStoreBase with Store {
 
       for(var busStopDetail in filteredList) {
         var eta = displayedETAMap[busStopDetail.identifier];
+        if(eta == null){
+          continue;
+        }
         var sequence = 0;
 
         var routeStopsMap = isInbound
             ? Stores.dataManager.inboundBusStopsMap
             : Stores.dataManager.outboundBusStopsMap;
         if (routeStopsMap != null) {
-           var routeStopsList = routeStopsMap[route.routeUniqueIdentifier];
+           var routeStopsList = routeStopsMap[route!.routeUniqueIdentifier];
            if (routeStopsList != null) {
               for (BusStop s in routeStopsList) {
                 if(s.identifier == busStopDetail.identifier){
@@ -129,7 +132,7 @@ abstract class RouteDetailStoreBase with Store {
              }
 
             result.add(BusStopDetailWithETA(
-              busStopDetail: busStopDetail, eta: eta, sequence: sequence));
+               busStopDetail, eta, sequence));
           }
         }
       }
@@ -143,13 +146,13 @@ abstract class RouteDetailStoreBase with Store {
 
 
   @observable
-  int selectedSequence;
+  int? selectedSequence;
 
   @observable
-  int lastSelectedSequence;
+  int? lastSelectedSequence;
 
   @action
-  void setSelectedSequence(int seq){
+  void setSelectedSequence(int? seq){
     selectedSequence = seq;
     if(seq != null){
       lastSelectedSequence = selectedSequence;
@@ -171,17 +174,17 @@ abstract class RouteDetailStoreBase with Store {
     if(routeStopsMap == null){
       return result;
     }
-    var busStopsList = routeStopsMap[route.routeUniqueIdentifier];
+    var busStopsList = routeStopsMap[route!.routeUniqueIdentifier];
     if(busStopsList == null){
       return result;
     }
 
     for(BusStop busStop in busStopsList){
-      var routeStop = RouteStop(route.routeCode, busStop.identifier, route.companyCode, isInbound, busStop.serviceType);
-      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey(routeStop)){
-        var ETAs = Stores.dataManager.ETAMap[routeStop];
+      var routeStop = RouteStop(route!.routeCode, busStop.identifier, route!.companyCode, isInbound, busStop.serviceType);
+      if(Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap!.containsKey(routeStop)){
+        var ETAs = Stores.dataManager.ETAMap![routeStop];
         var filteredETAs = <ETA>[];
-        for(var eta in ETAs) {
+        for(var eta in ETAs!) {
           if(routeStop.matchETA(eta)) {
             filteredETAs.add(eta);
           }
@@ -193,7 +196,7 @@ abstract class RouteDetailStoreBase with Store {
           if(a.etaTimestamp == null || b.etaTimestamp == null){
             return 0;
           }
-          return a.etaTimestamp.compareTo(b.etaTimestamp);});
+          return a.etaTimestamp!.compareTo(b.etaTimestamp!);});
         result.add(filteredETAs);
       }else{
         result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);

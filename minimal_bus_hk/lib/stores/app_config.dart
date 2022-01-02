@@ -28,13 +28,13 @@ abstract class AppConfigStoreBase with Store {
   final int etaExpiryTimeMilliseconds = 30000;
 
   @observable
-  bool downloadAllData;
+  bool? downloadAllData;
 
   static final String _downloadAllDataConfigKey = "downloadAllData";
   @action
-  Future<bool> shouldDownloadAllData() async{
+  Future<bool?> shouldDownloadAllData() async{
     if(downloadAllData != null){
-      return downloadAllData;
+      return downloadAllData!;
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -50,7 +50,7 @@ abstract class AppConfigStoreBase with Store {
   }
 
   @observable
-  bool _routeSearchReminder;
+  bool _routeSearchReminder = true;
 
   static final String _routeSearchReminderConfigKey = "routeSearchReminder";
   @action
@@ -58,11 +58,7 @@ abstract class AppConfigStoreBase with Store {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    _routeSearchReminder = prefs.getBool(_routeSearchReminderConfigKey);
-    if(_routeSearchReminder != null){
-      return _routeSearchReminder;
-    }
-    _routeSearchReminder = true;
+    _routeSearchReminder = prefs.getBool(_routeSearchReminderConfigKey) ?? true;
     return _routeSearchReminder;
   }
 
@@ -80,10 +76,7 @@ abstract class AppConfigStoreBase with Store {
   @action
   Future<void> checkShowSearchButtonReminder() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    showSearchButtonReminder = prefs.getBool(_showSearchButtonReminderConfigKey);
-    if(showSearchButtonReminder == null){
-      showSearchButtonReminder = true;
-    }
+    showSearchButtonReminder = prefs.getBool(_showSearchButtonReminderConfigKey) ?? true;
   }
 
   @action
@@ -108,10 +101,8 @@ abstract class AppConfigStoreBase with Store {
   @action
   Future<void> checkAppLaunchCount() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    appLaunchCount = prefs.getInt(_appLaunchCountConfigKey);
-    if(appLaunchCount == null){
-      appLaunchCount = 0;
-    }
+    appLaunchCount = prefs.getInt(_appLaunchCountConfigKey) ?? 0;
+
   }
 
   @action
@@ -128,10 +119,8 @@ abstract class AppConfigStoreBase with Store {
   @action
   Future<void> checkShowRouteDetailReminder() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    showRouteDetailReminder = prefs.getBool(_showRouteDetailReminderConfigKey);
-    if(showRouteDetailReminder == null){
-      showRouteDetailReminder = true;
-    }
+    showRouteDetailReminder = prefs.getBool(_showRouteDetailReminderConfigKey) ?? true;
+
   }
 
   @action

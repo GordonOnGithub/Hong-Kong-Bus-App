@@ -15,7 +15,7 @@ class SettingView extends StatelessWidget {
 }
 
 class SettingViewPage extends StatefulWidget {
-  SettingViewPage({Key key}) : super(key: key);
+  SettingViewPage({Key? key}) : super(key: key);
 
   @override
   _SettingViewPageState createState() => _SettingViewPageState();
@@ -61,6 +61,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
   List<Widget> _getWidgetList(SelectedOption option, String version){
     switch(option) {
       case SelectedOption.none:
+        case SelectedOption.appStore:
         return [
           Container(height: 20),
           InkWell(child: Container(height: 50, alignment: Alignment.center, child:
@@ -138,7 +139,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
         Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadData, Stores.localizationStore.localizationPref), style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600 ),),
           Switch(value: Stores.appConfig.downloadAllData == true, onChanged: (_){
               Stores.appConfig.setShouldDownloadAllData(!(Stores.appConfig.downloadAllData == true));
-              if(Stores.appConfig.downloadAllData ){
+              if((Stores.appConfig.downloadAllData ?? false)){
                 CacheUtils.sharedInstance().fetchAllData();
               }
           })]),
@@ -156,8 +157,7 @@ class _SettingViewPageState extends State<SettingViewPage> {
           Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisAppDetail, Stores.localizationStore.localizationPref)}"),
           Expanded(child: Container())];
 
-  }
-  return [];
+   }
   }
 
   String _getTitle(SelectedOption option){
@@ -174,7 +174,6 @@ class _SettingViewPageState extends State<SettingViewPage> {
         return LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForAboutThisApp, Stores.localizationStore.localizationPref);
 
     }
-    return "";
   }
 
   Widget _getProgressView(int currentCount){

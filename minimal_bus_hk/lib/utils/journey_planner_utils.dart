@@ -11,28 +11,31 @@ class JourneyPlannerUtils{
     }
 
       List<BusStopDetail> result = [];
-      for(DirectionalRoute dr in Stores.dataManager.stopRoutesMap[fromStopId]){
+      var directionalRouteList =  Stores.dataManager.stopRoutesMap[fromStopId];
+      if(directionalRouteList == null){ return []; }
+      for(DirectionalRoute dr in directionalRouteList){
           var map = dr.isInbound? Stores.dataManager.inboundBusStopsMap : Stores.dataManager.outboundBusStopsMap;
-          if(!map.containsKey(dr.route.routeUniqueIdentifier)){
+          if(map == null || !map.containsKey(dr.route.routeUniqueIdentifier)){
             continue;
           }
           var busStopsList = map[dr.route.routeUniqueIdentifier];
+          if(busStopsList == null){ continue; }
           bool startSearch = false;
           for(BusStop b in busStopsList){
             if(!startSearch && b.identifier == fromStopId){
               startSearch = true;
               continue;
             }else if (b.identifier == toStopId){
-              result.add(Stores.dataManager.busStopDetailMap[fromStopId]);
-              result.add(Stores.dataManager.busStopDetailMap[toStopId]);
+              result.add(Stores.dataManager.busStopDetailMap![fromStopId]!);
+              result.add(Stores.dataManager.busStopDetailMap![toStopId]!);
               return result;
             }else if(transit > 0){
               var subResult = findPath(b.identifier, toStopId, transit - 1);
               if(subResult.length < 1){
                 continue;
               }else{
-                result.add(Stores.dataManager.busStopDetailMap[fromStopId]);
-                result.add(Stores.dataManager.busStopDetailMap[b.identifier]);
+                result.add(Stores.dataManager.busStopDetailMap![fromStopId]!);
+                result.add(Stores.dataManager.busStopDetailMap![b.identifier]!);
                 result.addAll(subResult);
                 return result;
               }
@@ -44,6 +47,6 @@ class JourneyPlannerUtils{
 
       }
 
-
+    return [];
   }
 }

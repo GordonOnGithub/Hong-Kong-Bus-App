@@ -16,8 +16,8 @@ class ETA extends LocalizedData{
   final String englishRemark;
   final String TCRemark;
   final String SCRemark;
-  final DateTime etaTimestamp;
-  final DateTime dataTimestamp;
+  final DateTime? etaTimestamp;
+  final DateTime? dataTimestamp;
   final bool isInbound;
   final ETAStatus status;
 
@@ -81,7 +81,7 @@ class ETA extends LocalizedData{
     }
 
 
-    var localTime = etaTimestamp.add(Duration(hours: 8));
+    var localTime = etaTimestamp!.add(Duration(hours: 8));
     return "${localTime.hour.toString().padLeft(2, "0")}:${localTime.minute.toString().padLeft(2, "0")}";
   }
 
@@ -95,7 +95,7 @@ class ETA extends LocalizedData{
     if(timestampForChecking == null){
       timestampForChecking = DateTime.now();
     }
-    return  (etaTimestamp != null? etaTimestamp.millisecondsSinceEpoch:0) - timestampForChecking.millisecondsSinceEpoch;
+    return  (etaTimestamp != null? etaTimestamp!.millisecondsSinceEpoch:0) - timestampForChecking.millisecondsSinceEpoch;
   }
   @override
   Map<String, Map<String, String>> getLocalizedData() {

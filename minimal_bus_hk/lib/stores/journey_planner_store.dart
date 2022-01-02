@@ -26,7 +26,7 @@ abstract class JourneyPlannerStoreBase with Store {
   }
 
   @observable
-  String filterKeywords;
+  String? filterKeywords;
 
   @action
   void setFilterKeywords(String keywords){
@@ -34,7 +34,7 @@ abstract class JourneyPlannerStoreBase with Store {
   }
 
   @observable
-  String originStopId;
+  String? originStopId;
 
   @action
   void setOriginStopId(String id){
@@ -42,16 +42,16 @@ abstract class JourneyPlannerStoreBase with Store {
   }
 
   @computed
-  BusStopDetail get originBusStop{
-    if(originStopId != null && Stores.dataManager.busStopDetailMap.containsKey(originStopId)){
-      return Stores.dataManager.busStopDetailMap[originStopId];
+  BusStopDetail? get originBusStop{
+    if(originStopId != null && Stores.dataManager.busStopDetailMap!.containsKey(originStopId)){
+      return Stores.dataManager.busStopDetailMap![originStopId];
     }else{
       return null;
     }
   }
 
   @observable
-  String destinationStopId;
+  String? destinationStopId;
 
   @action
   void setDestinationStopId(String id){
@@ -59,9 +59,9 @@ abstract class JourneyPlannerStoreBase with Store {
   }
 
   @computed
-  BusStopDetail get destinationBusStop{
-    if(destinationStopId != null && Stores.dataManager.busStopDetailMap.containsKey(destinationStopId)){
-      return Stores.dataManager.busStopDetailMap[destinationStopId];
+  BusStopDetail? get destinationBusStop{
+    if(destinationStopId != null && Stores.dataManager.busStopDetailMap!.containsKey(destinationStopId)){
+      return Stores.dataManager.busStopDetailMap![destinationStopId];
     }else{
       return null;
     }
@@ -69,12 +69,12 @@ abstract class JourneyPlannerStoreBase with Store {
 
   @computed
   List<String> get _keywords{
-    return filterKeywords.split(" ");
+    return filterKeywords?.split(" ") ?? [];
   }
   @computed
   List<BusStopDetail> get filteredBusStopDetailList{
-    List<BusStopDetail> busStops = Stores.dataManager.busStopDetailMap != null? Stores.dataManager.busStopDetailMap.values.toList() : [];
-    if(filterKeywords != null && filterKeywords.length > 0 && busStops.length > 0 && (originStopId != null || destinationBusStop != null)){
+    List<BusStopDetail> busStops = Stores.dataManager.busStopDetailMap != null? Stores.dataManager.busStopDetailMap!.values.toList() : [];
+    if(filterKeywords != null && filterKeywords!.length > 0 && busStops.length > 0 && (originStopId != null || destinationBusStop != null)){
       var filteredList =  <BusStopDetail>[];
       filteredList.addAll(busStops.where((element) {
         if(element == null) return false;

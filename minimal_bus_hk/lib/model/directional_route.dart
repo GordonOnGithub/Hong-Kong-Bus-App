@@ -4,6 +4,6 @@ class DirectionalRoute{
   final BusRoute route;
   final bool isInbound;
 
-  DirectionalRoute({this.route,  this.isInbound});
+  DirectionalRoute(this.route,  this.isInbound);
 
 }

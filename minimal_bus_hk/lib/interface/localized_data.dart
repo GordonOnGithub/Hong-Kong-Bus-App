@@ -1,3 +1,3 @@
 abstract class LocalizedData{
-  Map<String, Map<String, String>> getLocalizedData();
+  Map<String, Map<String, String>>? getLocalizedData();
 }

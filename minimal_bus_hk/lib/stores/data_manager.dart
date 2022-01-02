@@ -19,16 +19,16 @@ class DataManager = DataManagerBase with _$DataManager;
 
 abstract class DataManagerBase with Store {
   @observable
-  ObservableMap<String,List<BusRoute>> companyRoutesMap;
+  ObservableMap<String,List<BusRoute>>? companyRoutesMap;
 
   @computed
-  ObservableList<BusRoute> get routes{
+  ObservableList<BusRoute>? get routes{
     if(companyRoutesMap == null){
       return null;
     }
 
     var result = ObservableList<BusRoute>();
-    for(var routes in companyRoutesMap.values){
+    for(var routes in companyRoutesMap!.values){
       for(var route in routes){
           result.add(route);
       }
@@ -38,10 +38,10 @@ abstract class DataManagerBase with Store {
   }
 
   @computed
-  ObservableMap<String, BusRoute> get routesMap{
+  ObservableMap<String, BusRoute>? get routesMap{
     var result = ObservableMap<String, BusRoute>();
     if(routes != null) {
-      for (var route in routes) {
+      for (var route in routes!) {
         result[route.routeUniqueIdentifier] = route;
       }
     }
@@ -57,18 +57,19 @@ abstract class DataManagerBase with Store {
     }
     if(companyRoutesMap==null){
       companyRoutesMap = ObservableMap();
-    }else if(companyRoutesMap.containsKey(companyCode) && Stores.appConfig.downloadAllData == true){
-      var oldData = companyRoutesMap[companyCode];
-      var delta = result.where((element) {
-        return !oldData.contains(element);
-      });
+    }else if(companyRoutesMap!.containsKey(companyCode) && Stores.appConfig.downloadAllData == true){
+      var oldData = companyRoutesMap![companyCode];
+      if(oldData != null) {
+        var delta = result.where((element) {
+          return !oldData.contains(element);
+        });
 
-      if(delta.isNotEmpty){
+        if (delta.isNotEmpty) {
           NetworkUtil.sharedInstance().downloadNewRouteData(delta.toList());
+        }
       }
-
     }
-    companyRoutesMap[companyCode] = result;
+    companyRoutesMap![companyCode] = result;
   }
 
 
@@ -80,11 +81,13 @@ abstract class DataManagerBase with Store {
     for(BusStop busStop in busStops){
       String identifier = busStop.identifier;
       bool containKey  = stopRoutesMap.containsKey(identifier);
-      ObservableList<DirectionalRoute> routeList = containKey ? stopRoutesMap[identifier] : ObservableList<DirectionalRoute>();
+      ObservableList<DirectionalRoute>? routeList = containKey ? stopRoutesMap[identifier] : ObservableList<DirectionalRoute>();
+      if(routeList == null) { continue; }
       if(!containKey){
         stopRoutesMap[identifier] = routeList;
       }
       routeList.add(directionalRoute);
+
     }
   }
 
@@ -92,12 +95,12 @@ abstract class DataManagerBase with Store {
   ObservableList<DirectionalRoute> get directionalRouteList {
     var result = ObservableList<DirectionalRoute>();
     if(routes != null) {
-      for (var route in routes) {
+      for (var route in routes!) {
         if (route.bound.length == 0) {
-          result.add(DirectionalRoute(route: route, isInbound: true));
-          result.add(DirectionalRoute(route: route, isInbound: false));
+          result.add(DirectionalRoute( route, true));
+          result.add(DirectionalRoute( route, false));
         }else{
-          result.add(DirectionalRoute(route: route, isInbound: route.bound == "I"));
+          result.add(DirectionalRoute( route, route.bound == "I"));
         }
       }
     }
@@ -108,10 +111,10 @@ abstract class DataManagerBase with Store {
   ObservableList<DirectionalRoute> get directionalRouteListOfNWFBAndCTB {
     var result = ObservableList<DirectionalRoute>();
     if(routes != null) {
-      for (var route in routes) {
+      for (var route in routes!) {
         if (route.companyCode != NetworkUtil.companyCodeKMB) {
-          result.add(DirectionalRoute(route: route, isInbound: true));
-          result.add(DirectionalRoute(route: route, isInbound: false));
+          result.add(DirectionalRoute( route, true));
+          result.add(DirectionalRoute( route, false));
         }
       }
     }
@@ -122,9 +125,9 @@ abstract class DataManagerBase with Store {
   ObservableList<DirectionalRoute> get directionalRouteListOfKMB {
     var result = ObservableList<DirectionalRoute>();
     if(routes != null) {
-      for (var route in routes) {
+      for (var route in routes!) {
         if (route.companyCode == NetworkUtil.companyCodeKMB) {
-          result.add(DirectionalRoute(route: route, isInbound: route.bound == "I"));
+          result.add(DirectionalRoute( route, route.bound == "I"));
         }
       }
     }
@@ -132,12 +135,12 @@ abstract class DataManagerBase with Store {
   }
 
   @observable
-  ObservableMap<String, List<BusStop>> inboundBusStopsMap;
+  ObservableMap<String, List<BusStop>>? inboundBusStopsMap;
   @observable
-  ObservableMap<String, List<BusStop>> outboundBusStopsMap;
+  ObservableMap<String, List<BusStop>>? outboundBusStopsMap;
 
-  Map<String, List<BusStop>> _tmpInboundBusStopsMap;
-  Map<String, List<BusStop>> _tmpOutboundBusStopsMap;
+  Map<String, List<BusStop>>? _tmpInboundBusStopsMap;
+  Map<String, List<BusStop>>? _tmpOutboundBusStopsMap;
 
   @action
   Future<void> updateBusStopsMap(String routeCode, String companyCode, bool isInbound, List<Map<String, dynamic>> dataArray, {bool saveInTmp = false}) async{
@@ -146,8 +149,10 @@ abstract class DataManagerBase with Store {
       result.add(BusStop.fromJson(data));
     }
     String routeUniqueIdentifier = "${routeCode}_$companyCode";
-    if(routesMap.containsKey(routeUniqueIdentifier)) {
-      DirectionalRoute directionalRoute = DirectionalRoute(route: routesMap[routeUniqueIdentifier], isInbound: isInbound);
+    if(routesMap!.containsKey(routeUniqueIdentifier)) {
+      BusRoute? route =  routesMap![routeUniqueIdentifier];
+      if (route == null) { return; }
+      DirectionalRoute directionalRoute = DirectionalRoute( route, isInbound);
       updateStopRouteCodeMap(directionalRoute, result);
     }
     if(saveInTmp){
@@ -155,31 +160,31 @@ abstract class DataManagerBase with Store {
         if (_tmpInboundBusStopsMap == null) {
           _tmpInboundBusStopsMap = Map();
         }
-        _tmpInboundBusStopsMap[routeUniqueIdentifier] = result;
+        _tmpInboundBusStopsMap![routeUniqueIdentifier] = result;
       } else {
         if (_tmpOutboundBusStopsMap == null) {
           _tmpOutboundBusStopsMap = Map();
         }
-        _tmpOutboundBusStopsMap[routeUniqueIdentifier] = result;
+        _tmpOutboundBusStopsMap![routeUniqueIdentifier] = result;
       }
     }else {
       if (isInbound) {
         if (inboundBusStopsMap == null) {
           inboundBusStopsMap = ObservableMap();
         }
-        inboundBusStopsMap[routeUniqueIdentifier] = result;
+        inboundBusStopsMap![routeUniqueIdentifier] = result;
       } else {
         if (outboundBusStopsMap == null) {
           outboundBusStopsMap = ObservableMap();
         }
-        outboundBusStopsMap[routeUniqueIdentifier] = result;
+        outboundBusStopsMap![routeUniqueIdentifier] = result;
       }
     }
   }
 
   @observable
-  ObservableMap<String, BusStopDetail> busStopDetailMap;
-  Map<String, BusStopDetail> _tmpBusStopDetailMap;
+  ObservableMap<String, BusStopDetail>? busStopDetailMap;
+  Map<String, BusStopDetail>? _tmpBusStopDetailMap;
 
   @action
   void updateBusStopDetailMapFromList(List<Map<String, dynamic>> busStopDataList){
@@ -196,7 +201,7 @@ abstract class DataManagerBase with Store {
     if (_tmpBusStopDetailMap == null) {
       _tmpBusStopDetailMap = Map();
     }
-    _tmpBusStopDetailMap.addAll(tmpBusStopDetailMap);
+    _tmpBusStopDetailMap!.addAll(tmpBusStopDetailMap);
   }
 
   @action
@@ -207,12 +212,12 @@ abstract class DataManagerBase with Store {
       if (_tmpBusStopDetailMap == null) {
         _tmpBusStopDetailMap = Map();
       }
-      _tmpBusStopDetailMap[stopId] = busStopDetail;
+      _tmpBusStopDetailMap![stopId] = busStopDetail;
     }else{
       if (busStopDetailMap == null) {
         busStopDetailMap = ObservableMap();
       }
-      busStopDetailMap[stopId] = busStopDetail;
+      busStopDetailMap![stopId] = busStopDetail;
     }
   }
 
@@ -222,8 +227,8 @@ abstract class DataManagerBase with Store {
       busStopDetailMap = ObservableMap();
     }
     if(_tmpBusStopDetailMap != null) {
-      busStopDetailMap.addAll(_tmpBusStopDetailMap);
-      _tmpBusStopDetailMap.clear();
+      busStopDetailMap!.addAll(_tmpBusStopDetailMap!);
+      _tmpBusStopDetailMap!.clear();
     }
   }
 
@@ -234,21 +239,21 @@ abstract class DataManagerBase with Store {
     }
 
     if(_tmpInboundBusStopsMap != null) {
-      inboundBusStopsMap.addAll(_tmpInboundBusStopsMap);
-      _tmpInboundBusStopsMap.clear();
+      inboundBusStopsMap!.addAll(_tmpInboundBusStopsMap!);
+      _tmpInboundBusStopsMap!.clear();
     }
 
     if (outboundBusStopsMap == null) {
       outboundBusStopsMap = ObservableMap();
     }
     if(_tmpOutboundBusStopsMap != null) {
-      outboundBusStopsMap.addAll(_tmpOutboundBusStopsMap);
-      _tmpOutboundBusStopsMap.clear();
+      outboundBusStopsMap!.addAll(_tmpOutboundBusStopsMap!);
+      _tmpOutboundBusStopsMap!.clear();
     }
   }
 
   @observable
-  ObservableMap<RouteStop, List<ETA>> ETAMap;
+  ObservableMap<RouteStop, List<ETA>>? ETAMap;
 
   @action
   void updateETAMap(String stopId, String routeCode, String companyCode, String serviceType, List<Map<String, dynamic>> dataArray){
@@ -268,13 +273,13 @@ abstract class DataManagerBase with Store {
     if(ETAMap == null){
       ETAMap = ObservableMap();
     }
-    ETAMap[RouteStop(routeCode, stopId, companyCode, true, serviceType)] = inboundResult;
-    ETAMap[RouteStop(routeCode, stopId, companyCode, false, serviceType)] = outboundResult;
+    ETAMap![RouteStop(routeCode, stopId, companyCode, true, serviceType)] = inboundResult;
+    ETAMap![RouteStop(routeCode, stopId, companyCode, false, serviceType)] = outboundResult;
 
   }
 
   @observable
-  ObservableList<RouteStop> bookmarkedRouteStops;
+  ObservableList<RouteStop>? bookmarkedRouteStops;
   bool bookmarkUpdating = false;
   bool savedDataNotUpdated = false;
   @action
@@ -285,7 +290,7 @@ abstract class DataManagerBase with Store {
     }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bookmarkUpdating = true;
-      if (bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+      if (bookmarkedRouteStops != null && bookmarkedRouteStops!.length > 0) {
          prefs.setString(CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
           bookmarkUpdating = false;
           if(savedDataNotUpdated){
@@ -309,15 +314,15 @@ abstract class DataManagerBase with Store {
     if(bookmarkedRouteStops == null){
       bookmarkedRouteStops = ObservableList<RouteStop>();
     }
-    if(!bookmarkedRouteStops.contains(routeStop)) {
-      bookmarkedRouteStops.add(routeStop);
+    if(!bookmarkedRouteStops!.contains(routeStop)) {
+      bookmarkedRouteStops!.add(routeStop);
       if (bookmarkUpdating){
         savedDataNotUpdated = true;
         return;
       }
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bookmarkUpdating = true;
-      if (bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+      if (bookmarkedRouteStops != null && bookmarkedRouteStops!.length > 0) {
        prefs.setString(CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
          bookmarkUpdating = false;
          if(savedDataNotUpdated){
@@ -341,14 +346,14 @@ abstract class DataManagerBase with Store {
   Future<void> removeRouteStopFromBookmark(RouteStop routeStop) async{
 
     if(bookmarkedRouteStops != null){
-      bookmarkedRouteStops.removeWhere((element) => element == routeStop);
+      bookmarkedRouteStops!.removeWhere((element) => element == routeStop);
       if (bookmarkUpdating){
         savedDataNotUpdated = true;
         return;
       }
         SharedPreferences prefs = await SharedPreferences.getInstance();
       bookmarkUpdating = true;
-      if( bookmarkedRouteStops != null && bookmarkedRouteStops.length > 0) {
+      if( bookmarkedRouteStops != null && bookmarkedRouteStops!.length > 0) {
          prefs.setString( CacheUtils.bookmarkedRouteStop, jsonEncode(bookmarkedRouteStops)).then((value) {
            bookmarkUpdating = false;
            if(savedDataNotUpdated){
@@ -373,10 +378,10 @@ abstract class DataManagerBase with Store {
     if(bookmarkedRouteStops == null){
       bookmarkedRouteStops = ObservableList<RouteStop>();
     }else {
-      bookmarkedRouteStops.clear();
+      bookmarkedRouteStops!.clear();
     }
     for(var routeStop in list){
-      bookmarkedRouteStops.add(routeStop);
+      bookmarkedRouteStops!.add(routeStop);
     }
   }
 

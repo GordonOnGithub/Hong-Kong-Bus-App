@@ -16,15 +16,15 @@ class JourneyPlannerView extends StatelessWidget {
 }
 
 class JourneyPlannerViewPage extends StatefulWidget {
-  JourneyPlannerViewPage({Key key}) : super(key: key);
+  JourneyPlannerViewPage({Key? key}) : super(key: key);
 
   @override
   _JourneyPlannerViewPageState createState() => _JourneyPlannerViewPageState();
 }
 
 class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
-  TextEditingController _originSearchFieldController;
-  TextEditingController _destinationSearchFieldController;
+  TextEditingController? _originSearchFieldController;
+  TextEditingController? _destinationSearchFieldController;
 
   @override
   void initState() {
@@ -66,9 +66,9 @@ class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
                   // ),
                 ),
                 ),
-                Stores.journeyPlannerStore.filterKeywords.length > 0?
+                Stores.journeyPlannerStore.filterKeywords!.length > 0?
                 IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
-                  _originSearchFieldController.text = "";
+                  _originSearchFieldController?.text = "";
                   Stores.journeyPlannerStore.setFilterKeywords("");
                 },):Container()
               ])):Container(),
@@ -84,7 +84,7 @@ class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
                     ), onTap: (){
                         Stores.journeyPlannerStore.setOriginStopId(busStop.identifier);
                         Stores.journeyPlannerStore.selectionMode = StopSelectionMode.none;
-                        _originSearchFieldController.text = "";
+                        _originSearchFieldController?.text = "";
                     },);
                   }).build(context))
                 ): Container()
@@ -111,9 +111,9 @@ class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
                   // ),
                 ),
                 ),
-                Stores.journeyPlannerStore.filterKeywords.length > 0?
+                Stores.journeyPlannerStore.filterKeywords!.length > 0?
                 IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
-                  _destinationSearchFieldController.text = "";
+                  _destinationSearchFieldController?.text = "";
                   Stores.journeyPlannerStore.setFilterKeywords("");
                 },) : Container()
               ])) : Container(),
@@ -131,7 +131,7 @@ class _JourneyPlannerViewPageState extends State<JourneyPlannerViewPage> {
                     ), onTap: (){
                         Stores.journeyPlannerStore.setDestinationStopId(busStop.identifier);
                         Stores.journeyPlannerStore.selectionMode = StopSelectionMode.none;
-                        _destinationSearchFieldController.text = "";
+                        _destinationSearchFieldController?.text = "";
                     },);
                   }).build(context))
                       ) :  Stores.journeyPlannerStore.selectionMode == StopSelectionMode.none? Expanded(child: Container(),) : Container()

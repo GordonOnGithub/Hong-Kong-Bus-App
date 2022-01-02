@@ -55,7 +55,7 @@ class LocalizationUtil{
 
 
   static String localizedString(String key, LocalizationPref pref){
-    if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap.containsKey(key)) {
+    if(Stores.localizationStore.localizationMap == null || !Stores.localizationStore.localizationMap!.containsKey(key)) {
       return "";
     }
     var lang = "en";
@@ -64,15 +64,15 @@ class LocalizationUtil{
     }else if(pref == LocalizationPref.SC){
       lang = "sc";
     }
-    Map<String, String> map = Stores.localizationStore.localizationMap[key];
+    Map<String, String> map = Stores.localizationStore.localizationMap![key]!;
     if(map.containsKey(lang)){
-      return map[lang];
+      return map[lang] ?? "";
     }
     return "";
   }
 
-  static String localizedStringFrom(LocalizedData data, String key, LocalizationPref pref){
-    if(data.getLocalizedData() == null || !data.getLocalizedData().containsKey(key)) {
+  static String localizedStringFrom(LocalizedData? data, String key, LocalizationPref pref){
+    if( data == null || data.getLocalizedData() == null || data.getLocalizedData() == null|| !data.getLocalizedData()!.containsKey(key)) {
       return "";
     }
     var lang = "en";
@@ -81,9 +81,9 @@ class LocalizationUtil{
     }else if(pref == LocalizationPref.SC){
       lang = "sc";
     }
-    Map<String, String> map = data.getLocalizedData()[key];
+    Map<String, String> map = data.getLocalizedData()![key]!;
     if(map.containsKey(lang)){
-      return map[lang];
+      return map[lang] ?? "";
     }
     return "";
   }

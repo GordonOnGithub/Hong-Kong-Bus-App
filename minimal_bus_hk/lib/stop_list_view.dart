@@ -12,14 +12,14 @@ class StopListView extends StatelessWidget {
 }
 
 class StopListViewPage extends StatefulWidget {
-  StopListViewPage({Key key}) : super(key: key);
+  StopListViewPage({Key? key}) : super(key: key);
 
   @override
   _StopListViewPageState createState() => _StopListViewPageState();
 }
 
 class _StopListViewPageState extends State<StopListViewPage> {
-  TextEditingController _searchFieldController;
+  TextEditingController? _searchFieldController;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _StopListViewPageState extends State<StopListViewPage> {
              ),
              Stores.stopListViewStore.filterKeywords.length > 0 ?
              IconButton(icon: Icon(Icons.cancel_outlined), onPressed: (){
-               _searchFieldController.text = "";
+               _searchFieldController?.text = "";
                Stores.stopListViewStore.setFilterKeywords("");
              },):Container()
            ]))),
@@ -75,7 +75,7 @@ class _StopListViewPageState extends State<StopListViewPage> {
         ])
       ) : _getProgressView(Stores.dataManager.allDataFetchCount)
     )),
-      ));
+      ), onWillPop: null,);
   }
 
   Widget _getProgressView(int currentCount){

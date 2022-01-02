@@ -25,14 +25,14 @@ class CacheUtils{
   final int _defaultRouteDetailsCacheExpiryDays = 14;
   final int _defaultBusStopDetailsCacheExpiryDays = 14;
 
-  static CacheUtils _sharedInstance;
+  static CacheUtils? _sharedInstance;
 
   static CacheUtils sharedInstance(){
     if(_sharedInstance == null){
       _sharedInstance = CacheUtils._();
     }
 
-    return _sharedInstance;
+    return _sharedInstance!;
   }
 
   CacheUtils._();
@@ -61,8 +61,8 @@ class CacheUtils{
     await getRoutes();
     var routes = Stores.dataManager.routes;
     if(routes != null){
-      Stores.dataManager.setTotalDataCount((Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 4 +
-          Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length + 1 ); //assume every route of NWFB/CTB has inbound & outbound route , only KMB has provide if their routes are inbound/outbound
+      Stores.dataManager.setTotalDataCount((Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeNWFB]!.length + Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeCTB]!.length) * 4 +
+          Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeKMB]!.length + 1 ); //assume every route of NWFB/CTB has inbound & outbound route , only KMB has provide if their routes are inbound/outbound
       List<Future<bool>> futures = [];
 
       await getStopListFor(NetworkUtil.companyCodeKMB);
@@ -100,10 +100,10 @@ class CacheUtils{
 
       Set<String> stopIdSet = Set();
 
-      var inboundBusStopsMap = Map.from(Stores.dataManager.inboundBusStopsMap);
-      var outboundBusStopsMap =  Map.from(Stores.dataManager.outboundBusStopsMap);
+      var inboundBusStopsMap = Map.from(Stores.dataManager.inboundBusStopsMap!);
+      var outboundBusStopsMap =  Map.from(Stores.dataManager.outboundBusStopsMap!);
       //re-evaluate the progress count
-      Stores.dataManager.setTotalDataCount( (Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeNWFB].length + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeCTB].length) * 2 + Stores.dataManager.companyRoutesMap[NetworkUtil.companyCodeKMB].length + 1 + (Stores.dataManager.inboundBusStopsMap.length + Stores.dataManager.outboundBusStopsMap.length));
+      Stores.dataManager.setTotalDataCount( (Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeNWFB]!.length + Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeCTB]!.length) * 2 + Stores.dataManager.companyRoutesMap![NetworkUtil.companyCodeKMB]!.length + 1 + (Stores.dataManager.inboundBusStopsMap!.length + Stores.dataManager.outboundBusStopsMap!.length));
      // log("revised data count: ${Stores.dataManager.totalDataCount}");
       for(var list in inboundBusStopsMap.values){
         if(Stores.appConfig.downloadAllData != true){
@@ -166,7 +166,7 @@ class CacheUtils{
 
     Future<bool> getRouteFor(String companyCode, {bool silentUpdate = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString("$routesCacheKey/$companyCode");
+    String? content = prefs.getString("$routesCacheKey/$companyCode");
     var expiryDay = prefs.getInt(routesCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -175,7 +175,7 @@ class CacheUtils{
 
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
-      if(Stores.dataManager.companyRoutesMap == null || !Stores.dataManager.companyRoutesMap.containsKey(companyCode)) {
+      if(Stores.dataManager.companyRoutesMap == null || !Stores.dataManager.companyRoutesMap!.containsKey(companyCode)) {
         await NetworkUtil.sharedInstance().parseRouteData(cachedData, companyCode);
       }
 
@@ -192,7 +192,7 @@ class CacheUtils{
 
   Future<bool> getStopListFor(String companyCode, {bool silentUpdate = true}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString("${getStopListCacheKey(companyCode)}");
+    String? content = prefs.getString("${getStopListCacheKey(companyCode)}");
     var expiryDay = prefs.getInt(routesCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -216,7 +216,7 @@ class CacheUtils{
 
   Future<bool> getRouteDetail(String routeCode, String companyCode, bool isInbound, String serviceType, { bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
+    String? content = prefs.getString(getRouteDetailsCacheKey(routeCode, companyCode, isInbound));
     var expiryDay = prefs.getInt(routeDetailsCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -225,8 +225,8 @@ class CacheUtils{
 
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
-      if((isInbound && (Stores.dataManager.inboundBusStopsMap == null || !Stores.dataManager.inboundBusStopsMap.containsKey(routeCode))) ||
-          (!isInbound && (Stores.dataManager.outboundBusStopsMap == null || !Stores.dataManager.outboundBusStopsMap.containsKey(routeCode)))){
+      if((isInbound && (Stores.dataManager.inboundBusStopsMap == null || !Stores.dataManager.inboundBusStopsMap!.containsKey(routeCode))) ||
+          (!isInbound && (Stores.dataManager.outboundBusStopsMap == null || !Stores.dataManager.outboundBusStopsMap!.containsKey(routeCode)))){
         await NetworkUtil.sharedInstance().parseRouteDetail(
             routeCode, companyCode, isInbound, cachedData,  saveInTmp: saveInTmp);
       }
@@ -244,7 +244,7 @@ class CacheUtils{
 
   Future<bool> getBusStopDetail(String stopId,String companyCode, { bool silentUpdate = false, bool saveInTmp = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(getBusStopDetailCacheKey(stopId, companyCode));
+    String? content = prefs.getString(getBusStopDetailCacheKey(stopId, companyCode));
     var expiryDay = prefs.getInt(busStopDetailsCacheExpiryDaysKey);
 
     if(expiryDay == null || expiryDay < 1){
@@ -252,7 +252,7 @@ class CacheUtils{
     }
     if(content != null){
       Map<String, dynamic> cachedData = jsonDecode(content);
-      if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stopId)) {
+      if(Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap!.containsKey(stopId)) {
         await NetworkUtil.sharedInstance().parseBusStopDetail(stopId,companyCode, cachedData, saveInTmp: saveInTmp);
       }
       if(!_checkCacheContentExpired(cachedData, expiryDay * _dayInMicroseconds) && !silentUpdate) {
@@ -273,10 +273,16 @@ class CacheUtils{
       var routeStopsMap = isInbound? Stores.dataManager.inboundBusStopsMap:Stores.dataManager.outboundBusStopsMap;
       if(routeStopsMap != null && routeStopsMap.containsKey(route.routeUniqueIdentifier)){
         var futures = <Future<bool>>[];
+        var stopList = routeStopsMap[route.routeUniqueIdentifier];
 
-        for(var stop in routeStopsMap[route.routeUniqueIdentifier]){
-          if( Stores.dataManager.busStopDetailMap == null || !Stores.dataManager.busStopDetailMap.containsKey(stop.identifier)) {
-            futures.add(getBusStopDetail(stop.identifier,  stop.companyCode, silentUpdate: silentUpdate));
+        if(stopList != null) {
+          for (var stop in stopList) {
+            if (Stores.dataManager.busStopDetailMap == null ||
+                !Stores.dataManager.busStopDetailMap!.containsKey(
+                    stop.identifier)) {
+              futures.add(getBusStopDetail(stop.identifier, stop.companyCode,
+                  silentUpdate: silentUpdate));
+            }
           }
         }
         List<bool> results = await Future.wait(futures);
@@ -293,7 +299,7 @@ class CacheUtils{
 
   Future<void> getBookmarkedRouteStop() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String content = prefs.getString(bookmarkedRouteStop);
+    String? content = prefs.getString(bookmarkedRouteStop);
     List<RouteStop> list = <RouteStop>[];
     if(content != null){
         List<dynamic> decodedList = jsonDecode(content);
@@ -313,7 +319,7 @@ class CacheUtils{
     bool result = true;
     if(Stores.dataManager.bookmarkedRouteStops == null)return result;
 
-    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops);
+    List<RouteStop> list = List.from(Stores.dataManager.bookmarkedRouteStops!);
     for(RouteStop routeStop in list){
 
       var query = ETAQuery.fromRouteStop(routeStop);
@@ -348,10 +354,10 @@ class CacheUtils{
   }
 
   Future<bool> getETA(ETAQuery query) async {
-    if(Stores.dataManager.routesMap != null && Stores.dataManager.routesMap.containsKey(query.routeUniqueIdentifier) &&
-        Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap.containsKey( Stores.dataManager.routesMap[query.routeUniqueIdentifier])){
-      List<ETA> ETAs = Stores.dataManager.ETAMap[Stores.dataManager.routesMap[query.routeUniqueIdentifier]];
-        if(ETAs.length > 0 &&  DateTime.now().millisecondsSinceEpoch - ETAs.first.dataTimestamp.millisecondsSinceEpoch  < Stores.appConfig.etaExpiryTimeMilliseconds && ETAs.first.status == ETAStatus.found){
+    if(Stores.dataManager.routesMap != null && Stores.dataManager.routesMap!.containsKey(query.routeUniqueIdentifier) &&
+        Stores.dataManager.ETAMap != null && Stores.dataManager.ETAMap!.containsKey( Stores.dataManager.routesMap![query.routeUniqueIdentifier])){
+      List<ETA>? ETAs = Stores.dataManager.ETAMap![Stores.dataManager.routesMap![query.routeUniqueIdentifier]];
+        if(ETAs != null && ETAs.length > 0 &&  DateTime.now().millisecondsSinceEpoch - ETAs.first.dataTimestamp!.millisecondsSinceEpoch  < Stores.appConfig.etaExpiryTimeMilliseconds && ETAs.first.status == ETAStatus.found){
           return true;
         }
     }

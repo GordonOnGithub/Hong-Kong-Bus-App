@@ -31,9 +31,9 @@ abstract class LocalizationStoreBase with Store {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String systemLangCode = ui.window.locale.languageCode;
-    String systemScriptCode = ui.window.locale.scriptCode;
+    String? systemScriptCode = ui.window.locale.scriptCode;
 
-    String locale = prefs.getString(_localeKey);
+    String? locale = prefs.getString(_localeKey);
     if(locale != null){
       for(LocalizationPref p in _localizationStringMap.keys){
         if(_localizationStringMap[p] == locale){
@@ -55,12 +55,12 @@ abstract class LocalizationStoreBase with Store {
   Future<void> setLocalizationPref(LocalizationPref pref) async{
     localizationPref = pref;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(_localeKey, _localizationStringMap[pref]);
+    prefs.setString(_localeKey, _localizationStringMap[pref] ?? "en");
 
   }
 
   @observable
-  ObservableMap<String, Map<String, String>> localizationMap;
+  ObservableMap<String, Map<String, String>>? localizationMap;
 
   @action
   Future<void> loadDataFromAsset() async {
@@ -80,9 +80,9 @@ abstract class LocalizationStoreBase with Store {
             }
 
 
-            String localizationKey = localizationDataMap["key"];
+            String? localizationKey = localizationDataMap["key"];
             if (localizationKey != null) {
-              localizationMap[localizationKey] = localizationDataMap;
+              localizationMap?[localizationKey] = localizationDataMap;
             }
           }
         }

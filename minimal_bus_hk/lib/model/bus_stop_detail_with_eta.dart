@@ -6,6 +6,6 @@ class BusStopDetailWithETA{
   final int sequence;
   final ETA eta;
 
-  BusStopDetailWithETA({this.busStopDetail, this.eta, this.sequence});
+  BusStopDetailWithETA(this.busStopDetail, this.eta, this.sequence);
 
 }

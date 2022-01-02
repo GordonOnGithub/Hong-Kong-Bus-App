@@ -35,23 +35,23 @@ class ETAListView extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Timer _updateTimer;
+  Timer? _updateTimer;
   bool _callETAApi = false;
-  ReactionDisposer _bookmarkReaction;
+  ReactionDisposer? _bookmarkReaction;
   final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
    Future<void> updateETAData(List<RouteStop> routeStops) async{
      if(routeStops == null)return;
      if(_updateTimer != null){
-       _updateTimer.cancel();
+       _updateTimer!.cancel();
        _updateTimer = null;
        _callETAApi = false;
      }
@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _bookmarkReaction = autorun( (_) {
       if(Stores.connectivityStore.connected){
-        updateETAData(Stores.dataManager.bookmarkedRouteStops);
+        updateETAData(Stores.dataManager.bookmarkedRouteStops!);
       }
     });
 
@@ -122,15 +122,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement dispose
     super.dispose();
     if(_bookmarkReaction != null) {
-      _bookmarkReaction();
+      _bookmarkReaction!();
     }
     if(_updateTimer != null) {
-      _updateTimer.cancel();
+      _updateTimer!.cancel();
       _updateTimer = null;
     }
 
     if(_connectivitySubscription != null){
-      _connectivitySubscription.cancel();
+      _connectivitySubscription!.cancel();
       _connectivitySubscription = null;
     }
   }
@@ -168,9 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
         }) ],),) :
         Container()) :
         Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),)),
-      Expanded( child: ((Stores.dataManager.bookmarkedRouteStops != null && ( Stores.dataManager.bookmarkedRouteStops.length == 0 || Stores.dataManager.routes != null)  )?
+      Expanded( child: ((Stores.dataManager.bookmarkedRouteStops != null && ( Stores.dataManager.bookmarkedRouteStops!.length == 0 || Stores.dataManager.routes != null)  )?
         Padding(padding: const EdgeInsets.all(0), child: (
-                     Stores.dataManager.bookmarkedRouteStops.length > 0 ? Scrollbar( child: ListView.builder(
+                     Stores.dataManager.bookmarkedRouteStops!.length > 0 ? Scrollbar( child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                     itemCount: Stores.etaListStore.displayedETAs.length + 1 ,
                     itemBuilder: (BuildContext context, int index) {
@@ -197,12 +197,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                    ])
                                    ),
 
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap[eta.routeUniqueIdentifier], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap![eta.routeUniqueIdentifier], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
 
                                    Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                    Row( mainAxisAlignment: MainAxisAlignment.start, children:[
                                      Icon(Icons.location_on_outlined),
-                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap[eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): " - "}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
+                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap!.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap![eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): " - "}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
                                     ]),),
                               Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
                                     Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -295,19 +295,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onRemoveBookmark(int index){
-    Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops[index]);
+    Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops![index]);
     Stores.etaListStore.setSelectedETAListIndex(null);
   }
 
   void _onOpenMapView(ETA eta){
-    if(Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier) && Stores.dataManager.busStopDetailMap.containsKey(eta.stopId)) {
+    if(Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier) && Stores.dataManager.busStopDetailMap!.containsKey(eta.stopId)) {
       Stores.googleMapStore.setSelectedBusStop(
-          Stores.dataManager.busStopDetailMap[eta.stopId]);
+          Stores.dataManager.busStopDetailMap![eta.stopId]);
       Stores.googleMapStore.setIsInbound(
           eta.isInbound);
       Stores.googleMapStore.setSelectedRoute(
-          Stores.dataManager.routesMap[eta.routeUniqueIdentifier]);
-      CacheUtils.sharedInstance().getRouteAndStopsDetail(Stores.dataManager.routesMap[eta.routeUniqueIdentifier], eta.isInbound);
+          Stores.dataManager.routesMap![eta.routeUniqueIdentifier]);
+      BusRoute? route = Stores.dataManager.routesMap![eta.routeUniqueIdentifier];
+      if (route == null) { return; }
+      CacheUtils.sharedInstance().getRouteAndStopsDetail(route, eta.isInbound);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) =>
@@ -317,9 +319,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onRouteInfoButtonClicked(ETA eta){
-
-     if(Stores.dataManager.routesMap.containsKey(eta.routeUniqueIdentifier)) {
-       Stores.routeDetailStore.route = Stores.dataManager.routesMap[eta.routeUniqueIdentifier];
+     if(Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier)) {
+       BusRoute? route = Stores.dataManager.routesMap![eta.routeUniqueIdentifier];
+       if(route == null) { return; }
+       Stores.routeDetailStore.route = route;
        Stores.routeDetailStore.isInbound = eta.isInbound;
        Stores.routeDetailStore.setSelectedStopId(eta.stopId);
        Navigator.push(
