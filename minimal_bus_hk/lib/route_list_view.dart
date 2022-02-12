@@ -12,6 +12,8 @@ import 'utils/network_util.dart';
 import 'utils/stores.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:minimal_bus_hk/model/bus_route.dart';
+import 'package:mobx/mobx.dart' as mobx;
+
 class RouteListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -29,10 +31,17 @@ class RouteListViewPage extends StatefulWidget {
 class _RouteListViewPageState extends State<RouteListViewPage> with TickerProviderStateMixin{
   TextEditingController? _searchFieldController;
   TabController? _tabController;
+  ReactionDisposer? _tabControllerReaction;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    _tabControllerReaction = mobx.reaction((_) => Stores.routeListStore.filterStopIdentifier, (identifier) {
+      _tabController?.index = Stores.dataManager.busStopDetailMap?[Stores.routeListStore.filterStopIdentifier]?.companyCode ==  NetworkUtil.companyCodeKMB ? 1 : 0;
+    });
+
     Stores.routeListStore.setSelectedDirectionalRoute(null);
     CacheUtils.sharedInstance().getRoutes().then((value) => Stores.routeListStore.setDataFetchingError(!value));
     Stores.routeListStore.setFilterKeyword("");
@@ -50,6 +59,9 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
     // TODO: implement dispose
     super.dispose();
     Stores.routeListStore.clearFilters();
+    if (_tabControllerReaction != null) {
+      _tabControllerReaction!();
+    }
   }
 
   @override

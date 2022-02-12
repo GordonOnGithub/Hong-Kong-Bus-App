@@ -394,6 +394,12 @@ abstract class DataManagerBase with Store {
     // debugPrint("allDataFetchCount: $allDataFetchCount");
   }
 
+  @action
+  void setAllDataFetchCount(int count){
+    allDataFetchCount = count;
+    // debugPrint("allDataFetchCount: $allDataFetchCount");
+  }
+
   @observable
   int totalDataCount = 0;
 

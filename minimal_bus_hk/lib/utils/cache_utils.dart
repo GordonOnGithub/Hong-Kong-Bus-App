@@ -153,6 +153,8 @@ class CacheUtils{
     Stores.dataManager.applyTmpBusStopsDetailData();
     Stores.dataManager.setLastFetchDataCompleteTimestamp( DateTime.now().millisecondsSinceEpoch);
     _isFetchingAllData = false;
+
+    Stores.dataManager.setAllDataFetchCount(Stores.dataManager.allDataFetchCount);
   }
 
   Future<bool> getRoutes() async {
