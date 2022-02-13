@@ -63,7 +63,14 @@ class _StopListViewPageState extends State<StopListViewPage> {
                itemCount: Stores.stopListViewStore.filteredBusStopDetailList.length ,
                itemBuilder: (BuildContext context, int index) {
                  var busStop = Stores.stopListViewStore.filteredBusStopDetailList[index];
-                 return InkWell(child: Container( height: 80, color: index % 2 == 0? Colors.white : Colors.grey[100],alignment: Alignment.centerLeft, child:
+                 return InkWell(child: Container( height: 80,
+                     margin:  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                     decoration: BoxDecoration(
+                       border: Border.all(color: Colors.black!),
+                       borderRadius: BorderRadius.all(Radius.circular(4)),
+                       color: Colors.white ,
+                     )
+                     ,alignment: Alignment.centerLeft, child:
                  Padding( padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child:
                  Row(children:[ Expanded(child: Text("[${LocalizationUtil.localizedString( busStop.companyCode, Stores.localizationStore.localizationPref)}]  ${LocalizationUtil.localizedStringFrom(busStop, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}", style: TextStyle(fontWeight: FontWeight.w600), maxLines: 2,))])),
                  ), onTap: (){

@@ -164,8 +164,13 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
                                       DirectionalRoute directionalBusRoute = directionalRouteList[index];
                                       return Observer(
                                         builder: (_) =>Container(
+                                          margin:  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.black!),
+                                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                                            color:  Colors.white ,
+                                          ),
                                           height:  100,
-                                          color: ( index % 2 == 0? Colors.white : Colors.grey[100]),
                                           child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:
                                           Column(
                                               mainAxisAlignment: MainAxisAlignment.center,

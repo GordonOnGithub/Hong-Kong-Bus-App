@@ -138,7 +138,12 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
                     height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 140 : 80,
-                    color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? Colors.lightBlue[50] : ( index % 2 == 0? Colors.white : Colors.grey[100]),
+                        margin:  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black!),
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          color: ( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence ) ? Colors.lightBlue[50] : Colors.white ,
+                        ),
                     child:Observer(
                       builder: (_) =>Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

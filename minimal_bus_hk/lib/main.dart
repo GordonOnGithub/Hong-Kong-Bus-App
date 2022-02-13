@@ -180,8 +180,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ETA eta = Stores.etaListStore.displayedETAs[index];
                       return Observer(
                           builder: (_) =>Container(
+                            margin:  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black!),
+                                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                                  color: (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : Colors.white ,
+                          ),
                         height: (Stores.etaListStore.selectedETAListIndex == index) ? 230 : 190,
-                        color:  (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : ( index % 2 == 0? Colors.white : Colors.grey[100]),
                         child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
