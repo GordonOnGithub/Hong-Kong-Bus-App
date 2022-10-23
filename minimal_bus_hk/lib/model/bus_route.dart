@@ -19,16 +19,16 @@ static final String localizationKeyForDestination = "destination";
 
 
 BusRoute.fromJson(Map<String, dynamic> json):
-      routeCode = json["route"],
+      routeCode = json["route"]??"",
       companyCode = (json["co"] as String).toLowerCase(),
       serviceType = json["service_type"]??"",
       bound = json["bound"]??"",
-      originEnglishName = json["orig_en"],
-      originTCName = json["orig_tc"],
-      originSCName = json["orig_sc"],
-      destinationEnglishName = json["dest_en"],
-      destinationTCName = json["dest_tc"],
-      destinationSCName = json["dest_sc"],
+      originEnglishName = json["orig_en"]??"",
+      originTCName = json["orig_tc"]??"",
+      originSCName = json["orig_sc"]??"",
+      destinationEnglishName = json["dest_en"]??"",
+      destinationTCName = json["dest_tc"]??"",
+      destinationSCName = json["dest_sc"]??"",
       timestamp = DateTime.tryParse(json["data_timestamp"]?? "")  ?? DateTime.now(){
       Map<String, String> destinationNameData = Map();
       destinationNameData["en"] = bound == "I"? originEnglishName : destinationEnglishName;

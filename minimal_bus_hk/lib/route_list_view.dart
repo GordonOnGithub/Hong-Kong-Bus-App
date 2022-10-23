@@ -262,7 +262,7 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
     return WillPopScope(child: AlertDialog(title: Text(""),
       content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearchReminder, Stores.localizationStore.localizationPref)),
       actions: [
-        FlatButton(onPressed: (){
+        TextButton(onPressed: (){
           Stores.appConfig.setShouldShowRouteSearchReminder(false);
           Navigator.of(context).pop();
         }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForUnderstand, Stores.localizationStore.localizationPref))),

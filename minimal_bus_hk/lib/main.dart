@@ -341,12 +341,12 @@ class _MyHomePageState extends State<MyHomePage> {
      return WillPopScope(child: AlertDialog(title: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle, Stores.localizationStore.localizationPref)),
        content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref)),
      actions: [
-       FlatButton(onPressed: (){
+       TextButton(onPressed: (){
          CacheUtils.sharedInstance().fetchAllData();
          Stores.appConfig.setShouldDownloadAllData(true);
          Navigator.of(context).pop();
        }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupYes, Stores.localizationStore.localizationPref))),
-       FlatButton(onPressed: (){
+       TextButton(onPressed: (){
          Stores.appConfig.setShouldDownloadAllData(false);
          Navigator.of(context).pop();
        }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupNo, Stores.localizationStore.localizationPref))),
