@@ -134,7 +134,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                 itemCount:  Stores.routeDetailStore.displayedStops.length ,
                 itemBuilder: (BuildContext context, int index) {
                   ETA eta = Stores.routeDetailStore.displayedStops[index].eta;
-
+                  String prefix = Stores.routeDetailStore.filterKeyword.isEmpty ? "${index + 1}. " : "";
                   return Observer(
                       builder: (_) =>InkWell(child:Container(
                     height:( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence )? 140 : 80,
@@ -155,7 +155,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                           Icon((Stores.dataManager.bookmarkedRouteStops != null && Stores.dataManager.bookmarkedRouteStops!.contains(RouteStop(  Stores.routeDetailStore.route!.routeCode,  Stores.routeDetailStore.displayedStops[index].busStopDetail.identifier,  Stores.routeDetailStore.route!.companyCode, Stores.routeDetailStore.isInbound, Stores.routeDetailStore.route!.serviceType)))?
                        Icons.bookmark:Icons.bookmark_border),
 
-                        Expanded(child: Text( "${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
+                        Expanded(child: Text( "${prefix}${LocalizationUtil.localizedStringFrom(Stores.routeDetailStore.displayedStops[index].busStopDetail, BusStopDetail.localizationKeyForName, Stores.localizationStore.localizationPref)}" , style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600), textAlign: TextAlign.left,)),
 
                         Icon(( Stores.routeDetailStore.selectedSequence == Stores.routeDetailStore.displayedStops[index].sequence)? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
                       ])),
@@ -164,7 +164,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
                           Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end ,  children: [
                             Icon(Icons.access_time, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black,),
                           Expanded(child:Text(" ${ eta.toClockDescription()}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,), ),
-                            Icon(Icons.timer, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
+                            Icon(Icons.timer_sharp, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
                             Text(" ${ eta.getTimeLeftDescription(Stores.routeDetailStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.routeDetailStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),
                           ],), height: 20,)
                           ) : Container(),
@@ -235,7 +235,7 @@ class BusRouteDetailPageState extends State<BusRouteDetailPage> {
           ,))),
           floatingActionButton:  Observer(
     builder: (_) =>(Stores.routeDetailStore.selectedRouteBusStops != null && !Stores.routeDetailStore.dataFetchingError?FloatingActionButton.extended(
-            icon: Icon(Icons.map),
+            icon: Icon(Icons.map_outlined),
             label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMap, Stores.localizationStore.localizationPref), ),
             onPressed: (){
               _onOpenMapView(null);

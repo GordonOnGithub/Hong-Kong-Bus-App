@@ -48,30 +48,32 @@ class _MyHomePageState extends State<MyHomePage> {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
-   Future<void> updateETAData(List<RouteStop> routeStops) async{
-     if(routeStops == null)return;
-     if(_updateTimer != null){
-       _updateTimer!.cancel();
-       _updateTimer = null;
-       _callETAApi = false;
-     }
-    for(RouteStop s in routeStops){
-      await CacheUtils.sharedInstance().getBusStopDetail(s.stopId, s.companyCode);
+  Future<void> updateETAData(List<RouteStop> routeStops) async {
+    if (routeStops == null) return;
+    if (_updateTimer != null) {
+      _updateTimer!.cancel();
+      _updateTimer = null;
+      _callETAApi = false;
+    }
+    for (RouteStop s in routeStops) {
+      await CacheUtils.sharedInstance().getBusStopDetail(
+          s.stopId, s.companyCode);
     }
     await CacheUtils.sharedInstance().getETAForBookmarkedRouteStops();
 
     _updateTimer = Timer.periodic(Duration(seconds: 30), (timer) {
       Stores.etaListStore.updateTimeStampForChecking();
-      if(_callETAApi) {
-        CacheUtils.sharedInstance().getETAForBookmarkedRouteStops().then((value){
-          if (!value){
+      if (_callETAApi) {
+        CacheUtils.sharedInstance().getETAForBookmarkedRouteStops().then((
+            value) {
+          if (!value) {
             _callETAApi = true;
           }
         });
       }
       _callETAApi = !_callETAApi;
     });
-   }
+  }
 
   @override
   void initState() {
@@ -79,8 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
     Stores.localizationStore.checkLocalizationPref();
     Stores.etaListStore.setSelectedETAListIndex(null);
 
-    _bookmarkReaction = autorun( (_) {
-      if(Stores.connectivityStore.connected){
+    _bookmarkReaction = autorun((_) {
+      if (Stores.connectivityStore.connected) {
         updateETAData(Stores.dataManager.bookmarkedRouteStops!);
       }
     });
@@ -90,28 +92,30 @@ class _MyHomePageState extends State<MyHomePage> {
     Stores.localizationStore.loadDataFromAsset();
 
     _connectivity.checkConnectivity().then((result) {
-       Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
-     });
-
-    _connectivitySubscription =
-    _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-        Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
+      Stores.connectivityStore.setConnected(result != ConnectivityResult.none);
     });
 
-    Stores.appConfig.shouldDownloadAllData().then((value){
-        if(value == null){
-          CacheUtils.sharedInstance().getRoutes();
-          showDialog(context: context, builder: (context) => _buildDownloadAllDataDialog(context));
-        }else if(value){
-          CacheUtils.sharedInstance().fetchAllData();
-        } else{
-          CacheUtils.sharedInstance().getRoutes();
-        }
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+          Stores.connectivityStore.setConnected(
+              result != ConnectivityResult.none);
+        });
+
+    Stores.appConfig.shouldDownloadAllData().then((value) {
+      if (value == null) {
+        CacheUtils.sharedInstance().getRoutes();
+        showDialog(context: context,
+            builder: (context) => _buildDownloadAllDataDialog(context));
+      } else if (value) {
+        CacheUtils.sharedInstance().fetchAllData();
+      } else {
+        CacheUtils.sharedInstance().getRoutes();
+      }
     });
 
     Stores.appConfig.checkShowSearchButtonReminder();
-    Stores.appConfig.checkAppLaunchCount().then((_){
-      Stores.appConfig.increaseAppLaunchCount().then((_){
+    Stores.appConfig.checkAppLaunchCount().then((_) {
+      Stores.appConfig.increaseAppLaunchCount().then((_) {
         Stores.appConfig.setHideRatingDialogue(false);
       });
     });
@@ -121,15 +125,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(_bookmarkReaction != null) {
+    if (_bookmarkReaction != null) {
       _bookmarkReaction!();
     }
-    if(_updateTimer != null) {
+    if (_updateTimer != null) {
       _updateTimer!.cancel();
       _updateTimer = null;
     }
 
-    if(_connectivitySubscription != null){
+    if (_connectivitySubscription != null) {
       _connectivitySubscription!.cancel();
       _connectivitySubscription = null;
     }
@@ -140,180 +144,753 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Observer(
-        builder: (_) =>Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForETAListView, Stores.localizationStore.localizationPref))),
-        actions: [IconButton(icon: Icon(Icons.settings), onPressed: (){
+            builder: (_) => Text(LocalizationUtil.localizedString(
+                LocalizationUtil.localizationKeyForETAListView,
+                Stores.localizationStore.localizationPref))),
+        actions: [IconButton(icon: Icon(Icons.settings), onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => SettingView()),
           );
-        },)],
+        },)
+        ],
       ),
       body: Center(
 
-        child: Observer(
-      builder: (_) => Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.stretch , children:[
-        (Stores.connectivityStore.connected?  ( Stores.appConfig.appLaunchCount == Stores.appConfig.launchCountToShowRatingMessage && !Stores.appConfig.hideRatingDialogue ?
-        Container(height: 50,color: Colors.green,alignment: Alignment.centerLeft, child:Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          Expanded( child:
-        Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0), child: InkWell(child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRateThisApp, Stores.localizationStore.localizationPref), textAlign: TextAlign.left, style: TextStyle(color: Colors.white),), onTap: (){
-          String appStoreUrl = Stores.appConfig.appStoreUrl;
-          canLaunch(appStoreUrl).then((result) {
-            if (result) {
-              launch(appStoreUrl);
-            }
-            Stores.appConfig.setHideRatingDialogue(true);
-          });
-        },))),  IconButton(icon: Icon(Icons.cancel_outlined), color: Colors.white, onPressed: (){
-          Stores.appConfig.setHideRatingDialogue(true);
-        }) ],),) :
-        Container()) :
-        Container(height: 50,color: Colors.yellow,alignment: Alignment.center, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForConnectivityWarning, Stores.localizationStore.localizationPref), style: TextStyle(fontWeight: FontWeight.w600),),)),
-      Expanded( child: ((Stores.dataManager.bookmarkedRouteStops != null && ( Stores.dataManager.bookmarkedRouteStops!.length == 0 || Stores.dataManager.routes != null)  )?
-        Padding(padding: const EdgeInsets.all(0), child: (
-                     Stores.dataManager.bookmarkedRouteStops!.length > 0 ? Scrollbar( child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-                    itemCount: Stores.etaListStore.displayedETAs.length + 1 ,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index >= Stores.etaListStore.displayedETAs.length ) {
-                        return Container(height: 60);
-                      }
-                      ETA eta = Stores.etaListStore.displayedETAs[index];
-                      return Observer(
-                          builder: (_) =>Container(
-                            margin:  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black!),
-                                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                                  color: (Stores.etaListStore.selectedETAListIndex == index) ? Colors.lightBlue[50] : Colors.white ,
-                          ),
-                        height: (Stores.etaListStore.selectedETAListIndex == index) ? 230 : 190,
-                        child:Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10), child:Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                               Expanded(child: InkWell(child:Column(
-                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                             crossAxisAlignment: CrossAxisAlignment.stretch,
-                                 children:[
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),child:
-                                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
-                                   Text("${LocalizationUtil.localizedString(eta.companyCode, Stores.localizationStore.localizationPref)} ${eta.routeCode}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                                     Icon((Stores.etaListStore.selectedETAListIndex == index) ?Icons.keyboard_arrow_up_sharp :Icons.keyboard_arrow_down_sharp)
-                                   ])
-                                   ),
+          child: Observer(
+            builder: (_) =>
+                Column(mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      (Stores.connectivityStore.connected ? (Stores.appConfig
+                          .appLaunchCount ==
+                          Stores.appConfig.launchCountToShowRatingMessage &&
+                          !Stores.appConfig.hideRatingDialogue ?
+                      Container(height: 50,
+                        color: Colors.green,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(child:
+                            Padding(padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 0), child: InkWell(
+                              child: Text(LocalizationUtil.localizedString(
+                                  LocalizationUtil
+                                      .localizationKeyForRateThisApp,
+                                  Stores.localizationStore.localizationPref),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(color: Colors.white),),
+                              onTap: () {
+                                String appStoreUrl = Stores.appConfig
+                                    .appStoreUrl;
+                                canLaunch(appStoreUrl).then((result) {
+                                  if (result) {
+                                    launch(appStoreUrl);
+                                  }
+                                  Stores.appConfig.setHideRatingDialogue(true);
+                                });
+                              },))),
+                            IconButton(icon: Icon(Icons.cancel_outlined),
+                                color: Colors.white,
+                                onPressed: () {
+                                  Stores.appConfig.setHideRatingDialogue(true);
+                                })
+                          ],),) :
+                      Container()) :
+                      Container(height: 50,
+                        color: Colors.yellow,
+                        alignment: Alignment.center,
+                        child: Text(LocalizationUtil.localizedString(
+                            LocalizationUtil
+                                .localizationKeyForConnectivityWarning,
+                            Stores.localizationStore.localizationPref),
+                          style: TextStyle(fontWeight: FontWeight.w600),),)),
+                      Expanded(
+                        child: ((Stores.dataManager.bookmarkedRouteStops !=
+                            null &&
+                            (Stores.dataManager.bookmarkedRouteStops!.length ==
+                                0 || Stores.dataManager.routes != null)) ?
+                        Padding(padding: const EdgeInsets.all(0), child: (
+                            Stores.dataManager.bookmarkedRouteStops!.length > 0
+                                ? Scrollbar(child: ListView.builder(
+                                padding: const EdgeInsets.fromLTRB(
+                                    20, 0, 20, 30),
+                                itemCount: Stores.etaListStore.routesETAList
+                                    .length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index >= Stores.etaListStore.routesETAList
+                                      .length) {
+                                    return Container(height: 60);
+                                  }
+                                  ETA eta = Stores.etaListStore
+                                      .routesETAList[index][0];
+                                  ETA? secondETA = null;
+                                  if (Stores.etaListStore.routesETAList[index]
+                                      .length > 1) {
+                                    secondETA =
+                                    Stores.etaListStore.routesETAList[index][1];
+                                  }
 
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyTo, Stores.localizationStore.localizationPref)}: ${Stores.dataManager.routesMap!= null && Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier) ?(  LocalizationUtil.localizedStringFrom(Stores.dataManager.routesMap![eta.routeUniqueIdentifier], eta.isInbound ? BusRoute.localizationKeyForOrigin: BusRoute.localizationKeyForDestination, Stores.localizationStore.localizationPref) ):" - "}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),)),
+                                  return Observer(
+                                    builder: (_) =>
+                                        Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 5),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black!),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(4)),
+                                              color: (Stores.etaListStore
+                                                  .selectedETAListIndex ==
+                                                  index)
+                                                  ? Colors.lightBlue[50]
+                                                  : Colors.white,
+                                            ),
+                                            height: (Stores.etaListStore
+                                                .selectedETAListIndex == index)
+                                                ? 270
+                                                : 190,
+                                            child: Padding(
+                                                padding: const EdgeInsets
+                                                    .symmetric(vertical: 0,
+                                                    horizontal: 10),
+                                                child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .spaceEvenly,
+                                                    crossAxisAlignment: CrossAxisAlignment
+                                                        .start,
+                                                    children: [
+                                                      Expanded(child: InkWell(
+                                                          child: Column(
+                                                              mainAxisAlignment: MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                              crossAxisAlignment: CrossAxisAlignment
+                                                                  .stretch,
+                                                              children: [
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 5,
+                                                                        horizontal: 0),
+                                                                    child:
+                                                                    Row(mainAxisAlignment: MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                        children: [
+                                                                          Text(
+                                                                            "${LocalizationUtil
+                                                                                .localizedString(
+                                                                                eta
+                                                                                    .companyCode,
+                                                                                Stores
+                                                                                    .localizationStore
+                                                                                    .localizationPref)} ${eta
+                                                                                .routeCode}",
+                                                                            style: TextStyle(
+                                                                                fontSize: 20,
+                                                                                fontWeight: FontWeight
+                                                                                    .bold),),
+                                                                          Icon(
+                                                                              (Stores
+                                                                                  .etaListStore
+                                                                                  .selectedETAListIndex ==
+                                                                                  index)
+                                                                                  ? Icons
+                                                                                  .keyboard_arrow_up_sharp
+                                                                                  : Icons
+                                                                                  .keyboard_arrow_down_sharp)
+                                                                        ])
+                                                                ),
 
-                                   Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
-                                   Row( mainAxisAlignment: MainAxisAlignment.start, children:[
-                                     Icon(Icons.location_on_outlined),
-                                   Expanded(child: Text("${Stores.dataManager.busStopDetailMap!= null && Stores.dataManager.busStopDetailMap!.containsKey(eta.stopId) ?  LocalizationUtil.localizedStringFrom(Stores.dataManager.busStopDetailMap![eta.stopId],BusStopDetail.localizationKeyForName,Stores.localizationStore.localizationPref): " - "}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal), maxLines: 2,)),
-                                    ]),),
-                              Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:
-                                    Container(child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
-                                      Icon(Icons.access_time_outlined, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
-                                     Expanded(child:Text(" ${ eta.toClockDescription()}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black ), textAlign: TextAlign.left,)),
-                                      Icon(Icons.timer, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),
-                                      Text(" ${ eta.getTimeLeftDescription(Stores.etaListStore.timeStampForChecking)}", style: TextStyle(fontSize: 15, fontWeight:(eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalImminentTimeMilliseconds && eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) > Stores.appConfig.arrivalExpiryTimeMilliseconds )? FontWeight.bold : FontWeight.normal, color: eta.getRemainTimeInMilliseconds(Stores.etaListStore.timeStampForChecking) < Stores.appConfig.arrivalExpiryTimeMilliseconds? Colors.grey : Colors.black),  textAlign: TextAlign.right),
-                                    ],), height: 20,)
-                                ),
-                                Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),child:Text("${LocalizationUtil.localizedStringFrom(eta, ETA.localizationKeyForRemark, Stores.localizationStore.localizationPref)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),))
-                              ])
-                              ,onTap: (){
-                                  Stores.etaListStore.setSelectedETAListIndex(index);
-                             }
-                      )),
-                              (Stores.etaListStore.selectedETAListIndex == index) ? Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 15) , child:
-                              Container(height: 25, child:
-                              Row( mainAxisAlignment: MainAxisAlignment.spaceEvenly, crossAxisAlignment:  CrossAxisAlignment.end, children: [
-                                InkWell(child:
-                                Container(
-                                    alignment: Alignment.center,
-                                    child:   Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.end ,children:[
-                                      Icon(Icons.remove_circle_outline),
-                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRemove, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                    ),)])
-                              ), onTap: (){
-                                  _onRemoveBookmark(index);
-                                },),
-                                InkWell(child:
-                                Container(
-                                    alignment: Alignment.center,
-                                    child:
-                                    Row(mainAxisAlignment: MainAxisAlignment.start , crossAxisAlignment: CrossAxisAlignment.end,children:[
-                                      Icon(Icons.info_outline),
-                                      Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteDetail, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                      ),)])
-                                ), onTap: (){
-                                  _onRouteInfoButtonClicked(eta);
-                                },),
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 0,
+                                                                        horizontal: 0),
+                                                                    child: Text(
+                                                                      "${LocalizationUtil
+                                                                          .localizedString(
+                                                                          LocalizationUtil
+                                                                              .localizationKeyTo,
+                                                                          Stores
+                                                                              .localizationStore
+                                                                              .localizationPref)}: ${Stores
+                                                                          .dataManager
+                                                                          .routesMap !=
+                                                                          null &&
+                                                                          Stores
+                                                                              .dataManager
+                                                                              .routesMap!
+                                                                              .containsKey(
+                                                                              eta
+                                                                                  .routeUniqueIdentifier)
+                                                                          ? (LocalizationUtil
+                                                                          .localizedStringFrom(
+                                                                          Stores
+                                                                              .dataManager
+                                                                              .routesMap![eta
+                                                                              .routeUniqueIdentifier],
+                                                                          eta
+                                                                              .isInbound
+                                                                              ? BusRoute
+                                                                              .localizationKeyForOrigin
+                                                                              : BusRoute
+                                                                              .localizationKeyForDestination,
+                                                                          Stores
+                                                                              .localizationStore
+                                                                              .localizationPref))
+                                                                          : " - "}",
+                                                                      style: TextStyle(
+                                                                          fontSize: 15,
+                                                                          fontWeight: FontWeight
+                                                                              .w600),)),
 
-                                InkWell(child:
-                                Container(
-                                    alignment: Alignment.center,
-                                    child:
-                                    Row(mainAxisAlignment: MainAxisAlignment.start , crossAxisAlignment: CrossAxisAlignment.end,children:[
-                                      Icon(Icons.location_on_outlined),
-                                    Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLocation, Stores.localizationStore.localizationPref), style:  TextStyle(fontSize: 17, fontWeight:  FontWeight.w500, decoration: TextDecoration.underline,
-                                    ),)])
-                                ), onTap: (){
-                                    _onOpenMapView(eta);
-                                },)
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      vertical: 0,
+                                                                      horizontal: 0),
+                                                                  child:
+                                                                  Row(mainAxisAlignment: MainAxisAlignment
+                                                                      .start,
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .location_on_outlined),
+                                                                        Expanded(
+                                                                            child: Text(
+                                                                              "${Stores
+                                                                                  .dataManager
+                                                                                  .busStopDetailMap !=
+                                                                                  null &&
+                                                                                  Stores
+                                                                                      .dataManager
+                                                                                      .busStopDetailMap!
+                                                                                      .containsKey(
+                                                                                      eta
+                                                                                          .stopId)
+                                                                                  ? LocalizationUtil
+                                                                                  .localizedStringFrom(
+                                                                                  Stores
+                                                                                      .dataManager
+                                                                                      .busStopDetailMap![eta
+                                                                                      .stopId],
+                                                                                  BusStopDetail
+                                                                                      .localizationKeyForName,
+                                                                                  Stores
+                                                                                      .localizationStore
+                                                                                      .localizationPref)
+                                                                                  : " - "}",
+                                                                              style: TextStyle(
+                                                                                  fontSize: 13,
+                                                                                  fontWeight: FontWeight
+                                                                                      .normal),
+                                                                              maxLines: 2,)),
+                                                                      ]),),
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 0,
+                                                                        horizontal: 0),
+                                                                    child:
+                                                                    Container(
+                                                                      child: Row(
+                                                                        mainAxisAlignment: MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                        crossAxisAlignment: CrossAxisAlignment
+                                                                            .end,
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons
+                                                                                  .access_time_outlined,
+                                                                              color: eta
+                                                                                  .getRemainTimeInMilliseconds(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking) <
+                                                                                  Stores
+                                                                                      .appConfig
+                                                                                      .arrivalExpiryTimeMilliseconds
+                                                                                  ? Colors
+                                                                                  .grey
+                                                                                  : Colors
+                                                                                  .black),
+                                                                          Expanded(
+                                                                              child: Text(
+                                                                                " ${ eta
+                                                                                    .toClockDescription()}",
+                                                                                style: TextStyle(
+                                                                                    fontSize: 15,
+                                                                                    fontWeight: (eta
+                                                                                        .getRemainTimeInMilliseconds(
+                                                                                        Stores
+                                                                                            .etaListStore
+                                                                                            .timeStampForChecking) <
+                                                                                        Stores
+                                                                                            .appConfig
+                                                                                            .arrivalImminentTimeMilliseconds &&
+                                                                                        eta
+                                                                                            .getRemainTimeInMilliseconds(
+                                                                                            Stores
+                                                                                                .etaListStore
+                                                                                                .timeStampForChecking) >
+                                                                                            Stores
+                                                                                                .appConfig
+                                                                                                .arrivalExpiryTimeMilliseconds)
+                                                                                        ? FontWeight
+                                                                                        .bold
+                                                                                        : FontWeight
+                                                                                        .normal,
+                                                                                    color: eta
+                                                                                        .getRemainTimeInMilliseconds(
+                                                                                        Stores
+                                                                                            .etaListStore
+                                                                                            .timeStampForChecking) <
+                                                                                        Stores
+                                                                                            .appConfig
+                                                                                            .arrivalExpiryTimeMilliseconds
+                                                                                        ? Colors
+                                                                                        .grey
+                                                                                        : Colors
+                                                                                        .black),
+                                                                                textAlign: TextAlign
+                                                                                    .left,)),
+                                                                          Icon(
+                                                                              Icons
+                                                                                  .timer_sharp,
+                                                                              color: eta
+                                                                                  .getRemainTimeInMilliseconds(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking) <
+                                                                                  Stores
+                                                                                      .appConfig
+                                                                                      .arrivalExpiryTimeMilliseconds
+                                                                                  ? Colors
+                                                                                  .grey
+                                                                                  : Colors
+                                                                                  .black),
+                                                                          Text(
+                                                                              " ${ eta
+                                                                                  .getTimeLeftDescription(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking)}",
+                                                                              style: TextStyle(
+                                                                                  fontSize: 15,
+                                                                                  fontWeight: (eta
+                                                                                      .getRemainTimeInMilliseconds(
+                                                                                      Stores
+                                                                                          .etaListStore
+                                                                                          .timeStampForChecking) <
+                                                                                      Stores
+                                                                                          .appConfig
+                                                                                          .arrivalImminentTimeMilliseconds &&
+                                                                                      eta
+                                                                                          .getRemainTimeInMilliseconds(
+                                                                                          Stores
+                                                                                              .etaListStore
+                                                                                              .timeStampForChecking) >
+                                                                                          Stores
+                                                                                              .appConfig
+                                                                                              .arrivalExpiryTimeMilliseconds)
+                                                                                      ? FontWeight
+                                                                                      .bold
+                                                                                      : FontWeight
+                                                                                      .normal,
+                                                                                  color: eta
+                                                                                      .getRemainTimeInMilliseconds(
+                                                                                      Stores
+                                                                                          .etaListStore
+                                                                                          .timeStampForChecking) <
+                                                                                      Stores
+                                                                                          .appConfig
+                                                                                          .arrivalExpiryTimeMilliseconds
+                                                                                      ? Colors
+                                                                                      .grey
+                                                                                      : Colors
+                                                                                      .black),
+                                                                              textAlign: TextAlign
+                                                                                  .right),
+                                                                        ],),
+                                                                      height: 20,)
+                                                                ),
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 0,
+                                                                        horizontal: 0),
+                                                                    child: Text(
+                                                                      "${LocalizationUtil
+                                                                          .localizedStringFrom(
+                                                                          eta,
+                                                                          ETA
+                                                                              .localizationKeyForRemark,
+                                                                          Stores
+                                                                              .localizationStore
+                                                                              .localizationPref)}",
+                                                                      style: TextStyle(
+                                                                          fontSize: 15,
+                                                                          fontWeight: FontWeight
+                                                                              .normal),)),
 
-                              ],))) :Container(),
-                              // Container(height: 1, color: Colors.grey,),
-                            ]
-                        ))
-                          ),);
-                    }
-                ).build(context)) : Observer(
-                         builder: (_) => Padding(padding:  const EdgeInsets.symmetric(vertical: 0, horizontal: 20), child: Container(alignment: Alignment.center, child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForEmptyETAList, Stores.localizationStore.localizationPref), textAlign: TextAlign.center,)))))
+                                                                (Stores
+                                                                    .etaListStore
+                                                                    .selectedETAListIndex ==
+                                                                    index &&
+                                                                    secondETA !=
+                                                                        null) ?
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 0,
+                                                                        horizontal: 0),
+                                                                    child:
+                                                                    Container(
+                                                                      child: Row(
+                                                                        mainAxisAlignment: MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                        crossAxisAlignment: CrossAxisAlignment
+                                                                            .end,
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons
+                                                                                  .access_time_outlined,
+                                                                              color: secondETA
+                                                                                  .getRemainTimeInMilliseconds(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking) <
+                                                                                  Stores
+                                                                                      .appConfig
+                                                                                      .arrivalExpiryTimeMilliseconds
+                                                                                  ? Colors
+                                                                                  .grey
+                                                                                  : Colors
+                                                                                  .black),
+                                                                          Expanded(
+                                                                              child: Text(
+                                                                                " ${ secondETA
+                                                                                    .toClockDescription()}",
+                                                                                style: TextStyle(
+                                                                                    fontSize: 15,
+                                                                                    fontWeight: (secondETA
+                                                                                        .getRemainTimeInMilliseconds(
+                                                                                        Stores
+                                                                                            .etaListStore
+                                                                                            .timeStampForChecking) <
+                                                                                        Stores
+                                                                                            .appConfig
+                                                                                            .arrivalImminentTimeMilliseconds &&
+                                                                                        secondETA
+                                                                                            .getRemainTimeInMilliseconds(
+                                                                                            Stores
+                                                                                                .etaListStore
+                                                                                                .timeStampForChecking) >
+                                                                                            Stores
+                                                                                                .appConfig
+                                                                                                .arrivalExpiryTimeMilliseconds)
+                                                                                        ? FontWeight
+                                                                                        .bold
+                                                                                        : FontWeight
+                                                                                        .normal,
+                                                                                    color: secondETA
+                                                                                        .getRemainTimeInMilliseconds(
+                                                                                        Stores
+                                                                                            .etaListStore
+                                                                                            .timeStampForChecking) <
+                                                                                        Stores
+                                                                                            .appConfig
+                                                                                            .arrivalExpiryTimeMilliseconds
+                                                                                        ? Colors
+                                                                                        .grey
+                                                                                        : Colors
+                                                                                        .black),
+                                                                                textAlign: TextAlign
+                                                                                    .left,)),
+                                                                          Icon(
+                                                                              Icons
+                                                                                  .timer_sharp,
+                                                                              color: secondETA
+                                                                                  .getRemainTimeInMilliseconds(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking) <
+                                                                                  Stores
+                                                                                      .appConfig
+                                                                                      .arrivalExpiryTimeMilliseconds
+                                                                                  ? Colors
+                                                                                  .grey
+                                                                                  : Colors
+                                                                                  .black),
+                                                                          Text(
+                                                                              " ${ secondETA
+                                                                                  .getTimeLeftDescription(
+                                                                                  Stores
+                                                                                      .etaListStore
+                                                                                      .timeStampForChecking)}",
+                                                                              style: TextStyle(
+                                                                                  fontSize: 15,
+                                                                                  fontWeight: FontWeight
+                                                                                      .normal,
+                                                                                  color: secondETA
+                                                                                      .getRemainTimeInMilliseconds(
+                                                                                      Stores
+                                                                                          .etaListStore
+                                                                                          .timeStampForChecking) <
+                                                                                      Stores
+                                                                                          .appConfig
+                                                                                          .arrivalExpiryTimeMilliseconds
+                                                                                      ? Colors
+                                                                                      .grey
+                                                                                      : Colors
+                                                                                      .black),
+                                                                              textAlign: TextAlign
+                                                                                  .right),
+                                                                        ],),
+                                                                      height: 20,)
+                                                                ) : Container(),
+
+                                                                (Stores
+                                                                    .etaListStore
+                                                                    .selectedETAListIndex ==
+                                                                    index &&
+                                                                    secondETA !=
+                                                                        null) ?
+                                                                Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical: 0,
+                                                                        horizontal: 0),
+                                                                    child: Text(
+                                                                      "${LocalizationUtil
+                                                                          .localizedStringFrom(
+                                                                          eta,
+                                                                          ETA
+                                                                              .localizationKeyForRemark,
+                                                                          Stores
+                                                                              .localizationStore
+                                                                              .localizationPref)}",
+                                                                      style: TextStyle(
+                                                                          fontSize: 15,
+                                                                          fontWeight: FontWeight
+                                                                              .normal),))
+                                                                    : Container(),
+
+                                                              ])
+                                                          , onTap: () {
+                                                        Stores.etaListStore
+                                                            .setSelectedETAListIndex(
+                                                            index);
+                                                      }
+                                                      )),
+                                                      (Stores.etaListStore
+                                                          .selectedETAListIndex ==
+                                                          index) ? Padding(
+                                                          padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                              0, 0, 0, 15),
+                                                          child:
+                                                          Container(
+                                                              height: 25, child:
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment
+                                                                .spaceEvenly,
+                                                            crossAxisAlignment: CrossAxisAlignment
+                                                                .end,
+                                                            children: [
+                                                              InkWell(child:
+                                                              Container(
+                                                                  alignment: Alignment
+                                                                      .center,
+                                                                  child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment
+                                                                          .start,
+                                                                      crossAxisAlignment: CrossAxisAlignment
+                                                                          .end,
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .remove_circle_outline),
+                                                                        Text(
+                                                                          LocalizationUtil
+                                                                              .localizedString(
+                                                                              LocalizationUtil
+                                                                                  .localizationKeyForRemove,
+                                                                              Stores
+                                                                                  .localizationStore
+                                                                                  .localizationPref),
+                                                                          style: TextStyle(
+                                                                            fontSize: 17,
+                                                                            fontWeight: FontWeight
+                                                                                .w500,
+                                                                            decoration: TextDecoration
+                                                                                .underline,
+                                                                          ),)
+                                                                      ])
+                                                              ), onTap: () {
+                                                                _onRemoveBookmark(
+                                                                    index);
+                                                              },),
+                                                              InkWell(child:
+                                                              Container(
+                                                                  alignment: Alignment
+                                                                      .center,
+                                                                  child:
+                                                                  Row(mainAxisAlignment: MainAxisAlignment
+                                                                      .start,
+                                                                      crossAxisAlignment: CrossAxisAlignment
+                                                                          .end,
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .info_outline),
+                                                                        Text(
+                                                                          LocalizationUtil
+                                                                              .localizedString(
+                                                                              LocalizationUtil
+                                                                                  .localizationKeyForRouteDetail,
+                                                                              Stores
+                                                                                  .localizationStore
+                                                                                  .localizationPref),
+                                                                          style: TextStyle(
+                                                                            fontSize: 17,
+                                                                            fontWeight: FontWeight
+                                                                                .w500,
+                                                                            decoration: TextDecoration
+                                                                                .underline,
+                                                                          ),)
+                                                                      ])
+                                                              ), onTap: () {
+                                                                _onRouteInfoButtonClicked(
+                                                                    eta);
+                                                              },),
+
+                                                              InkWell(child:
+                                                              Container(
+                                                                  alignment: Alignment
+                                                                      .center,
+                                                                  child:
+                                                                  Row(mainAxisAlignment: MainAxisAlignment
+                                                                      .start,
+                                                                      crossAxisAlignment: CrossAxisAlignment
+                                                                          .end,
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .location_on_outlined),
+                                                                        Text(
+                                                                          LocalizationUtil
+                                                                              .localizedString(
+                                                                              LocalizationUtil
+                                                                                  .localizationKeyForLocation,
+                                                                              Stores
+                                                                                  .localizationStore
+                                                                                  .localizationPref),
+                                                                          style: TextStyle(
+                                                                            fontSize: 17,
+                                                                            fontWeight: FontWeight
+                                                                                .w500,
+                                                                            decoration: TextDecoration
+                                                                                .underline,
+                                                                          ),)
+                                                                      ])
+                                                              ), onTap: () {
+                                                                _onOpenMapView(
+                                                                    eta);
+                                                              },)
+
+                                                            ],))) : Container(),
+                                                      // Container(height: 1, color: Colors.grey,),
+                                                    ]
+                                                ))
+                                        ),);
+                                }
+                            ).build(context))
+                                : Observer(
+                                builder: (_) =>
+                                    Padding(padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 20),
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              LocalizationUtil.localizedString(
+                                                  LocalizationUtil
+                                                      .localizationKeyForEmptyETAList,
+                                                  Stores.localizationStore
+                                                      .localizationPref),
+                                              textAlign: TextAlign.center,)))))
 
 
-        ):
-        Observer(
-            builder: (_) =>Container(alignment: Alignment.center,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForLoading, Stores.localizationStore.localizationPref), textAlign: TextAlign.center)))),
-      ),
-          Stores.appConfig.showSearchButtonReminder ? Container(height: 80,color: Colors.yellow,alignment: Alignment.center, child:
-          Row(children:[
-            Expanded(child: Padding(padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20) ,child:Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForSearchButtonReminder, Stores.localizationStore.localizationPref),textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.w600)))),
-            Container(width: 180)
-          ])
-          )
-          :Container()
-      ]),
-      )),
+                        ) :
+                        Observer(
+                            builder: (_) => Container(
+                                alignment: Alignment.center,
+                                child: Text(LocalizationUtil.localizedString(
+                                    LocalizationUtil.localizationKeyForLoading,
+                                    Stores.localizationStore.localizationPref),
+                                    textAlign: TextAlign.center)))),
+                      ),
+                      Stores.appConfig.showSearchButtonReminder ? Container(
+                          height: 80,
+                          color: Colors.yellow,
+                          alignment: Alignment.center,
+                          child:
+                          Row(children: [
+                            Expanded(child: Padding(padding: const EdgeInsets
+                                .symmetric(vertical: 0, horizontal: 20),
+                                child: Text(LocalizationUtil.localizedString(
+                                    LocalizationUtil
+                                        .localizationKeyForSearchButtonReminder,
+                                    Stores.localizationStore.localizationPref),
+                                    textAlign: TextAlign.left, style: TextStyle(
+                                        fontWeight: FontWeight.w600)))),
+                            Container(width: 180)
+                          ])
+                      )
+                          : Container()
+                    ]),
+          )),
       floatingActionButton: Observer(
-    builder: (_) =>FloatingActionButton.extended(
-        onPressed: (){
-          Stores.appConfig.setShowSearchButtonReminder(false);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RouteListView()),
-          );
-        },
-        tooltip: 'Search',
-        icon: Icon(Icons.search),
-        label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForRouteSearch, Stores.localizationStore.localizationPref)),
-      )), // This trailing comma makes auto-formatting nicer for build methods.
+          builder: (_) =>
+              FloatingActionButton.extended(
+                onPressed: () {
+                  Stores.appConfig.setShowSearchButtonReminder(false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RouteListView()),
+                  );
+                },
+                tooltip: 'Search',
+                icon: Icon(Icons.search),
+                label: Text(LocalizationUtil.localizedString(
+                    LocalizationUtil.localizationKeyForRouteSearch,
+                    Stores.localizationStore.localizationPref)),
+              )), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  void _onRemoveBookmark(int index){
-    Stores.dataManager.removeRouteStopFromBookmark(Stores.dataManager.bookmarkedRouteStops![index]);
+  void _onRemoveBookmark(int index) {
+    Stores.dataManager.removeRouteStopFromBookmark(
+        Stores.dataManager.bookmarkedRouteStops![index]);
     Stores.etaListStore.setSelectedETAListIndex(null);
   }
 
-  void _onOpenMapView(ETA eta){
-    if(Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier) && Stores.dataManager.busStopDetailMap!.containsKey(eta.stopId)) {
+  void _onOpenMapView(ETA eta) {
+    if (Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier) &&
+        Stores.dataManager.busStopDetailMap!.containsKey(eta.stopId)) {
       Stores.googleMapStore.setSelectedBusStop(
           Stores.dataManager.busStopDetailMap![eta.stopId]);
       Stores.googleMapStore.setIsInbound(
           eta.isInbound);
       Stores.googleMapStore.setSelectedRoute(
           Stores.dataManager.routesMap![eta.routeUniqueIdentifier]);
-      BusRoute? route = Stores.dataManager.routesMap![eta.routeUniqueIdentifier];
-      if (route == null) { return; }
+      BusRoute? route = Stores.dataManager.routesMap![eta
+          .routeUniqueIdentifier];
+      if (route == null) {
+        return;
+      }
       CacheUtils.sharedInstance().getRouteAndStopsDetail(route, eta.isInbound);
       Navigator.push(
         context,
@@ -323,34 +900,48 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onRouteInfoButtonClicked(ETA eta){
-     if(Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier)) {
-       BusRoute? route = Stores.dataManager.routesMap![eta.routeUniqueIdentifier];
-       if(route == null) { return; }
-       Stores.routeDetailStore.route = route;
-       Stores.routeDetailStore.isInbound = eta.isInbound;
-       Stores.routeDetailStore.setSelectedStopId(eta.stopId);
-       Navigator.push(
-         context,
-         MaterialPageRoute(builder: (context) => BusRouteDetailView()),
-       );
-     }
+  void _onRouteInfoButtonClicked(ETA eta) {
+    if (Stores.dataManager.routesMap!.containsKey(eta.routeUniqueIdentifier)) {
+      BusRoute? route = Stores.dataManager.routesMap![eta
+          .routeUniqueIdentifier];
+      if (route == null) {
+        return;
+      }
+      Stores.routeDetailStore.route = route;
+      Stores.routeDetailStore.isInbound = eta.isInbound;
+      Stores.routeDetailStore.setSelectedStopId(eta.stopId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BusRouteDetailView()),
+      );
+    }
   }
 
   Widget _buildDownloadAllDataDialog(BuildContext context) {
-     return WillPopScope(child: AlertDialog(title: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle, Stores.localizationStore.localizationPref)),
-       content: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupContent, Stores.localizationStore.localizationPref)),
-     actions: [
-       TextButton(onPressed: (){
-         CacheUtils.sharedInstance().fetchAllData();
-         Stores.appConfig.setShouldDownloadAllData(true);
-         Navigator.of(context).pop();
-       }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupYes, Stores.localizationStore.localizationPref))),
-       TextButton(onPressed: (){
-         Stores.appConfig.setShouldDownloadAllData(false);
-         Navigator.of(context).pop();
-       }, child: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForDownloadAllDataPopupNo, Stores.localizationStore.localizationPref))),
-     ],), onWillPop: () async => false ,);
+    return WillPopScope(child: AlertDialog(title: Text(
+        LocalizationUtil.localizedString(
+            LocalizationUtil.localizationKeyForDownloadAllDataPopupTitle,
+            Stores.localizationStore.localizationPref)),
+      content: Text(LocalizationUtil.localizedString(
+          LocalizationUtil.localizationKeyForDownloadAllDataPopupContent,
+          Stores.localizationStore.localizationPref)),
+      actions: [
+        TextButton(onPressed: () {
+          CacheUtils.sharedInstance().fetchAllData();
+          Stores.appConfig.setShouldDownloadAllData(true);
+          Navigator.of(context).pop();
+        },
+            child: Text(LocalizationUtil.localizedString(
+                LocalizationUtil.localizationKeyForDownloadAllDataPopupYes,
+                Stores.localizationStore.localizationPref))),
+        TextButton(onPressed: () {
+          Stores.appConfig.setShouldDownloadAllData(false);
+          Navigator.of(context).pop();
+        },
+            child: Text(LocalizationUtil.localizedString(
+                LocalizationUtil.localizationKeyForDownloadAllDataPopupNo,
+                Stores.localizationStore.localizationPref))),
+      ],), onWillPop: () async => false,);
   }
 
 }

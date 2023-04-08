@@ -87,7 +87,20 @@ class ETA extends LocalizedData{
 
   String getTimeLeftDescription(DateTime timestampForChecking){
     var remainedTimeInMilliseconds = getRemainTimeInMilliseconds(timestampForChecking);
-    return remainedTimeInMilliseconds > Stores.appConfig.arrivalExpiryTimeMilliseconds ?( remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds?"~${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)} ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}":("< 1 ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}")) : "-";
+
+    if (remainedTimeInMilliseconds <= Stores.appConfig.arrivalExpiryTimeMilliseconds) {
+      return "-";
+    }
+
+    if (remainedTimeInMilliseconds >= 600000) { // 10 minutes
+      return " ${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)} ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}";
+    }
+
+    if (remainedTimeInMilliseconds > Stores.appConfig.arrivalImminentTimeMilliseconds) {
+      return "   ${(remainedTimeInMilliseconds~/Stores.appConfig.arrivalImminentTimeMilliseconds)} ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}";
+    }
+
+    return "< 1 ${LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForMinute, Stores.localizationStore.localizationPref)}";
 
   }
 

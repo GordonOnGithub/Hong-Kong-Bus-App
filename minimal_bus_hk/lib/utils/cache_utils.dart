@@ -85,7 +85,7 @@ class CacheUtils{
               route.routeCode, route.companyCode, route.bound == "I", route.serviceType,
               saveInTmp: true));
         }
-        if(futures.length > 19) {
+        if(futures.length > 39) {
           await Future.wait(futures);
           Stores.dataManager.addAllDataFetchCount(futures.length);
           futures = [];

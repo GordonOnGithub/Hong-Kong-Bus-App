@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:minimal_bus_hk/model/eta.dart';
 import 'package:minimal_bus_hk/utils/stores.dart';
 import 'package:mobx/mobx.dart';
@@ -57,10 +59,25 @@ abstract class ETAListStoreBase with Store {
         if(filteredETAs.length == 0){
           filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
         }
+
+        if(filteredETAs.length == 1){
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
+        }
+
         filteredETAs.sort((a,b){
+
+          if(a.etaTimestamp == null && b.etaTimestamp != null) {
+            return -1;
+          }
+
+          if(a.etaTimestamp != null && b.etaTimestamp == null) {
+            return 1;
+          }
+
           if(a.etaTimestamp == null || b.etaTimestamp == null){
             return 0;
           }
+
           return a.etaTimestamp!.compareTo(b.etaTimestamp!);});
         result.add(filteredETAs);
       }else{

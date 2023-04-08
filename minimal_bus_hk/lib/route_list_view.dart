@@ -73,12 +73,16 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
         bottom: TabBar(
           controller: _tabController,
           tabs:  <Widget>[
+        Observer(
+        builder: (_) =>
             Tab(
-             text: "${LocalizationUtil.localizedString(NetworkUtil.companyCodeNWFB, Stores.localizationStore.localizationPref)} & ${LocalizationUtil.localizedString(NetworkUtil.companyCodeCTB, Stores.localizationStore.localizationPref)}",
-            ),
+             text: Stores.routeListStore.nwfbTabTitle,
+            )),
+    Observer(
+    builder: (_) =>
             Tab(
-              text: "${LocalizationUtil.localizedString(NetworkUtil.companyCodeKMB, Stores.localizationStore.localizationPref)}",
-            ),
+              text: Stores.routeListStore.kmbTabTitle,
+            )),
           ],
         ),
       ),
@@ -96,11 +100,13 @@ class _RouteListViewPageState extends State<RouteListViewPage> with TickerProvid
         ],
       ),
         floatingActionButton:
-        (Stores.appConfig.downloadAllData ?? false) ?
-        FloatingActionButton.extended(icon: Icon(Icons.flag), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)),
-        onPressed: (){
-           _onBusStopListClicked();
-        },) : Container(),
+            // TODO: re-enable it if full data download is optimized later
+        // (Stores.appConfig.downloadAllData ?? false) ?
+        // FloatingActionButton.extended(icon: Icon(Icons.flag), label: Text(LocalizationUtil.localizedString(LocalizationUtil.localizationKeyForBusStopList, Stores.localizationStore.localizationPref)),
+        // onPressed: (){
+        //    _onBusStopListClicked();
+        // },) :
+        Container(),
     );
   }
 
