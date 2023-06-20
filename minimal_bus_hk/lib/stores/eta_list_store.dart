@@ -56,22 +56,16 @@ abstract class ETAListStoreBase with Store {
             }
           }
         }
-        if(filteredETAs.length == 0){
-          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
-        }
 
-        if(filteredETAs.length == 1){
-          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
-        }
 
         filteredETAs.sort((a,b){
 
           if(a.etaTimestamp == null && b.etaTimestamp != null) {
-            return -1;
+            return 1;
           }
 
           if(a.etaTimestamp != null && b.etaTimestamp == null) {
-            return 1;
+            return -1;
           }
 
           if(a.etaTimestamp == null || b.etaTimestamp == null){
@@ -79,6 +73,15 @@ abstract class ETAListStoreBase with Store {
           }
 
           return a.etaTimestamp!.compareTo(b.etaTimestamp!);});
+
+        if(filteredETAs.length == 0){
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
+        } else if(filteredETAs.length == 1){
+          filteredETAs.add(ETA.notFound(routeStop.routeCode, routeStop.stopId,  routeStop.companyCode, routeStop.isInbound));
+        }
+
+
         result.add(filteredETAs);
       }else{
         result.add([ETA.unknown(routeStop.routeCode, routeStop.stopId, routeStop.companyCode, routeStop.isInbound)]);
