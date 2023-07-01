@@ -21,9 +21,9 @@ class CacheUtils{
   static final String busStopDetailsCacheExpiryDaysKey = "bus_stop_details_expiry_days_key";
 
   static final int _dayInMicroseconds = 86400000;
-  final int _defaultRoutesCacheExpiryDays = 14;
-  final int _defaultRouteDetailsCacheExpiryDays = 14;
-  final int _defaultBusStopDetailsCacheExpiryDays = 14;
+  final int _defaultRoutesCacheExpiryDays = 1;
+  final int _defaultRouteDetailsCacheExpiryDays = 7;
+  final int _defaultBusStopDetailsCacheExpiryDays = 7;
 
   static CacheUtils? _sharedInstance;
 
@@ -51,12 +51,22 @@ class CacheUtils{
 
   bool _isFetchingAllData = false;
 
+  bool _forceClearCache = false;
 
   Future<void> fetchAllData() async{
     if(_isFetchingAllData) return;
     _isFetchingAllData = true;
     Stores.dataManager.addAllDataFetchCount(0);
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if(DateTime.now().millisecondsSinceEpoch < 1688688000000 && !prefs.containsKey("2023JulyForceClearCache") ) {
+      // temporary logic to handle the merging of NWFB and CTB in 2023-7-1
+      // TODO: remove it when the old versions are deprecated.
+      _forceClearCache = true;
+
+     prefs.setBool("2023JulyForceClearCache", true);
+    }
 
     await getRoutes();
     var routes = Stores.dataManager.routes;
@@ -368,6 +378,11 @@ class CacheUtils{
   }
 
     bool _checkCacheContentExpired( Map<String, dynamic> cachedData, int expiryDuration ){
+
+    if (_forceClearCache) {
+      return true;
+    }
+
     var key = "generated_timestamp ";//API issue, there is an extra space in key
     if(!cachedData.containsKey(key)){
       return true;

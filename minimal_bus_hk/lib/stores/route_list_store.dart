@@ -213,7 +213,7 @@ abstract class RouteListStoreBase with Store {
   @computed
   String get nwfbTabTitle {
     String title =
-        "${LocalizationUtil.localizedString(NetworkUtil.companyCodeNWFB, Stores.localizationStore.localizationPref)} & ${LocalizationUtil.localizedString(NetworkUtil.companyCodeCTB, Stores.localizationStore.localizationPref)}";
+        "${LocalizationUtil.localizedString(NetworkUtil.companyCodeCTB, Stores.localizationStore.localizationPref)}";
 
     if (filterKeyword.isNotEmpty) {
       title = "${title} (${displayedDirectionalRoutesForNWFBAndCTB.length})";
